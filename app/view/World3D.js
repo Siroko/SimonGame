@@ -5,7 +5,7 @@ var THREE = require('three');
 var VRControls = require('../utils/VRControls');
 var VREffect = require('../utils/VREffect');
 var Model = require('../model/ModelData');
-var PanoramaStereo = require('./PanoramaStereo');
+var WorldManager = require('./WorldManager');
 
 var World3D = function( container ) {
 
@@ -21,18 +21,21 @@ var World3D = function( container ) {
 
     // Apply VR headset positional data to camera.
     this.controls       = new VRControls(this.camera);
-
-    this.panoramaStereo = new PanoramaStereo();
+    this.controls.standing = true;
 
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer );
+
+    this.pointLight = new THREE.PointLight(0xFFFFFF, 1);
+    this.pointLight.position.set(-75, 82, 57);
+    this.scene.add( this.pointLight );
 
     // Create a VR manager helper to enter and exit VR mode.
     var params = {
         hideButton: false, // Default: false.
         isUndistorted: true // Default: false.
     };
-
+    this.worldManager = new WorldManager( this.scene, this.camera );
     this.manager = new WebVRManager( this.renderer, this.effect, params );
 
     this.setup();
@@ -42,9 +45,6 @@ World3D.prototype.setup = function() {
 
     this.renderer.setClearColor( 0x000000, 1 );
     this.container.appendChild( this.renderer.domElement );
-
-    this.scene.add( this.panoramaStereo.eyeL );
-    this.scene.add( this.panoramaStereo.eyeR );
 
     this.addEvents();
     this.render();
