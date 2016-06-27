@@ -58,10 +58,10 @@ WorldManager.prototype.setup = function(){
                 }
 
                 if( obj.name.indexOf('CloudGeom') >= 0  ) {
-                    obj.material.emissive = new THREE.Color('#FFFFFF');
-
-                    obj.castShadow = true;
-                    obj.receiveShadow = true;
+                    obj.material = new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
+                        transparent : true
+                    });
 
                 }
 
