@@ -13,11 +13,13 @@ var World3D = function( container ) {
 
     this.container      = container;
 
-    this.camera         = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 100000 );
+    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
     this.renderer       = new THREE.WebGLRenderer( { antialias: true, logarithmicDepthBuffer: true } );
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Apply VR headset positional data to camera.
     this.controls       = new VRControls(this.camera);
@@ -26,8 +28,15 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer );
 
-    this.pointLight = new THREE.PointLight(0xFFFFFF, 1);
-    this.pointLight.position.set(-75, 82, 57);
+    var SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT;
+    SHADOW_MAP_WIDTH = SHADOW_MAP_HEIGHT = 64;
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
+    this.pointLight.position.set( -75, 82, 57 );
+    this.pointLight.castShadow = true;
+    this.pointLight.shadow.bias = -.0000025;
+    this.pointLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    this.pointLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
     this.scene.add( this.pointLight );
 
     // Create a VR manager helper to enter and exit VR mode.
@@ -49,6 +58,7 @@ World3D.prototype.setup = function() {
     this.addEvents();
     this.render();
 };
+
 
 World3D.prototype.addEvents = function() {
 
