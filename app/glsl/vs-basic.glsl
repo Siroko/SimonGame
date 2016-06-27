@@ -142,7 +142,7 @@ float snoise(vec4 v)
       vec3 pos = position;
       float noise = snoise(vec4(pos, uTime * 0.001));
 
-      pos += normal * noise * 0.1;
+      pos += normal * noise * 0.2;
       vPos = vec4(pos, 1.0);
       vNormal = normal;
 

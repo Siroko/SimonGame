@@ -65,9 +65,24 @@ WorldManager.prototype.setup = function(){
 
                 }
 
+                if( obj.name.indexOf('faceSun') >= 0  ) {
+                    obj.material = new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
+                        transparent : true
+                    });
+
+                    var texture = obj.material.map;
+                    //texture.generateMipmaps = false;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.minFilter = THREE.LinearFilter;
+
+                }
+
                 if( obj.name.indexOf('ground') >= 0  ) {
                     obj.castShadow = true;
                     obj.receiveShadow = true;
+
+                    this.ground = obj;
                 }
 
                 if( obj.name.indexOf('stone') >= 0  ) {
@@ -80,10 +95,7 @@ WorldManager.prototype.setup = function(){
                     obj.receiveShadow = true;
 
                 }
-
-
-
-                console.log( obj );
+                obj.geometry.computeBoundingSphere();
             }
             this.scene.add( object );
 

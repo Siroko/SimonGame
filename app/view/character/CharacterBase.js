@@ -19,11 +19,12 @@ CharacterBase.prototype.setup = function(){
         },
         vertexShader: vs,
         fragmentShader: fs,
-        shading: THREE.SmoothShading,
+        shading: THREE.FlatShading,
         side: THREE.DoubleSide
     } );
 
     this.mesh = new THREE.Mesh( this.geom, this.material );
+    this.mesh.castShadow = true;
     this.mesh.position.set( 0, 1.5, -1.3 );
 
 };

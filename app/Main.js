@@ -3,10 +3,8 @@
  */
 
 var World3D = require('./view/World3D');
-var ModelData = require('./model/ModelData');
 
 var Main = function(){
-    this.model = null;
     this.world3D = null;
 };
 
@@ -15,8 +13,7 @@ Main.prototype.init = function() {
     console.log('APP initializing');
 
     var container = document.getElementById( "container" );
-    this.model = new ModelData();
-    this.world3D = new World3D( container, this.model );
+    this.world3D = new World3D( container );
 
     this.addEvents();
     this.onResize( null );

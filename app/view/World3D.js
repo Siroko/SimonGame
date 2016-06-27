@@ -4,12 +4,10 @@
 var THREE = require('three');
 var VRControls = require('../utils/VRControls');
 var VREffect = require('../utils/VREffect');
-var Model = require('../model/ModelData');
 var WorldManager = require('./WorldManager');
+var GamePads = require('./gamepads/MousePad');
 
 var World3D = function( container ) {
-
-    this.model          = new Model();
 
     this.container      = container;
 
@@ -22,14 +20,14 @@ var World3D = function( container ) {
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Apply VR headset positional data to camera.
-    this.controls       = new VRControls(this.camera);
+    this.controls       = new VRControls( this.camera );
     this.controls.standing = true;
 
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer );
 
     var SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT;
-    SHADOW_MAP_WIDTH = SHADOW_MAP_HEIGHT = 64;
+    SHADOW_MAP_WIDTH = SHADOW_MAP_HEIGHT = 256;
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
     this.pointLight.position.set( -75, 82, 57 );
     this.pointLight.castShadow = true;
@@ -46,6 +44,7 @@ var World3D = function( container ) {
     };
     this.worldManager = new WorldManager( this.scene, this.camera );
     this.manager = new WebVRManager( this.renderer, this.effect, params );
+    this.gamePads = new GamePads( this.scene, this.camera, this.worldManager );
 
     this.setup();
 };
@@ -78,11 +77,16 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
+    this.camera.update;
     // Update VR headset position and apply to camera.
     this.controls.update();
     // Render the scene through the manager.
     this.manager.render( this.scene, this.camera, timestamp);
     this.worldManager.character.update( timestamp );
+    this.gamePads.update( timestamp );
+    this.worldManager.character.mesh.position.x = this.gamePads.intersectPoint.x;
+    //this.worldManager.character.mesh.position.y = this.gamePads.intersectPoint.y;
+    this.worldManager.character.mesh.position.z = this.gamePads.intersectPoint.z;
 
 };
 
@@ -94,9 +98,6 @@ World3D.prototype.onResize = function( w, h ) {
 
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-
-    //this.renderer.setSize( w, h );
-
 };
 
 module.exports = World3D;
