@@ -13,11 +13,11 @@ var World3D = function( container ) {
 
     this.container      = container;
 
-    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
-    this.renderer       = new THREE.WebGLRenderer( { antialias: true, logarithmicDepthBuffer: true } );
+    this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -82,6 +82,7 @@ World3D.prototype.render = function( timestamp ) {
     this.controls.update();
     // Render the scene through the manager.
     this.manager.render( this.scene, this.camera, timestamp);
+    this.worldManager.character.update( timestamp );
 
 };
 

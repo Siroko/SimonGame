@@ -12,10 +12,10 @@ var CharacterBase = function(){
 
 CharacterBase.prototype.setup = function(){
 
-    this.geom = new THREE.SphereBufferGeometry( 0.5, 10, 10 );
+    this.geom = new THREE.SphereBufferGeometry( 0.5, 20, 20 );
     this.material = new THREE.ShaderMaterial({
         uniforms: {
-
+            'uTime': { type:'f', value:0 }
         },
         vertexShader: vs,
         fragmentShader: fs,
@@ -24,7 +24,7 @@ CharacterBase.prototype.setup = function(){
     } );
 
     this.mesh = new THREE.Mesh( this.geom, this.material );
-    this.mesh.position.set( 0, 1.5, -1 );
+    this.mesh.position.set( 0, 1.5, -1.3 );
 
 };
 
@@ -32,7 +32,9 @@ CharacterBase.prototype.addEvents = function(){
 
 };
 
-CharacterBase.prototype.update = function(){
+CharacterBase.prototype.update = function( t ){
+
+    this.material.uniforms.uTime.value = t;
 
 };
 
