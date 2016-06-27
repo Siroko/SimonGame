@@ -1,1 +1,1 @@
-# WebVR Google UNHCR
+# WebVR Simon Game
