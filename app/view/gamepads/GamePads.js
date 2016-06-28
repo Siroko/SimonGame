@@ -32,7 +32,9 @@ GamePads.prototype.update = function( t ){
     var gamepads = navigator.getGamepads();
 
     if( this.effect.getHMD() ) {
-        this.sTSMat.fromArray(this.effect.getHMD().stageParameters.sittingToStandingTransform);
+        if( this.effect.getHMD().stageParameters ) {
+            this.sTSMat.fromArray(this.effect.getHMD().stageParameters.sittingToStandingTransform);
+        }
     }
 
     for (var i = 0; i < gamepads.length; ++i) {
