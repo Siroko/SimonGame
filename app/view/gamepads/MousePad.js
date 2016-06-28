@@ -32,7 +32,7 @@ MousePad.prototype.onMouseMove = function( e ){
 MousePad.prototype.update = function( t ) {
     if( this.worldManager.ground ) {
         this.raycaster.setFromCamera(this.screenVector, this.camera);
-        var intersects = this.raycaster.intersectObjects([this.worldManager.character.calcPlane, this.worldManager.character.mesh]);
+        var intersects = this.raycaster.intersectObjects([this.worldManager.character.calcPlane]);
 
         if (intersects.length > 0) {
             this.intersectPoint.copy(intersects[0].point);
