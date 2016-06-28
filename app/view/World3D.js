@@ -5,7 +5,7 @@ var THREE = require('three');
 var VRControls = require('../utils/VRControls');
 var VREffect = require('../utils/VREffect');
 var WorldManager = require('./WorldManager');
-var GamePads = require('./gamepads/MousePad');
+var GamePads = require('./gamepads/GamePads');
 
 var World3D = function( container ) {
 
@@ -26,14 +26,12 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer );
 
-    var SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT;
-    SHADOW_MAP_WIDTH = SHADOW_MAP_HEIGHT = 256;
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
     this.pointLight.position.set( -75, 82, 57 );
-    this.pointLight.castShadow = true;
-    this.pointLight.shadow.bias = -.0000025;
-    this.pointLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
-    this.pointLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+    //this.pointLight.castShadow = true;
+    //this.pointLight.shadow.bias = -.0000025;
+    //this.pointLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    //this.pointLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     this.scene.add( this.pointLight );
 
@@ -44,7 +42,10 @@ var World3D = function( container ) {
     };
     this.worldManager = new WorldManager( this.scene, this.camera );
     this.manager = new WebVRManager( this.renderer, this.effect, params );
-    this.gamePads = new GamePads( this.scene, this.camera, this.worldManager );
+    this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
+
+    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.1, 10, 10), new THREE.MeshNormalMaterial() );
+    this.scene.add( this.pointer );
 
     this.setup();
 };
@@ -83,10 +84,9 @@ World3D.prototype.render = function( timestamp ) {
     // Render the scene through the manager.
     this.manager.render( this.scene, this.camera, timestamp);
     this.worldManager.character.update( timestamp );
+
     this.gamePads.update( timestamp );
-    this.worldManager.character.mesh.position.x = this.gamePads.intersectPoint.x;
-    //this.worldManager.character.mesh.position.y = this.gamePads.intersectPoint.y;
-    this.worldManager.character.mesh.position.z = this.gamePads.intersectPoint.z;
+    this.worldManager.character.positionTouch1.copy( this.gamePads.intersectPoint );
 
 };
 

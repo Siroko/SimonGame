@@ -1,10 +1,14 @@
 precision highp float;
 
 uniform float uTime;
+uniform vec3 uTouch1;
+uniform vec3 uWorldPosition;
 
 varying vec2 vUv;
 varying vec4 vPos;
 varying vec3 vNormal;
+varying float vDist;
+
 
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex
@@ -140,11 +144,26 @@ float snoise(vec4 v)
 
       vUv = uv;
       vec3 pos = position;
-      float noise = snoise(vec4(pos, uTime * 0.001));
+      float noise = snoise( vec4( pos, uTime * 0.001 ) );
+      vec3 direction = uWorldPosition - uTouch1;
+      normalize( direction );
 
-      pos += normal * noise * 0.2;
-      vPos = vec4(pos, 1.0);
+      vec3 vertexWorldPosition = uWorldPosition + position;
+
+      float d = clamp( 0.5 - distance( vertexWorldPosition, uTouch1 ), 0.0, 1.0 );
+
+      pos += normal * noise * 0.1;
+//      pos.x += direction.x * d * 0.7;
+//      pos.y += direction.y * d * 0.7;
+
+        vec3 displacement = direction * d * 0.5;
+        pos += displacement;
+
+      vDist = d;
+      vPos = vec4( pos, 1.0 );
       vNormal = normal;
 
       gl_Position = projectionMatrix * modelViewMatrix * vPos;
+
+
   }

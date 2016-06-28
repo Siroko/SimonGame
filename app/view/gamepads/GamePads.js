@@ -1,15 +1,40 @@
 /**
  * Created by siroko on 6/27/16.
  */
-var GamePads = function(){
 
+var THREE = require('three');
+var GamePads = function( scene, camera, worldManager, effect ){
+
+    this.worldManager = worldManager;
+    this.scene = scene;
+    this.camera = camera;
+    this.effect = effect;
+
+    this.intersectPoint = new THREE.Vector3();
+    this.sTSMat = new THREE.Matrix4();
+
+    this.h1 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
+    this.h1.matrixAutoUpdate = false;
+    this.h2 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
+    this.h2.matrixAutoUpdate = false;
+    this.handlers = [ this.h1, this.h2 ];
+
+    this.scene.add( this.h1 );
+    this.scene.add( this.h2 );
 
 };
 
-GamePads.prototype.update = function(){
+GamePads.prototype.update = function( t ){
+
+
     // Loop over every gamepad and if we find any that have a pose use it.
     var vrGamepads = [];
     var gamepads = navigator.getGamepads();
+
+    if( this.effect.getHMD() ) {
+        this.sTSMat.fromArray(this.effect.getHMD().stageParameters.sittingToStandingTransform);
+    }
+
     for (var i = 0; i < gamepads.length; ++i) {
         var gamepad = gamepads[i];
 
@@ -17,6 +42,15 @@ GamePads.prototype.update = function(){
         // well as a non-null pose.
         if (gamepad && gamepad.pose) {
             vrGamepads.push(gamepad);
+            console.log(vrGamepads);
+            //this.intersectPoint.quaternion.fromArray( gamepad.pose.orientation );
+            this.handlers[ i ].position.fromArray( gamepad.pose.position );
+            this.handlers[ i ].quaternion.fromArray( gamepad.pose.orientation );
+            this.handlers[ i ].updateMatrix();
+            this.handlers[ i ].applyMatrix( this.sTSMat );
+
+            this.intersectPoint.copy( this.handlers[ 0 ].position );
+
             if ("vibrate" in gamepad) {
                 for (var j = 0; j < gamepad.buttons.length; ++j) {
                     if (gamepad.buttons[j].pressed) {

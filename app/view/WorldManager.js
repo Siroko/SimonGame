@@ -97,6 +97,7 @@ WorldManager.prototype.setup = function(){
                 }
                 obj.geometry.computeBoundingSphere();
             }
+
             this.scene.add( object );
 
         } ).bind( this ), onProgress, onError );
@@ -105,6 +106,7 @@ WorldManager.prototype.setup = function(){
 
     this.character = new CharacterBase();
     this.scene.add( this.character.mesh );
+    this.scene.add( this.character.calcPlane );
 
 };
 

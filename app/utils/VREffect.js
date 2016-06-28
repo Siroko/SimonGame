@@ -13,12 +13,16 @@ var THREE = require('three');
 
 var VREffect = function ( renderer, onError ) {
 
-	var vrHMD;
+	var vrHMD = null;
 	var isDeprecatedAPI = false;
 	var eyeTranslationL = new THREE.Vector3();
 	var eyeTranslationR = new THREE.Vector3();
 	var renderRectL, renderRectR;
 	var eyeFOVL, eyeFOVR;
+
+	this.getHMD = function() {
+		return vrHMD;
+	}
 
 	function gotVRDevices( devices ) {
 
