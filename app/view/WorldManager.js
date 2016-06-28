@@ -104,9 +104,15 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    this.character = new CharacterBase();
+    this.character = new CharacterBase( new THREE.Vector3( -3, 1.6, -2) );
+    this.character2 = new CharacterBase( new THREE.Vector3( 0, 1.6, -4) );
+    this.character3 = new CharacterBase( new THREE.Vector3( 3, 1.6, -2) );
     this.scene.add( this.character.mesh );
     this.scene.add( this.character.calcPlane );
+    this.scene.add( this.character2.mesh );
+    this.scene.add( this.character2.calcPlane );
+    this.scene.add( this.character3.mesh );
+    this.scene.add( this.character3.calcPlane );
 
 };
 

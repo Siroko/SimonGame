@@ -24,15 +24,15 @@ MousePad.prototype.addEvents = function(){
 
 MousePad.prototype.onMouseMove = function( e ){
 
-    this.screenVector.x = (e.clientX / window.innerWidth) * 2 - 1;
-    this.screenVector.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1;
+    // this.screenVector.x = (e.clientX / window.innerWidth) * 2 - 1;
+    // this.screenVector.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1;
 
 };
 
 MousePad.prototype.update = function( t ) {
     if( this.worldManager.ground ) {
         this.raycaster.setFromCamera(this.screenVector, this.camera);
-        var intersects = this.raycaster.intersectObjects([this.worldManager.character.calcPlane]);
+        var intersects = this.raycaster.intersectObjects([this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane]);
 
         if (intersects.length > 0) {
             this.intersectPoint.copy(intersects[0].point);

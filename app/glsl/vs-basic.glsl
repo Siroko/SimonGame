@@ -4,10 +4,7 @@ uniform float uTime;
 uniform vec3 uTouch1;
 uniform vec3 uWorldPosition;
 
-varying vec2 vUv;
 varying vec4 vPos;
-varying vec3 vNormal;
-varying float vDist;
 
 
 //
@@ -142,7 +139,6 @@ float snoise(vec4 v)
 
   void main()	{
 
-      vUv = uv;
       vec3 pos = position;
       float noise = snoise( vec4( pos, uTime * 0.001 ) );
       vec3 direction = uWorldPosition - uTouch1;
@@ -159,9 +155,7 @@ float snoise(vec4 v)
         vec3 displacement = direction * d * 0.8;
         pos += displacement;
 
-      vDist = d;
       vPos = vec4( pos, 1.0 );
-      vNormal = normal;
 
       gl_Position = projectionMatrix * modelViewMatrix * vPos;
 

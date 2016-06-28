@@ -5,7 +5,7 @@ var THREE = require('three');
 var VRControls = require('../utils/VRControls');
 var VREffect = require('../utils/VREffect');
 var WorldManager = require('./WorldManager');
-var GamePads = require('./gamepads/GamePads');
+var GamePads = require('./gamepads/MousePad');
 
 var World3D = function( container ) {
 
@@ -78,15 +78,25 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.camera.update;
+    this.worldManager.character.calcPlane.lookAt(this.camera.position);
+    this.worldManager.character2.calcPlane.lookAt(this.camera.position);
+    this.worldManager.character3.calcPlane.lookAt(this.camera.position);
+
     // Update VR headset position and apply to camera.
     this.controls.update();
     // Render the scene through the manager.
     this.manager.render( this.scene, this.camera, timestamp);
     this.worldManager.character.update( timestamp );
+    this.worldManager.character2.update( timestamp );
+    this.worldManager.character3.update( timestamp );
 
     this.gamePads.update( timestamp );
     this.worldManager.character.positionTouch1.copy( this.gamePads.intersectPoint );
+    this.worldManager.character2.positionTouch1.copy( this.gamePads.intersectPoint );
+    this.worldManager.character3.positionTouch1.copy( this.gamePads.intersectPoint );
+
+    this.pointer.position.copy( this.gamePads.intersectPoint );
+
 
 };
 
