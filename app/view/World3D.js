@@ -89,7 +89,7 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.gamePads.update( timestamp, [this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane] );
+    this.gamePads.update( timestamp, [this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane, this.worldManager.character4.calcPlane] );
     this.worldManager.update( timestamp );
     // Update VR headset position and apply to camera.
     this.controls.update();

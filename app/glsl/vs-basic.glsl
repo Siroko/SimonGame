@@ -5,6 +5,7 @@ uniform vec3 uTouch1;
 uniform vec3 uWorldPosition;
 
 varying vec4 vPos;
+varying vec2 vUv;
 
 
 //

@@ -8,12 +8,13 @@ var vs = require('./../../glsl/vs-basic.glsl');
 var fs = require('./../../glsl/fs-basic.glsl');
 
 
-var CharacterBase = function( initPosition ){
+var CharacterBase = function( initPosition, correct ){
 
     this.positionCharacter = initPosition.clone();
     this.positionCharacterBase = initPosition.clone();
 
     this.seed = Math.random();
+    this.correct = correct;
     this.setup();
 };
 
@@ -68,22 +69,29 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.position.z -= this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * 0.84;
 
     var d = this.positionTouch1.distanceTo( this.mesh.position );
-    if( d < 0.6 ){
-        var direction = new THREE.Vector3();
-        direction.subVectors( this.mesh.position, this.positionTouch1 );
-        direction.normalize();
-        direction.multiplyScalar( 0.6 - d );
-        this.mesh.position.add( direction );
+    var base = this.positionCharacterBase.clone();
+    if( this.correct ){
+        if (d < 0.6) {
+           base.copy(this.positionTouch1);
+        }
+    } else {
+        if (d < 0.6) {
+            var direction = new THREE.Vector3();
+            direction.subVectors(this.mesh.position, this.positionTouch1);
+            direction.normalize();
+            direction.multiplyScalar(0.6 - d);
+            this.mesh.position.add(direction);
+        }
     }
 
     var speed = 0.0005;
-    this.positionCharacter.y = this.positionCharacterBase.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * 0.8);
-    this.positionCharacter.x = this.positionCharacterBase.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * 0.8);
+
+    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * 0.8);
+    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * 0.8);
+    this.positionCharacter.z = base.z;
 
     this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * 0.8);
     this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * 0.8);
-
-   
 
 };
 
