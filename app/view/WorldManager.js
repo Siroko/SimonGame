@@ -140,10 +140,10 @@ WorldManager.prototype.setup = function(){
     }).bind( this ) );
 
 
-    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, -0.75), false );
-    this.character2 = new CharacterBase( new THREE.Vector3( -0.75, 1.6, -1.5), false );
-    this.character3 = new CharacterBase( new THREE.Vector3( 0.75, 1.6, -1.5), false );
-    this.character4 = new CharacterBase( new THREE.Vector3( 2, 1.6, -0.75), false );
+    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, -0.75 ), false );
+    this.character2 = new CharacterBase( new THREE.Vector3( -0.75, 1.6, -1.5 ), false );
+    this.character3 = new CharacterBase( new THREE.Vector3( 0.75, 1.6, -1.5 ), false );
+    this.character4 = new CharacterBase( new THREE.Vector3( 2, 1.6, -0.75 ), false );
     this.scene.add( this.character.mesh );
     this.scene.add( this.character.calcPlane );
     this.scene.add( this.character2.mesh );

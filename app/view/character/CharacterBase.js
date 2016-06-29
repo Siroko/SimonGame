@@ -45,10 +45,23 @@ CharacterBase.prototype.setup = function(){
     this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
     this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z * 0.8);
 
-
     this.mesh.position.x = 1;
     this.mesh.position.y = 1;
     this.mesh.position.z = 1;
+
+
+    this.faceMaterial = new THREE.MeshBasicMaterial({
+        map: THREE.ImageUtils.loadTexture('assets/faceCreature.png'),
+        transparent: true,
+        depthWrite: false,
+        depthTest: false
+    });
+    this.faceGeom = new THREE.PlaneBufferGeometry(0.6, 0.3, 2, 2);
+    this.facePlane = new THREE.Mesh( this.faceGeom, this.faceMaterial );
+    this.facePlane.rotation.x = Math.PI * 2;
+    this.facePlane.position.z = 0.3;
+
+    this.mesh.add( this.facePlane );
 };
 
 CharacterBase.prototype.addEvents = function(){
