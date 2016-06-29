@@ -47,6 +47,8 @@ WorldManager.prototype.setup = function(){
                     obj.material.specular = new THREE.Color('#555555');
                     obj.material.shininess = 0;
 
+                    this.sun = obj;
+
                 }
                 if( obj.name.indexOf('mountainTorus') >= 0  ) {
                     obj.material.emissive = new THREE.Color('#999999');
@@ -77,6 +79,8 @@ WorldManager.prototype.setup = function(){
                     texture.magFilter = THREE.LinearFilter;
                     texture.minFilter = THREE.LinearFilter;
 
+                    this.faceSun = obj;
+
                 }
 
                 if( obj.name.indexOf('ground') >= 0  ) {
@@ -105,9 +109,9 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, 0) );
-    this.character2 = new CharacterBase( new THREE.Vector3( 0, 1.6, 0) );
-    this.character3 = new CharacterBase( new THREE.Vector3( 2, 1.6, 0) );
+    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, -0.75) );
+    this.character2 = new CharacterBase( new THREE.Vector3( 0, 1.6, -0.75) );
+    this.character3 = new CharacterBase( new THREE.Vector3( 2, 1.6, -0.75) );
     this.scene.add( this.character.mesh );
     this.scene.add( this.character.calcPlane );
     this.scene.add( this.character2.mesh );
@@ -130,6 +134,11 @@ WorldManager.prototype.update = function( timestamp ) {
     this.character.positionTouch1.copy( this.gamePads.intersectPoint );
     this.character2.positionTouch1.copy( this.gamePads.intersectPoint );
     this.character3.positionTouch1.copy( this.gamePads.intersectPoint );
+
+    if( this.sun ){
+        this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
+        this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
+    }
 
 
 };

@@ -31,22 +31,40 @@ var World3D = function( container ) {
     this.pointLight.position.set( -75, 82, 57 );
     this.scene.add( this.pointLight );
 
+    this.dummyCamera = new THREE.Object3D();
+    this.dummyCamera.add( this.camera);
+    this.scene.add( this.dummyCamera );
+
     // Create a VR manager helper to enter and exit VR mode.
     var params = {
         hideButton: false, // Default: false.
         isUndistorted: true // Default: false.
     };
-
-
-
-    this.dummyCamera = new THREE.Object3D();
-    this.dummyCamera.add( this.camera);
-    this.scene.add( this.dummyCamera );
-
     this.manager = new WebVRManager( this.renderer, this.effect, params );
-    if( this.effect.getHMD() == null ) {
+    this.addEvents();
+
+};
+
+World3D.prototype.setup = function() {
+
+    this.renderer.setClearColor( 0x000000, 1 );
+    this.container.appendChild( this.renderer.domElement );
+    this.render();
+};
+
+
+World3D.prototype.addEvents = function() {
+
+    this.manager.on('initialized', this.onInitializeManager.bind( this ) );
+    this.manager.on('modechange', this.onModeChange.bind( this ) );
+
+};
+
+World3D.prototype.onInitializeManager = function( n, o ) {
+
+    if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 3;
+        this.dummyCamera.position.z = 4;
     } else {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }
@@ -57,22 +75,6 @@ var World3D = function( container ) {
     this.scene.add( this.pointer );
 
     this.setup();
-};
-
-World3D.prototype.setup = function() {
-
-    this.renderer.setClearColor( 0x000000, 1 );
-    this.container.appendChild( this.renderer.domElement );
-
-    this.addEvents();
-    this.render();
-};
-
-
-World3D.prototype.addEvents = function() {
-
-    this.manager.on('modechange', this.onModeChange.bind( this ) );
-
 };
 
 World3D.prototype.onModeChange = function( n, o ) {
