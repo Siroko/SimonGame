@@ -146,13 +146,13 @@ float snoise(vec4 v)
 
       vec3 vertexWorldPosition = uWorldPosition + position;
 
-      float d = clamp( 0.6 - distance( vertexWorldPosition, uTouch1 ), 0.0, 1.0 );
+      float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch1 ), 0.0, 1.0 );
 
       pos += normal * noise * 0.1;
 //      pos.x += direction.x * d * 0.7;
 //      pos.y += direction.y * d * 0.7;
 
-        vec3 displacement = direction * d * 0.8;
+        vec3 displacement = direction * d * 2.0;
         pos += displacement;
 
       vPos = vec4( pos, 1.0 );

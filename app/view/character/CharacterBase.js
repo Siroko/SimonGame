@@ -22,7 +22,7 @@ CharacterBase.prototype.setup = function(){
     this.positionTouch1 = new THREE.Vector3();
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 1.2, 2 );
+    this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
     this.material = new THREE.ShaderMaterial({
         uniforms: {
             'uTime': { type:'f', value:0 },
@@ -68,11 +68,11 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.position.z -= this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * 0.84;
 
     var d = this.positionTouch1.distanceTo( this.mesh.position );
-    if( d < 1 ){
+    if( d < 0.6 ){
         var direction = new THREE.Vector3();
         direction.subVectors( this.mesh.position, this.positionTouch1 );
         direction.normalize();
-        direction.multiplyScalar( 1 - d );
+        direction.multiplyScalar( 0.6 - d );
         this.mesh.position.add( direction );
     }
 

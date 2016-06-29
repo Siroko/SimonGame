@@ -5,7 +5,8 @@ var THREE = require('three');
 var VRControls = require('../utils/VRControls');
 var VREffect = require('../utils/VREffect');
 var WorldManager = require('./WorldManager');
-var GamePads = require('./gamepads/MousePad');
+var GamePads = require('./gamepads/GamePads');
+var MousePad = require('./gamepads/MousePad');
 
 var World3D = function( container ) {
 
@@ -28,11 +29,6 @@ var World3D = function( container ) {
 
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
     this.pointLight.position.set( -75, 82, 57 );
-    //this.pointLight.castShadow = true;
-    //this.pointLight.shadow.bias = -.0000025;
-    //this.pointLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
-    //this.pointLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
-
     this.scene.add( this.pointLight );
 
     // Create a VR manager helper to enter and exit VR mode.
@@ -40,9 +36,22 @@ var World3D = function( container ) {
         hideButton: false, // Default: false.
         isUndistorted: true // Default: false.
     };
-    this.worldManager = new WorldManager( this.scene, this.camera );
+
+
+
+    this.dummyCamera = new THREE.Object3D();
+    this.dummyCamera.add( this.camera);
+    this.scene.add( this.dummyCamera );
+
     this.manager = new WebVRManager( this.renderer, this.effect, params );
-    this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
+    if( this.effect.getHMD() == null ) {
+        this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
+        this.dummyCamera.position.z = 3;
+    } else {
+        this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
+    }
+
+    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads );
 
     this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.1, 10, 10), new THREE.MeshNormalMaterial() );
     this.scene.add( this.pointer );
@@ -78,34 +87,20 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.worldManager.character.calcPlane.lookAt(this.camera.position);
-    this.worldManager.character2.calcPlane.lookAt(this.camera.position);
-    this.worldManager.character3.calcPlane.lookAt(this.camera.position);
-
+    this.gamePads.update( timestamp, [this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane] );
+    this.worldManager.update( timestamp );
     // Update VR headset position and apply to camera.
     this.controls.update();
     // Render the scene through the manager.
     this.manager.render( this.scene, this.camera, timestamp);
-    this.worldManager.character.update( timestamp );
-    this.worldManager.character2.update( timestamp );
-    this.worldManager.character3.update( timestamp );
-
-    this.gamePads.update( timestamp );
-    this.worldManager.character.positionTouch1.copy( this.gamePads.intersectPoint );
-    this.worldManager.character2.positionTouch1.copy( this.gamePads.intersectPoint );
-    this.worldManager.character3.positionTouch1.copy( this.gamePads.intersectPoint );
 
     this.pointer.position.copy( this.gamePads.intersectPoint );
-
-
 };
 
 World3D.prototype.onResize = function( w, h ) {
 
     this.renderer.setPixelRatio( window.devicePixelRatio );
-
     this.effect.setSize( w, h );
-
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
 };

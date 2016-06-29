@@ -38,6 +38,7 @@ GamePads.prototype.update = function( t ){
     }
 
     for (var i = 0; i < gamepads.length; ++i) {
+
         var gamepad = gamepads[i];
 
         // The array may contain undefined gamepads, so check for that as

@@ -19,24 +19,33 @@ var MousePad = function( scene, camera, worldManager ) {
 
 
 MousePad.prototype.addEvents = function(){
-    window.addEventListener('mousemove', this.onMouseMove.bind( this ) )
+    this.mouseMoveHandler = this.onMouseMove.bind( this )
+    window.addEventListener('mousemove', this.mouseMoveHandler );
+    window.addEventListener('touchend', this.onTouchEnd.bind( this ) );
 };
 
 MousePad.prototype.onMouseMove = function( e ){
 
-    // this.screenVector.x = (e.clientX / window.innerWidth) * 2 - 1;
-    // this.screenVector.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1;
+     this.screenVector.x = (e.clientX / window.innerWidth) * 2 - 1;
+     this.screenVector.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1;
 
 };
 
-MousePad.prototype.update = function( t ) {
-    if( this.worldManager.ground ) {
-        this.raycaster.setFromCamera(this.screenVector, this.camera);
-        var intersects = this.raycaster.intersectObjects([this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane]);
+MousePad.prototype.onTouchEnd = function( e ){
 
-        if (intersects.length > 0) {
-            this.intersectPoint.copy(intersects[0].point);
-        }
+    window.removeEventListener('mousemove', this.mouseMoveHandler );
+
+    this.screenVector.x = 0;
+    this.screenVector.y = 0;
+};
+
+MousePad.prototype.update = function( t, objs ) {
+
+    this.raycaster.setFromCamera(this.screenVector, this.camera);
+
+    var intersects = this.raycaster.intersectObjects( objs );
+    if (intersects.length > 0) {
+        this.intersectPoint.copy(intersects[0].point);
     }
 };
 

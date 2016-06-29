@@ -8,10 +8,11 @@ var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
 var TweenMax = require('gsap');
 
-var WorldManager = function( scene, camera ) {
+var WorldManager = function( scene, camera, gamepads ) {
 
     this.camera = camera;
     this.scene = scene;
+    this.gamePads = gamepads;
 
     this.setup();
 
@@ -104,15 +105,32 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    this.character = new CharacterBase( new THREE.Vector3( -3, 1.6, -2) );
-    this.character2 = new CharacterBase( new THREE.Vector3( 0, 1.6, -4) );
-    this.character3 = new CharacterBase( new THREE.Vector3( 3, 1.6, -2) );
+    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, 0) );
+    this.character2 = new CharacterBase( new THREE.Vector3( 0, 1.6, 0) );
+    this.character3 = new CharacterBase( new THREE.Vector3( 2, 1.6, 0) );
     this.scene.add( this.character.mesh );
     this.scene.add( this.character.calcPlane );
     this.scene.add( this.character2.mesh );
     this.scene.add( this.character2.calcPlane );
     this.scene.add( this.character3.mesh );
     this.scene.add( this.character3.calcPlane );
+
+};
+
+WorldManager.prototype.update = function( timestamp ) {
+
+    this.character.calcPlane.lookAt(this.camera.position);
+    this.character2.calcPlane.lookAt(this.camera.position);
+    this.character3.calcPlane.lookAt(this.camera.position);
+
+    this.character.update( timestamp );
+    this.character2.update( timestamp );
+    this.character3.update( timestamp );
+
+    this.character.positionTouch1.copy( this.gamePads.intersectPoint );
+    this.character2.positionTouch1.copy( this.gamePads.intersectPoint );
+    this.character3.positionTouch1.copy( this.gamePads.intersectPoint );
+
 
 };
 
