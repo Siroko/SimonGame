@@ -113,15 +113,15 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    this.character = new CharacterBase( new THREE.Vector3( -1, 1.6, -0.5 ), false, 'char1', 0.5 );
-    this.character2 = new CharacterBase( new THREE.Vector3( -0.35, 1.6, -0.5 ), false, 'char2', 0.5 );
-    this.character3 = new CharacterBase( new THREE.Vector3( 0.35, 1.6, -0.5 ), false, 'char3', 0.5 );
-    this.character4 = new CharacterBase( new THREE.Vector3( 1, 1.6, -0.5 ), false, 'char4', 0.5 );
+    this.character = new CharacterBase( new THREE.Vector3( -1, 1, -0.5 ), false, 'char1', 0.5 );
+    this.character2 = new CharacterBase( new THREE.Vector3( -0.35, 1, -.5 ), false, 'char2', 0.5 );
+    this.character3 = new CharacterBase( new THREE.Vector3( 0.35, 1, -.5 ), false, 'char3',0.5 );
+    this.character4 = new CharacterBase( new THREE.Vector3( 1, 1, -0.5 ), false, 'char4', 0.5 );
 
     this.characters.push( this.character );
-    //this.characters.push( this.character2 );
-    //this.characters.push( this.character3 );
-    //this.characters.push( this.character4 );
+    this.characters.push( this.character2 );
+    this.characters.push( this.character3 );
+    this.characters.push( this.character4 );
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
@@ -139,10 +139,10 @@ WorldManager.prototype.update = function( timestamp ) {
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
         if( this.dummyCamera.position.z != 0 ) {
-            char.calcPlane.lookAt(this.dummyCamera.position);
+            //char.calcPlane.lookAt(this.dummyCamera.position);
             char.mesh.lookAt( this.dummyCamera.position );
         } else {
-            char.calcPlane.lookAt(this.camera.position);
+            //char.calcPlane.lookAt(this.camera.position);
             char.mesh.lookAt( this.camera.position );
         }
         char.update( timestamp );

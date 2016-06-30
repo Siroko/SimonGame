@@ -64,14 +64,14 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 1;
+        this.dummyCamera.position.z = 2;
     } else {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }
 
     this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads, this.dummyCamera );
 
-    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.1, 10, 10), new THREE.MeshNormalMaterial({
+    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial({
         transparent:true
     }) );
     this.scene.add( this.pointer );

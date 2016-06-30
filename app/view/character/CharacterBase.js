@@ -127,12 +127,12 @@ CharacterBase.prototype.update = function( t ){
            base.copy(this.positionTouch1);
         }
     } else {
-        if (d < (0.6 * this.scale)) {
+        if ( d < ( 0.5 * this.scale ) ) {
 
             var direction = new THREE.Vector3();
             direction.subVectors(this.mesh.position, this.positionTouch1);
             direction.normalize();
-            direction.multiplyScalar((0.6 * this.scale) - d);
+            direction.multiplyScalar((0.5 * this.scale) - d);
             this.mesh.position.add(direction);
 
             this.cuddleness += 0.5;
@@ -143,7 +143,6 @@ CharacterBase.prototype.update = function( t ){
 
             if( this.cuddleness > 100 ) this.cuddleness = 100;
 
-            //console.log( this["name"], this["life"], this["cuddleness"])
         } else {
             this.cuddleness -= 0.09;
             if( this.cuddleness < 0 ) this.cuddleness = 0.0001;
@@ -170,6 +169,8 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
     this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
 
+    this.calcPlane.position.copy( this.mesh.position );
+    this.calcPlane.position.z += 0.2;
     //console.log( this["name"], this["life"], this["cuddleness"])
 
 };
