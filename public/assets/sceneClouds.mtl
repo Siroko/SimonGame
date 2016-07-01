@@ -41,6 +41,22 @@ Kd 1.00 1.00 1.00
 Ka 0.69 0.69 0.69
 Tf 1.00 1.00 1.00
 Ni 1.00
+newmtl pasted__pasted__phong7SG1
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.77 0.77 0.77
+Tf 0.32 0.32 0.32
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.48
+newmtl pasted__phong3SG
+illum 4
+Kd 0.62 0.89 0.30
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.00
 newmtl pasted__phong7SG
 illum 4
 Kd 1.00 1.00 1.00
