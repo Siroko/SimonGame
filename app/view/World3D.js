@@ -69,9 +69,11 @@ World3D.prototype.onInitializeManager = function( n, o ) {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }
 
-    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads );
+    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads, this.dummyCamera );
 
-    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.1, 10, 10), new THREE.MeshNormalMaterial() );
+    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial({
+        transparent:true
+    }) );
     this.scene.add( this.pointer );
 
     this.setup();
@@ -89,7 +91,8 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.gamePads.update( timestamp, [this.worldManager.character.calcPlane, this.worldManager.character2.calcPlane, this.worldManager.character3.calcPlane, this.worldManager.character4.calcPlane] );
+    this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
+
     this.worldManager.update( timestamp );
     // Update VR headset position and apply to camera.
     this.controls.update();

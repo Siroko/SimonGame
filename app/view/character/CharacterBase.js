@@ -8,14 +8,32 @@ var vs = require('./../../glsl/vs-basic.glsl');
 var fs = require('./../../glsl/fs-basic.glsl');
 
 
-var CharacterBase = function( initPosition, correct ){
+var CharacterBase = function( initPosition, correct, name, scale, soundManager ){
+
+    this.soundManager = soundManager;
+    //this.node = this.soundManager.getNode();
+    this.name = name;
+    this.cuddleness = 100;
+    this.life = 100;
+
+    this.scale = scale;
 
     this.positionCharacter = initPosition.clone();
     this.positionCharacterBase = initPosition.clone();
 
     this.seed = Math.random();
     this.correct = correct;
+
+    this.regularTexture = THREE.ImageUtils.loadTexture('assets/faceCreature.png');
+    this.happyTexture = THREE.ImageUtils.loadTexture('assets/faceCreatureHappy.png');
+
+    this.returnFaceTimer = 0;
+
     this.setup();
+};
+
+CharacterBase.prototype.getNode = function(){
+    this.node = this.soundManager.getNode();
 };
 
 CharacterBase.prototype.setup = function(){
@@ -30,6 +48,7 @@ CharacterBase.prototype.setup = function(){
             'uTouch1': { type:'v3', value: this.positionTouch1 },
             'uWorldPosition': { type:'v3', value: this.worldPosition }
         },
+        transparent: true,
         vertexShader: vs,
         fragmentShader: fs,
         shading: THREE.FlatShading,
@@ -51,7 +70,7 @@ CharacterBase.prototype.setup = function(){
 
 
     this.faceMaterial = new THREE.MeshBasicMaterial({
-        map: THREE.ImageUtils.loadTexture('assets/faceCreature.png'),
+        map: this.regularTexture,
         transparent: true,
         depthWrite: false,
         depthTest: false
@@ -62,6 +81,32 @@ CharacterBase.prototype.setup = function(){
     this.facePlane.position.z = 0.3;
 
     this.mesh.add( this.facePlane );
+    this.mesh.scale.set( this.scale, this.scale, this.scale );
+
+    this.createLifeCuddleBars();
+};
+
+CharacterBase.prototype.createLifeCuddleBars = function(){
+
+    this.lifeMat = new THREE.MeshBasicMaterial({
+        color: 0xFFFFFF
+    });
+
+    this.lifeGeom = new THREE.BoxBufferGeometry(0.1, 0.5, 0.1, 2, 2, 2);
+    this.lifeMesh = new THREE.Mesh( this.lifeGeom, this.lifeMat );
+    this.lifeMesh.position.y = -0.6;
+    this.lifeMesh.rotation.z = Math.PI * 0.5;
+    this.mesh.add( this.lifeMesh );
+
+    this.cuddleMat = new THREE.MeshBasicMaterial({
+        color: 0x00FF55
+    });
+
+    this.cuddleMesh = new THREE.Mesh( this.lifeGeom, this.cuddleMat );
+    this.cuddleMesh.position.y = -0.75;
+    this.cuddleMesh.rotation.z = Math.PI * 0.5;
+    this.mesh.add( this.cuddleMesh );
+
 };
 
 CharacterBase.prototype.addEvents = function(){
@@ -88,28 +133,59 @@ CharacterBase.prototype.update = function( t ){
            base.copy(this.positionTouch1);
         }
     } else {
-        if (d < 0.6) {
+        if ( d < ( 0.5 * this.scale ) ) {
+
             var direction = new THREE.Vector3();
             direction.subVectors(this.mesh.position, this.positionTouch1);
             direction.normalize();
-            direction.multiplyScalar(0.6 - d);
+            direction.multiplyScalar((0.5 * this.scale) - d);
             this.mesh.position.add(direction);
+
+            this.cuddleness += 0.5;
+
+            this.faceMaterial.map = this.happyTexture;
+            clearTimeout( this.returnFaceTimer );
+            this.returnFaceTimer = setTimeout( this.returnFaceBack.bind( this ), 500 );
+
+            if( this.cuddleness > 100 ) this.cuddleness = 100;
+
+            if( this.node ) this.soundManager.setValue( this.node, parseInt( this.name ) * 100 );
+
+        } else {
+            this.cuddleness -= 0.09;
+            if( this.node ) this.soundManager.setValue( this.node, 0 );
+            if( this.cuddleness < 0 ) this.cuddleness = 0.0001;
         }
     }
 
+    if( this.cuddleness <= 0.0001 ){
+        this.life -= 0.9;
+        if( this.life < 0 ) this.life = 0.0001;
+    }
+
+    var lpercent = this.life / 100;
+    var cpercent = this.cuddleness / 100;
+
+    this.lifeMesh.scale.y = lpercent;
+    this.cuddleMesh.scale.y = cpercent;
+
     var speed = 0.0005;
 
-    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * 0.8);
-    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * 0.8);
+    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
+    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
     this.positionCharacter.z = base.z;
 
-    this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * 0.8);
-    this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * 0.8);
+    this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
+    this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
+
+    this.calcPlane.position.copy( this.mesh.position );
+    this.calcPlane.position.z += 0.2;
+    //console.log( this["name"], this["life"], this["cuddleness"])
 
 };
 
-CharacterBase.prototype.dispose = function(){
-
+CharacterBase.prototype.returnFaceBack = function(){
+    this.faceMaterial.map = this.regularTexture;
 };
 
 module.exports = CharacterBase;

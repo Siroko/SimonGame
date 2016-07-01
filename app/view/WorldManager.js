@@ -6,15 +6,23 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
-var TweenMax = require('gsap');
+//var SoundManager = require('./audio/SoundManager');
+var AudioManager = require('audio-manager');
 
-var WorldManager = function( scene, camera, gamepads ) {
-
+var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
+    //this.am = new AudioManager();
+    //debugger;
+    this.dummyCamera = dummyCamera;
     this.camera = camera;
     this.scene = scene;
     this.gamePads = gamepads;
 
+    this.characters = [];
+    this.charactersMesh = [];
+    this.charactersCalcPlane = [];
+
     this.setup();
+    this.addEvents();
 
 };
 
@@ -101,7 +109,12 @@ WorldManager.prototype.setup = function(){
 
                 }
                 obj.geometry.computeBoundingSphere();
+                //obj.material = new THREE.MeshBasicMaterial({
+                //    color: 0xff0000,
+                //    wireframe: true
+                //});
             }
+
 
             this.scene.add( object );
 
@@ -109,68 +122,57 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    var mtlLoaderDevice = new MTLLoader();
-    mtlLoaderDevice.setPath( 'assets/' );
-    mtlLoaderDevice.load( 'device.mtl', (function( materials ) {
-        materials.preload();
+    for (var i = 0; i < 1; i++) {
+        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 2);
+        this.characters.push( character );
 
-        var objLoader = new OBJLoader();
-        objLoader.setMaterials( materials );
-        objLoader.setPath( 'assets/' );
-        objLoader.load( 'device.obj', (function ( object ) {
-            console.log( object );
-            for (var i = 0; i < object.children.length; i++) {
-                var obj = object.children[i];
-                if( obj.name.indexOf('sun') >= 0  ) {
-                    obj.material.emissive = new THREE.Color().setRGB(0.949, 0.416, 0.129);
-                    obj.material.specular = new THREE.Color('#555555');
-                    obj.material.shininess = 0;
+    }
 
-                    this.sun = obj;
+    for (var i = 0; i < this.characters.length; i++) {
+        var char = this.characters[i];
+        this.scene.add( char.mesh );
+        this.scene.add( char.calcPlane );
 
-                }
+        this.charactersMesh.push( char.mesh );
+        this.charactersCalcPlane.push( char.calcPlane );
+    }
 
-                obj.geometry.computeBoundingSphere();
-            }
+};
 
-            this.scene.add( object );
+WorldManager.prototype.addEvents = function() {
 
-        } ).bind( this ), onProgress, onError );
+    this.onTouchStartHandler = this.onTouchStart.bind( this );
+    window.addEventListener( 'touchstart', this.onTouchStartHandler );
 
-    }).bind( this ) );
+    this.onTouchStart( null );
 
+};
 
-    this.character = new CharacterBase( new THREE.Vector3( -2, 1.6, -0.75 ), false );
-    this.character2 = new CharacterBase( new THREE.Vector3( -0.75, 1.6, -1.5 ), false );
-    this.character3 = new CharacterBase( new THREE.Vector3( 0.75, 1.6, -1.5 ), false );
-    this.character4 = new CharacterBase( new THREE.Vector3( 2, 1.6, -0.75 ), false );
-    this.scene.add( this.character.mesh );
-    this.scene.add( this.character.calcPlane );
-    this.scene.add( this.character2.mesh );
-    this.scene.add( this.character2.calcPlane );
-    this.scene.add( this.character3.mesh );
-    this.scene.add( this.character3.calcPlane );
-    this.scene.add( this.character4.mesh );
-    this.scene.add( this.character4.calcPlane );
+WorldManager.prototype.onTouchStart = function( e ) {
 
+    window.removeEventListener( 'touchstart', this.onTouchStartHandler );
+    //this.soundManager.start();
+
+    for (var i = 0; i < this.characters.length; i++) {
+        var char = this.characters[i];
+        //char.getNode();
+    }
 };
 
 WorldManager.prototype.update = function( timestamp ) {
 
-    this.character.calcPlane.lookAt(this.camera.position);
-    this.character2.calcPlane.lookAt(this.camera.position);
-    this.character3.calcPlane.lookAt(this.camera.position);
-    this.character4.calcPlane.lookAt(this.camera.position);
+    for (var i = 0; i < this.characters.length; i++) {
+        var char = this.characters[i];
+        if( this.dummyCamera.position.z != 0 ) {
+            char.mesh.lookAt( this.dummyCamera.position );
+        } else {
+            char.mesh.lookAt(this.camera.position);
+        }
 
-    this.character.update( timestamp );
-    this.character2.update( timestamp );
-    this.character3.update( timestamp );
-    this.character4.update( timestamp );
+        char.update( timestamp );
+        char.positionTouch1.copy( this.gamePads.intersectPoint );
 
-    this.character.positionTouch1.copy( this.gamePads.intersectPoint );
-    this.character2.positionTouch1.copy( this.gamePads.intersectPoint );
-    this.character3.positionTouch1.copy( this.gamePads.intersectPoint );
-    this.character4.positionTouch1.copy( this.gamePads.intersectPoint );
+    }
 
     if( this.sun ){
         this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;

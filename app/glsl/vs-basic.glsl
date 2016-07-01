@@ -138,18 +138,18 @@ float snoise(vec4 v)
 
   }
 
-  void main()	{
+  void main(){
 
       vec3 pos = position;
       float noise = snoise( vec4( pos, uTime * 0.001 ) );
       vec3 direction = uWorldPosition - uTouch1;
       normalize( direction );
 
-      vec3 vertexWorldPosition = uWorldPosition + position;
+      vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
 
       float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch1 ), 0.0, 1.0 );
 
-      pos += normal * noise * 0.1;
+      pos += normal * noise * 0.15;
 //      pos.x += direction.x * d * 0.7;
 //      pos.y += direction.y * d * 0.7;
 
