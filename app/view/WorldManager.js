@@ -6,9 +6,12 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
+//var SoundManager = require('./audio/SoundManager');
+var AudioManager = require('audio-manager');
 
 var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
-
+    //this.am = new AudioManager();
+    //debugger;
     this.dummyCamera = dummyCamera;
     this.camera = camera;
     this.scene = scene;
@@ -19,6 +22,7 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
     this.charactersCalcPlane = [];
 
     this.setup();
+    this.addEvents();
 
 };
 
@@ -105,7 +109,12 @@ WorldManager.prototype.setup = function(){
 
                 }
                 obj.geometry.computeBoundingSphere();
+                //obj.material = new THREE.MeshBasicMaterial({
+                //    color: 0xff0000,
+                //    wireframe: true
+                //});
             }
+
 
             this.scene.add( object );
 
@@ -113,15 +122,11 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    this.character = new CharacterBase( new THREE.Vector3( -1, 1, -0.5 ), false, 'char1', 0.5 );
-    this.character2 = new CharacterBase( new THREE.Vector3( -0.35, 1, -.5 ), false, 'char2', 0.5 );
-    this.character3 = new CharacterBase( new THREE.Vector3( 0.35, 1, -.5 ), false, 'char3',0.5 );
-    this.character4 = new CharacterBase( new THREE.Vector3( 1, 1, -0.5 ), false, 'char4', 0.5 );
+    for (var i = 0; i < 1; i++) {
+        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 2);
+        this.characters.push( character );
 
-    this.characters.push( this.character );
-    this.characters.push( this.character2 );
-    this.characters.push( this.character3 );
-    this.characters.push( this.character4 );
+    }
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
@@ -134,17 +139,36 @@ WorldManager.prototype.setup = function(){
 
 };
 
+WorldManager.prototype.addEvents = function() {
+
+    this.onTouchStartHandler = this.onTouchStart.bind( this );
+    window.addEventListener( 'touchstart', this.onTouchStartHandler );
+
+    this.onTouchStart( null );
+
+};
+
+WorldManager.prototype.onTouchStart = function( e ) {
+
+    window.removeEventListener( 'touchstart', this.onTouchStartHandler );
+    //this.soundManager.start();
+
+    for (var i = 0; i < this.characters.length; i++) {
+        var char = this.characters[i];
+        //char.getNode();
+    }
+};
+
 WorldManager.prototype.update = function( timestamp ) {
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
         if( this.dummyCamera.position.z != 0 ) {
-            //char.calcPlane.lookAt(this.dummyCamera.position);
             char.mesh.lookAt( this.dummyCamera.position );
         } else {
-            //char.calcPlane.lookAt(this.camera.position);
-            char.mesh.lookAt( this.camera.position );
+            char.mesh.lookAt(this.camera.position);
         }
+
         char.update( timestamp );
         char.positionTouch1.copy( this.gamePads.intersectPoint );
 

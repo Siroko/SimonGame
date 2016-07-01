@@ -8,8 +8,10 @@ var vs = require('./../../glsl/vs-basic.glsl');
 var fs = require('./../../glsl/fs-basic.glsl');
 
 
-var CharacterBase = function( initPosition, correct, name, scale ){
+var CharacterBase = function( initPosition, correct, name, scale, soundManager ){
 
+    this.soundManager = soundManager;
+    //this.node = this.soundManager.getNode();
     this.name = name;
     this.cuddleness = 100;
     this.life = 100;
@@ -28,6 +30,10 @@ var CharacterBase = function( initPosition, correct, name, scale ){
     this.returnFaceTimer = 0;
 
     this.setup();
+};
+
+CharacterBase.prototype.getNode = function(){
+    this.node = this.soundManager.getNode();
 };
 
 CharacterBase.prototype.setup = function(){
@@ -143,8 +149,11 @@ CharacterBase.prototype.update = function( t ){
 
             if( this.cuddleness > 100 ) this.cuddleness = 100;
 
+            if( this.node ) this.soundManager.setValue( this.node, parseInt( this.name ) * 100 );
+
         } else {
             this.cuddleness -= 0.09;
+            if( this.node ) this.soundManager.setValue( this.node, 0 );
             if( this.cuddleness < 0 ) this.cuddleness = 0.0001;
         }
     }
