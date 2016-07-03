@@ -20,6 +20,7 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
     this.characters = [];
     this.charactersMesh = [];
     this.charactersCalcPlane = [];
+    this.mountainTorus = [];
 
     this.setup();
     this.addEvents();
@@ -66,6 +67,8 @@ WorldManager.prototype.setup = function(){
                     obj.castShadow = true;
                     obj.receiveShadow = true;
 
+                    this.mountainTorus.push( obj );
+
                 }
 
                 if( obj.name.indexOf('CloudGeom') >= 0  ) {
@@ -76,9 +79,16 @@ WorldManager.prototype.setup = function(){
 
                 }
 
+                if( obj.name.indexOf('water') >= 0  ) {
+                    obj.material.transparent = true;
+                    obj.material.opacity = 0.8;
+
+                }
+
                 if( obj.name.indexOf('faceSun') >= 0  ) {
                     obj.material = new THREE.MeshBasicMaterial({
                         map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
+                        depthWrite : false,
                         transparent : true
                     });
 
@@ -123,7 +133,7 @@ WorldManager.prototype.setup = function(){
     }).bind( this ) );
 
     for (var i = 0; i < 1; i++) {
-        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 2);
+        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 1);
         this.characters.push( character );
 
     }
@@ -177,6 +187,11 @@ WorldManager.prototype.update = function( timestamp ) {
     if( this.sun ){
         this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
         this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
+
+        // for (var r = 0; r < this.mountainTorus.length; r++) {
+        //     var t = this.mountainTorus[r];
+        //     t.rotation.y += 0.1;
+        // }
     }
 
 
