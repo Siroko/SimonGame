@@ -16,6 +16,8 @@ var World3D = function( container ) {
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
+    //this.scene.fog      = new THREE.Fog( 0xefd1b5, 0.025);
+
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -28,8 +30,12 @@ var World3D = function( container ) {
     this.effect = new VREffect( this.renderer );
 
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
-    this.pointLight.position.set( -75, 82, 57 );
+    this.pointLight.position.set( 0, 82, 0 );
     this.scene.add( this.pointLight );
+
+    //this.pointLight2 = new THREE.PointLight( 0xFFFFFF, 0.1 );
+    //this.pointLight2.position.set( 75, 82, 0 );
+    //this.scene.add( this.pointLight2 );
 
     this.dummyCamera = new THREE.Object3D();
     this.dummyCamera.add( this.camera);

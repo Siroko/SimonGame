@@ -21,6 +21,7 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
     this.charactersMesh = [];
     this.charactersCalcPlane = [];
     this.mountainTorus = [];
+    this.bubbles = [];
 
     this.setup();
     this.addEvents();
@@ -118,6 +119,12 @@ WorldManager.prototype.setup = function(){
                     obj.receiveShadow = true;
 
                 }
+
+                if( obj.name.indexOf('cascadeBottom') >= 0  ) {
+                    obj.material.visible = false;
+                    this.createBubbles( obj.position );
+                }
+
                 obj.geometry.computeBoundingSphere();
                 //obj.material = new THREE.MeshBasicMaterial({
                 //    color: 0xff0000,
@@ -145,6 +152,30 @@ WorldManager.prototype.setup = function(){
 
         this.charactersMesh.push( char.mesh );
         this.charactersCalcPlane.push( char.calcPlane );
+    }
+
+};
+
+WorldManager.prototype.createBubbles = function( p ) {
+
+    var geom = new THREE.IcosahedronGeometry( 0.5 + Math.random() * 0.3, 1 );
+    var mat = new THREE.MeshLambertMaterial( {
+        color: 0xFFFFFF,
+        shading: THREE.FlatShading,
+        emissive: 0x888888
+    } );
+
+    for (var i = 0; i < 25; i++) {
+
+        var mesh = new THREE.Mesh( geom, mat );
+        var r = (Math.random() + 0.1) * 3;
+        mesh.scale.set( r, r, r );
+        this.bubbles.push( mesh );
+        mesh.position.copy( new THREE.Vector3(-9.749, -1.863, 146.747) );
+        mesh.position.x += (Math.random() * 2 - 1 ) * 8;
+        mesh.position.y += Math.random() * 4;
+        this.scene.add( mesh );
+
     }
 
 };
@@ -192,6 +223,15 @@ WorldManager.prototype.update = function( timestamp ) {
         //     var t = this.mountainTorus[r];
         //     t.rotation.y += 0.1;
         // }
+    }
+
+    for (var r = 0; r < this.bubbles.length; r++) {
+        var rand = (Math.random() + 0.1) * 3;
+        var mesh = this.bubbles[ r ];
+        mesh.scale.set( rand, rand, rand );
+        mesh.position.set( -9.749, -1.863, 146.747 );
+        mesh.position.x += (Math.random() * 2 - 1 ) * 8;
+        mesh.position.y += Math.random() * 2 - 1;
     }
 
 
