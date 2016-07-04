@@ -22,6 +22,8 @@ var Simulator = function( params ) {
     this.sizeW      = params.sizeW;
     this.sizeH      = params.sizeH;
 
+
+
     this.positionsGeom = params.positionsGeom;
 
     this.setup();
@@ -31,9 +33,7 @@ Simulator.prototype = Object.create( BaseGLPass.prototype );
 
 Simulator.prototype.setup = function() {
 
-    this.VI2dRT             = this.getRenderTarget( this.sizeW, this.sizeH );
-    this.positionsRT        = this.getRenderTarget( this.sizeW, this.sizeH );
-    this.prevPositionsRT    = this.getRenderTarget( this.sizeW, this.sizeH );
+    this.pingpong          = 0;
     this.geometryRT         = this.getRenderTarget( this.sizeW, this.sizeH );
     this.finalPositionsRT   = this.getRenderTarget( this.sizeW, this.sizeH );
 
@@ -46,7 +46,7 @@ Simulator.prototype.setup = function() {
     for (var i = 0; i < this.total; i++) {
 
         this.index2D.setXY( i, ( ( 2. * div * ( ( i % this.sizeW ) + 0.5 ) - 1 ) + 1 ) / 2,  ( ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) + 1 ) / 2 );
-        this.positions.setXYZ( i, Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15 );
+        this.positions.setXYZ( i, Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5 );
     }
 
     this.bufferGeometry = new THREE.BufferGeometry();
@@ -63,8 +63,9 @@ Simulator.prototype.setup = function() {
         vertexShader                : vs_bufferParticles,
         fragmentShader              : fs_bufferParticles,
 
+        transparent                 : true,
         depthWrite                  : false,
-        transparent                 : true
+        depthTest                   : false
     } );
 
     this.bufferMesh = new THREE.Points( this.bufferGeometry, this.bufferMaterial );
@@ -83,7 +84,7 @@ Simulator.prototype.setup = function() {
 
     this.updatePositionsMaterial = new THREE.ShaderMaterial( {
         uniforms: {
-            'uPrevPositionsMap'     : { type: "t", value: this.positionsRT },
+            'uPrevPositionsMap'     : { type: "t", value: null },
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 }
         },
@@ -108,20 +109,29 @@ Simulator.prototype.setup = function() {
     this.passBuffer( this.drawPositionsMaterial, this.positionsRT );
     this.passBuffer( this.drawPositionsMaterial, this.geometryRT );
     this.drawPositionsMaterial.uniforms.uGeomToDraw.value = 1.0;
-    this.passBuffer( this.drawPositionsMaterial, this.VI2dRT );
+    // this.passBuffer( this.drawPositionsMaterial, this.VI2dRT );
 
     this.pass( this.updatePositionsMaterial, this.finalPositionsRT );
     this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.prevPositionsRT;
 
+    this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
+
     this.pass( this.copyMaterial, this.prevPositionsRT );
+
+
+    this.debugPositionsMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1, 1, 1, 1), new THREE.MeshBasicMaterial({map:this.finalPositionsRT}));
+    this.debugPositionsMesh.position.y = 1;
+
 };
 
 Simulator.prototype.update = function() {
 
-    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now() * 0.001) * 0.001;
+    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now() * 0.1) * 0.001;
 
-    this.pass( this.updatePositionsMaterial, this.finalPositionsRT );
-    this.pass( this.copyMaterial, this.prevPositionsRT );
+    this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
+    this.pingpong = 1 - this.pingpong;
+    this.pass( this.updatePositionsMaterial, this.targets[ this.pingpong ] );
+    // this.pass( this.copyMaterial, this.prevPositionsRT );
 };
 
 module.exports = Simulator;

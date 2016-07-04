@@ -8,6 +8,8 @@ var WorldManager = require('./WorldManager');
 var GamePads = require('./gamepads/GamePads');
 var MousePad = require('./gamepads/MousePad');
 
+var Simulator = require('./../utils/Simulator');
+
 var World3D = function( container ) {
 
     this.container      = container;
@@ -33,9 +35,9 @@ var World3D = function( container ) {
     this.pointLight.position.set( 0, 82, 0 );
     this.scene.add( this.pointLight );
 
-    //this.pointLight2 = new THREE.PointLight( 0xFFFFFF, 0.1 );
-    //this.pointLight2.position.set( 75, 82, 0 );
-    //this.scene.add( this.pointLight2 );
+    // this.pointLight2 = new THREE.PointLight( 0x6644FF, 0.9 );
+    // this.pointLight2.position.set( 0, 82, 0 );
+    // this.scene.add( this.pointLight2 );
 
     this.dummyCamera = new THREE.Object3D();
     this.dummyCamera.add( this.camera);
@@ -43,12 +45,21 @@ var World3D = function( container ) {
 
     // Create a VR manager helper to enter and exit VR mode.
     var params = {
+        FORCE_ENABLE_VR: true,
         hideButton: false, // Default: false.
         isUndistorted: true // Default: false.
     };
     this.manager = new WebVRManager( this.renderer, this.effect, params );
     this.addEvents();
 
+    this.simulator = new Simulator({
+        sizeW: 32,
+        sizeH: 32,
+        renderer: this.renderer
+    });
+
+    this.scene.add( this.simulator.bufferMesh );
+    this.scene.add( this.simulator.debugPositionsMesh );
 };
 
 World3D.prototype.setup = function() {
@@ -97,6 +108,7 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
+    this.simulator.update();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
     this.worldManager.update( timestamp );
@@ -106,6 +118,7 @@ World3D.prototype.render = function( timestamp ) {
     this.manager.render( this.scene, this.camera, timestamp);
 
     this.pointer.position.copy( this.gamePads.intersectPoint );
+
 };
 
 World3D.prototype.onResize = function( w, h ) {
@@ -114,6 +127,9 @@ World3D.prototype.onResize = function( w, h ) {
     this.effect.setSize( w, h );
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+
+    this.renderer.domElement.style.width = "100%";
+    this.renderer.domElement.style.height = "100%";
 };
 
 module.exports = World3D;

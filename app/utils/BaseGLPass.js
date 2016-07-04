@@ -38,15 +38,18 @@ BaseGLPass.prototype.passBuffer = function( material, target ) {
 BaseGLPass.prototype.getRenderTarget = function( w, h, linear ) {
 
     var renderTarget = new THREE.WebGLRenderTarget( w, h, {
-        wrapS           : THREE.RepeatWrapping,
-        wrapT           : THREE.RepeatWrapping,
-        minFilter       : linear ? THREE.LinearFilter : THREE.NearestFilter,
-        magFilter       : linear ? THREE.LinearFilter : THREE.NearestFilter,
-        format          : THREE.RGBFormat,
-        type            : THREE.HalfFloatType,
-        stencilBuffer   : false
+        wrapS: THREE.ClampToEdgeWrapping,
+        wrapT: THREE.ClampToEdgeWrapping,
+        minFilter: THREE.NearestFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.HalfFloatType,
+        stencilBuffer: false,
+        depthBuffer: false,
+        generateMipmaps: false
     } );
 
+    renderTarget.needsUpdate = true;
     return renderTarget;
 };
 
