@@ -31,13 +31,13 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer );
 
-    this.pointLight = new THREE.PointLight( 0xFFFFFF, 1 );
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.5 );
     this.pointLight.position.set( 0, 82, 0 );
     this.scene.add( this.pointLight );
 
-    // this.pointLight2 = new THREE.PointLight( 0x6644FF, 0.9 );
-    // this.pointLight2.position.set( 0, 82, 0 );
-    // this.scene.add( this.pointLight2 );
+     this.pointLight2 = new THREE.PointLight( 0xFF4433, 0.5 );
+     this.pointLight2.position.set( 0, 82, 0 );
+     this.scene.add( this.pointLight2 );
 
     this.dummyCamera = new THREE.Object3D();
     this.dummyCamera.add( this.camera);
@@ -45,7 +45,6 @@ var World3D = function( container ) {
 
     // Create a VR manager helper to enter and exit VR mode.
     var params = {
-        FORCE_ENABLE_VR: true,
         hideButton: false, // Default: false.
         isUndistorted: false // Default: false.
     };
@@ -53,8 +52,9 @@ var World3D = function( container ) {
     this.addEvents();
 
     this.simulator = new Simulator({
-        sizeW: 32,
-        sizeH: 32,
+        sizeW: 8,
+        sizeH: 8,
+        pointSize: 2,
         renderer: this.renderer
     });
 
@@ -85,7 +85,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }
 
-    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads, this.dummyCamera );
+    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads, this.dummyCamera, this.renderer );
 
     this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial({
         transparent:true

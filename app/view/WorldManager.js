@@ -9,7 +9,9 @@ var CharacterBase = require('./character/CharacterBase');
 //var SoundManager = require('./audio/SoundManager');
 var AudioManager = require('audio-manager');
 
-var WorldManager = function( scene, camera, gamepads, dummyCamera ) {
+var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
+
+    this.renderer = renderer;
     //this.am = new AudioManager();
     //debugger;
     this.dummyCamera = dummyCamera;
@@ -61,7 +63,7 @@ WorldManager.prototype.setup = function(){
 
                 }
                 if( obj.name.indexOf('mountainTorus') >= 0  ) {
-                    obj.material.emissive = new THREE.Color('#999999');
+                    obj.material.emissive = new THREE.Color('#555555');
                     obj.material.transparent = true;
                     obj.material.opacity = 0.7;
 
@@ -73,7 +75,7 @@ WorldManager.prototype.setup = function(){
                 }
 
                 if( obj.name.indexOf('CloudGeom') >= 0  ) {
-                    obj.material = new THREE.MeshBasicMaterial({
+                    obj.material = new THREE.MeshPhongMaterial({
                         map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
                         transparent : true
                     });
@@ -140,7 +142,7 @@ WorldManager.prototype.setup = function(){
     }).bind( this ) );
 
     for (var i = 0; i < 1; i++) {
-        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 1);
+        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 1, this.renderer);
         this.characters.push( character );
 
     }

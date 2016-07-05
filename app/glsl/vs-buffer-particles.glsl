@@ -10,6 +10,7 @@ uniform mat3 normalMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
+uniform float uPointSize;
 uniform sampler2D uPositionsT;
 uniform sampler2D map;
 
@@ -25,6 +26,11 @@ void main()	{
     vColor = texture2D( uPositionsT, ind ).a;
     float incrementSize = (1.0 - clamp(vColor, 0.0, 1.0)) * 5.0;
 
-    gl_PointSize = pow( min( 150.0, .1 * ( 150.0 / length( mvPosition.xyz ) ) ), 2.0 ) + 5.0;
+    if( uPointSize != 0.0 ){
+        gl_PointSize = uPointSize;
+    } else {
+        gl_PointSize = pow( min( 150.0, .1 * ( 150.0 / length( mvPosition.xyz ) ) ), 2.0 ) + 5.0;
+    }
+
     gl_Position = projectionMatrix * modelViewMatrix * pos;
 }

@@ -7,10 +7,13 @@ var THREE = require('three');
 var vs = require('./../../glsl/vs-character.glsl');
 var fs = require('./../../glsl/fs-character.glsl');
 
+var Simulator = require('./../../utils/Simulator');
 
-var CharacterBase = function( initPosition, correct, name, scale, soundManager ){
 
-    this.soundManager = soundManager;
+var CharacterBase = function( initPosition, correct, name, scale, renderer ){
+
+
+    this.renderer = renderer;
     //this.node = this.soundManager.getNode();
     this.name = name;
     this.cuddleness = 100;
@@ -83,6 +86,14 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
+    //this.simulator = new Simulator({
+    //    sizeW: 64,
+    //    sizeH: 64,
+    //    renderer: this.renderer
+    //});
+    //
+    //this.mesh.add( this.simulator.bufferMesh );
+
     this.createLifeCuddleBars();
 };
 
@@ -115,6 +126,7 @@ CharacterBase.prototype.addEvents = function(){
 
 CharacterBase.prototype.update = function( t ){
 
+    //this.simulator.update();
     this.worldPosition.copy( this.mesh.position );
 
     this.material.uniforms.uTime.value = t;

@@ -18,6 +18,8 @@ var Simulator = function( params ) {
     this.sizeW      = params.sizeW;
     this.sizeH      = params.sizeH;
 
+    this.pointSize  = params.pointSize || 0;
+
     this.setup();
 };
 
@@ -49,15 +51,17 @@ Simulator.prototype.setup = function() {
         uniforms: {
             'textureMap'            : { type: "t", value : THREE.ImageUtils.loadTexture( 'assets/particle.png' ) },
             'uPositionsT'           : { type: "t", value : this.finalPositionsRT },
-            'map'                   : { type: "t", value : this.finalPositionsRT }
+            'map'                   : { type: "t", value : this.finalPositionsRT },
+            'uPointSize'            : { type: 'f', value : this.pointSize }
         },
 
         vertexShader                : vs_bufferParticles,
         fragmentShader              : fs_bufferParticles,
 
-        transparent                 : true,
-        depthWrite                  : false,
-        depthTest                   : false
+        //transparent                 : true,
+        //depthWrite                  : false,
+        //depthTest                   : false
+
     } );
 
     this.bufferMesh = new THREE.Points( this.bufferGeometry, this.bufferMaterial );
