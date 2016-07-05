@@ -22,6 +22,10 @@ var VREffect = function ( renderer, onError, onReady ) {
 	var renderRectL, renderRectR;
 	var eyeFOVL, eyeFOVR;
 
+	this.getHMD = function() {
+		return vrHMD;
+	}
+
 	function gotVRDevices( devices ) {
 
 		for ( var i = 0; i < devices.length; i ++ ) {

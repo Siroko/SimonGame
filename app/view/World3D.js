@@ -47,7 +47,7 @@ var World3D = function( container ) {
     var params = {
         FORCE_ENABLE_VR: true,
         hideButton: false, // Default: false.
-        isUndistorted: true // Default: false.
+        isUndistorted: false // Default: false.
     };
     this.manager = new WebVRManager( this.renderer, this.effect, params );
     this.addEvents();
@@ -108,13 +108,16 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.simulator.update();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
     this.worldManager.update( timestamp );
     // Update VR headset position and apply to camera.
     this.controls.update();
+
+    this.simulator.update();
     // Render the scene through the manager.
+    this.renderer.setClearColor( 0x202020 );
+    this.renderer.setRenderTarget( null ); // add this line
     this.manager.render( this.scene, this.camera, timestamp);
 
     this.pointer.position.copy( this.gamePads.intersectPoint );

@@ -4,8 +4,8 @@
 
 var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var THREE = require('three');
-var vs = require('./../../glsl/vs-basic.glsl');
-var fs = require('./../../glsl/fs-basic.glsl');
+var vs = require('./../../glsl/vs-character.glsl');
+var fs = require('./../../glsl/fs-character.glsl');
 
 
 var CharacterBase = function( initPosition, correct, name, scale, soundManager ){
@@ -42,7 +42,7 @@ CharacterBase.prototype.setup = function(){
     this.worldPosition = new THREE.Vector3();
 
     this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
-    this.material = new THREE.ShaderMaterial({
+    this.material = new THREE.RawShaderMaterial({
         uniforms: {
             'uTime': { type:'f', value:0 },
             'uTouch1': { type:'v3', value: this.positionTouch1 },

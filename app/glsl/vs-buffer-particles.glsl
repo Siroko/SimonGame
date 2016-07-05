@@ -2,15 +2,24 @@ precision highp float;
 precision highp sampler2D;
 
 attribute vec2 aV2I;
+attribute vec3 position;
 
-uniform highp sampler2D uPositionsT;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat3 normalMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+
+uniform sampler2D uPositionsT;
+uniform sampler2D map;
 
 varying float vColor;
 
 void main()	{
 
     vec2 ind = aV2I;
-    vec4 pos = vec4(texture2D( uPositionsT, ind ).rgb, 1.0) ;
+    vec4 prevPos = vec4(texture2D( uPositionsT, ind ).rgb, 1.0) ;
+    vec4 pos = vec4(texture2D( map, ind ).rgb, 1.0) ;
     
     vec4 mvPosition = modelViewMatrix * pos;
     vColor = texture2D( uPositionsT, ind ).a;

@@ -1,8 +1,7 @@
 precision highp float;
 precision highp sampler2D;
 
-uniform highp sampler2D textureMap;
-
+uniform sampler2D textureMap;
 varying float vColor;
 
 void main(){
@@ -14,5 +13,5 @@ void main(){
     }
 
     color.a *= 0.2;
-    gl_FragColor = vec4(1.0, 1.0, 1.0, color.a);
+    gl_FragColor = vec4( 1.0, 1.0, 1.0, color.a );
 }
