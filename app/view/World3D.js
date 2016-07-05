@@ -53,13 +53,12 @@ var World3D = function( container ) {
     this.addEvents();
 
     this.simulator = new Simulator({
-        sizeW: 64,
-        sizeH: 64,
+        sizeW: 32,
+        sizeH: 32,
         renderer: this.renderer
     });
 
     this.scene.add( this.simulator.bufferMesh );
-    this.scene.add( this.simulator.debugPositionsMesh );
 };
 
 World3D.prototype.setup = function() {
@@ -130,9 +129,9 @@ World3D.prototype.onResize = function( w, h ) {
     this.effect.setSize( w, h );
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-
-    this.renderer.domElement.style.width = "100%";
-    this.renderer.domElement.style.height = "100%";
+    //
+    //this.renderer.domElement.style.width = "100%";
+    //this.renderer.domElement.style.height = "100%";
 };
 
 module.exports = World3D;

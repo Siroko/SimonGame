@@ -122,8 +122,8 @@ vec4 simplexNoiseDerivatives (vec4 v) {
 
 vec3 getCurlVelocity( vec4 position ) {
 
-    float NOISE_TIME_SCALE = 0.1;
-    float NOISE_SCALE = 0.02;
+    float NOISE_TIME_SCALE = 0.6;
+    float NOISE_SCALE = 0.002;
     float NOISE_POSITION_SCALE = 0.0025;
 
     vec3 oldPosition = position.rgb;
@@ -166,10 +166,10 @@ void main () {
     vec3 noiseVelocity = getCurlVelocity( data );
 
     vec3 vel = noiseVelocity;
-    vec3 dir = vec3( uTime * 0.1, 0.10, 0.0 );
+    vec3 dir = vec3( uTime * 0.0001, 0.007, 0.0 );
     vec3 newPosition = ( data.rgb + vel + dir );
 
-    if( newPosition.y < -30.5 || newPosition.y > 30.0 || newPosition.x < -50.0 || newPosition.x > 50.0 || newPosition.z < -150.0 || newPosition.z > 150.0) newPosition = geomPositions.rgb;
+    if( newPosition.y < -30.5 || newPosition.y > 5.0 || newPosition.x < -50.0 || newPosition.x > 50.0 || newPosition.z < -150.0 || newPosition.z > 150.0) newPosition = geomPositions.rgb;
 
     gl_FragColor = vec4(newPosition, 1.0);
 }

@@ -35,7 +35,7 @@
     "lodash.assign": "^3.2.0",
     "node-static": "^0.7.6",
     "stringify": "^3.1.0",
-    "three": "~0.76.0",
+    "three": ">=0.76.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^3.2.2"

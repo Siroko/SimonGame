@@ -94,9 +94,6 @@ Simulator.prototype.setup = function() {
     this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
     this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
 
-    this.debugPositionsMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1, 1, 1, 1), new THREE.MeshBasicMaterial( { map: this.finalPositionsRT } ) );
-    this.debugPositionsMesh.position.y = 1;
-
 };
 
 Simulator.prototype.update = function() {
@@ -105,7 +102,6 @@ Simulator.prototype.update = function() {
     this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
     this.bufferMaterial.uniforms.uPositionsT.value = this.targets[ this.pingpong ];
     this.bufferMaterial.uniforms.map.value = this.targets[ 1 - this.pingpong ];
-    this.debugPositionsMesh.material.map = this.targets[ 1 - this.pingpong ];
 
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updatePositionsMaterial, this.targets[ this.pingpong ] );
