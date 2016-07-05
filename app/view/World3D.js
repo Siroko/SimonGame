@@ -53,8 +53,8 @@ var World3D = function( container ) {
     this.addEvents();
 
     this.simulator = new Simulator({
-        sizeW: 32,
-        sizeH: 32,
+        sizeW: 64,
+        sizeH: 64,
         renderer: this.renderer
     });
 

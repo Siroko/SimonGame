@@ -22,8 +22,6 @@ var Simulator = function( params ) {
     this.sizeW      = params.sizeW;
     this.sizeH      = params.sizeH;
 
-
-
     this.positionsGeom = params.positionsGeom;
 
     this.setup();
@@ -33,7 +31,7 @@ Simulator.prototype = Object.create( BaseGLPass.prototype );
 
 Simulator.prototype.setup = function() {
 
-    this.pingpong          = 0;
+    this.pingpong           = 0;
     this.geometryRT         = this.getRenderTarget( this.sizeW, this.sizeH );
     this.finalPositionsRT   = this.getRenderTarget( this.sizeW, this.sizeH );
 
@@ -70,17 +68,19 @@ Simulator.prototype.setup = function() {
 
     this.bufferMesh = new THREE.Points( this.bufferGeometry, this.bufferMaterial );
 
-    this.drawPositionsMaterial = new THREE.ShaderMaterial( {
+    this.data = new Float32Array( this.sizeW * this.sizeH * 4 );
 
-        uniforms: {
-            'uGeomToDraw'           : { type: "f",  value: 1 }
-        },
-        vertexShader                : vs_createPositions,
-        fragmentShader              : fs_createPositions
-    } );
+    for( var i = 0; i < this.total; i ++ ) {
 
-    this.bufferMesh2 = new THREE.Points( this.bufferGeometry.clone(), this.drawPositionsMaterial );
-    this.sceneBuffer.add( this.bufferMesh2 );
+        this.data[ i * 4 ] =  Math.random() * 10 - 5;
+        this.data[ i * 4 + 1 ] =  Math.random() * 10 - 5;
+        this.data[ i * 4 + 2 ] =  Math.random() * 10 - 5;
+        this.data[ i * 4 + 3 ] = 1; // frames life
+
+    }
+
+    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType, null, null, null, THREE.NearestFilter, THREE.NearestFilter);
+    this.geometryRT.needsUpdate = true;
 
     this.updatePositionsMaterial = new THREE.ShaderMaterial( {
         uniforms: {
@@ -93,33 +93,14 @@ Simulator.prototype.setup = function() {
         fragmentShader              : fs_updatePositions
     } );
 
-    this.copyMaterial = new THREE.ShaderMaterial( {
-        uniforms: {
-            textureMap              : { type: "t", value: this.finalPositionsRT }
-        },
-
-        vertexShader                : vs_simpleQuad,
-        fragmentShader              : fs_copy
-    } );
-
     var quad_geom = new THREE.PlaneBufferGeometry( 2, 2, 1, 1 );
     this.quad = new THREE.Mesh( quad_geom, this.updatePositionsMaterial );
-    this.sceneRT.add(this.quad);
-
-    this.passBuffer( this.drawPositionsMaterial, this.positionsRT );
-    this.passBuffer( this.drawPositionsMaterial, this.geometryRT );
-    this.drawPositionsMaterial.uniforms.uGeomToDraw.value = 1.0;
-    // this.passBuffer( this.drawPositionsMaterial, this.VI2dRT );
-
-    this.pass( this.updatePositionsMaterial, this.finalPositionsRT );
-    this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.prevPositionsRT;
+    this.sceneRT.add( this.quad );
 
     this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
+    this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
 
-    this.pass( this.copyMaterial, this.prevPositionsRT );
-
-
-    this.debugPositionsMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1, 1, 1, 1), new THREE.MeshBasicMaterial({map:this.finalPositionsRT}));
+    this.debugPositionsMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1, 1, 1, 1), new THREE.MeshBasicMaterial({map:this.geometryRT}));
     this.debugPositionsMesh.position.y = 1;
 
 };
@@ -129,9 +110,11 @@ Simulator.prototype.update = function() {
     this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now() * 0.1) * 0.001;
 
     this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
+    this.bufferMaterial.uniforms.uPositionsT.value = this.targets[ this.pingpong ];
+    this.debugPositionsMesh.material.map = this.targets[ this.pingpong ];
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updatePositionsMaterial, this.targets[ this.pingpong ] );
-    // this.pass( this.copyMaterial, this.prevPositionsRT );
+
 };
 
 module.exports = Simulator;
