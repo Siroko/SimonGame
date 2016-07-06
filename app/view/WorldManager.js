@@ -77,7 +77,10 @@ WorldManager.prototype.setup = function(){
                 if( obj.name.indexOf('CloudGeom') >= 0  ) {
                     obj.material = new THREE.MeshPhongMaterial({
                         map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
-                        transparent : true
+                        transparent : true,
+                        emissive : new THREE.Color().setRGB(0,0,0),
+                        specular : new THREE.Color('#FFFFFF'),
+                        shininess : 0
                     });
 
                 }
@@ -105,8 +108,13 @@ WorldManager.prototype.setup = function(){
                 }
 
                 if( obj.name.indexOf('ground') >= 0  ) {
-                    obj.castShadow = true;
-                    obj.receiveShadow = true;
+
+                    var t = THREE.ImageUtils.loadTexture('assets/test_Light.jpg');
+
+                    for (var j = 0; j < obj.material.materials.length; j++) {
+                        var mat = obj.material.materials[j];
+                        mat.map = t;
+                    }
 
                     this.ground = obj;
                 }
