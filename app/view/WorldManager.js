@@ -149,8 +149,10 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
-    for (var i = 0; i < 1; i++) {
-        var character = new CharacterBase( new THREE.Vector3( Math.sin( i * 0.25 ) * 2 , 1.5 + i * 0.05, 1 - Math.cos( i * 0.25 ) * 2 ), false, i, 1, this.renderer);
+    var totalChars = 4;
+    var separation = 0.9;
+    for (var i = 0; i < totalChars; i++) {
+        var character = new CharacterBase( new THREE.Vector3( ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ), false, i, 0.4, this.renderer, this.scene);
         this.characters.push( character );
 
     }
@@ -228,11 +230,6 @@ WorldManager.prototype.update = function( timestamp ) {
     if( this.sun ){
         this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
         this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
-
-        // for (var r = 0; r < this.mountainTorus.length; r++) {
-        //     var t = this.mountainTorus[r];
-        //     t.rotation.y += 0.1;
-        // }
     }
 
     for (var r = 0; r < this.bubbles.length; r++) {

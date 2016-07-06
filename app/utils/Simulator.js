@@ -27,6 +27,7 @@ var Simulator = function( params ) {
         };
 
     this.directionFlow = params.directionFlow;
+    this.locked = params.locked || 0;
 
     this.temVect = new THREE.Vector3();
 
@@ -78,15 +79,16 @@ Simulator.prototype.setup = function() {
 
     if( this.initialBuffer ) { // if initial buffer is defined we set the positions according
 
-        for( var i = 0; i < this.total; i ++ ) {
+        //for( var i = 0; i < this.total; i ++ ) {
+        //
+        //    this.data[ i * 4 ]     = this.initialBuffer[ i ];
+        //    this.data[ i * 4 + 1 ] = this.initialBuffer[ i * 4 + 1];
+        //    this.data[ i * 4 + 2 ] = this.initialBuffer[ i * 4 + 2];
+        //    this.data[ i * 4 + 3 ] = 100; // frames life
+        //
+        //}
 
-            this.data[ i * 4 ]     = this.initialBuffer[ i * 4 ];
-            this.data[ i * 4 + 1 ] = this.initialBuffer[ i * 4 ];
-            this.data[ i * 4 + 2 ] = this.initialBuffer[ i * 4 ];
-            this.data[ i * 4 + 3 ] = 1; // frames life
-
-        }
-
+        this.data = this.initialBuffer;
     } else { // else we just set them randomly
 
         for( var i = 0; i < this.total; i ++ ) {
@@ -94,7 +96,7 @@ Simulator.prototype.setup = function() {
             this.data[ i * 4 ]     = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x + this.boundary.position.x;
             this.data[ i * 4 + 1 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y + this.boundary.position.y;
             this.data[ i * 4 + 2 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z + this.boundary.position.z;
-            this.data[ i * 4 + 3 ] = 1; // frames life
+            this.data[ i * 4 + 3 ] = 100; // frames life
 
         }
 
@@ -109,6 +111,10 @@ Simulator.prototype.setup = function() {
             'uPrevPositionsMap'     : { type: "t", value: this.geometryRT },
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3() },
+            'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
+            'uLock'                 : { type: "i", value: this.locked },
+            'uCollision'            : { type: "v3", value: new THREE.Vector3() },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
                 this.boundary.position.y,

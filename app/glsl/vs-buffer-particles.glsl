@@ -14,7 +14,7 @@ uniform float uPointSize;
 uniform sampler2D uPositionsT;
 uniform sampler2D map;
 
-varying float vColor;
+varying vec4 vColor;
 
 void main()	{
 
@@ -23,8 +23,8 @@ void main()	{
     vec4 pos = vec4(texture2D( map, ind ).rgb, 1.0) ;
     
     vec4 mvPosition = modelViewMatrix * pos;
-    vColor = texture2D( uPositionsT, ind ).a;
-    float incrementSize = (1.0 - clamp(vColor, 0.0, 1.0)) * 5.0;
+    vColor = texture2D( uPositionsT, ind );
+    float incrementSize = (1.0 - clamp(vColor.a, 0.0, 1.0)) * 5.0;
 
     if( uPointSize != 0.0 ){
         gl_PointSize = uPointSize;

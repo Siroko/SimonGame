@@ -80,7 +80,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 2;
+        this.dummyCamera.position.z = 1;
     } else {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }
@@ -107,7 +107,7 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
+    this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane.concat( this.worldManager.charactersMesh ) );
 
     this.worldManager.update( timestamp );
     // Update VR headset position and apply to camera.
