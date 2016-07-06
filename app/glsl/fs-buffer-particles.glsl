@@ -12,6 +12,7 @@ void main(){
         color.a *= vColor;
     }
 
+    float alpha = vColor / 100.0;
     color.a *= 0.2;
-    gl_FragColor = vec4( 1.0, 1.0, 1.0, color.a );
+    gl_FragColor = vec4( 1.0, 1.0, 1.0, alpha );
 }

@@ -4,6 +4,8 @@ precision highp sampler2D;
 uniform sampler2D uPrevPositionsMap;
 uniform sampler2D uGeomPositionsMap;
 uniform float uTime;
+uniform float uBoundary[ 6 ];
+uniform vec3 uDirectionFlow;
 
 varying vec2 vUv;
 
@@ -156,20 +158,29 @@ vec3 getCurlVelocity( vec4 position ) {
     return noiseVelocity;
 }
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 void main () {
 
     vec2 uv = vUv;
 
-    vec4 geomPositions = texture2D(uGeomPositionsMap, uv);
+    vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
     vec4 data = texture2D(uPrevPositionsMap, uv);
-
     vec3 noiseVelocity = getCurlVelocity( data );
 
     vec3 vel = noiseVelocity;
-    vec3 dir = vec3( uTime * 0.0001, 0.007, 0.0 );
+    vec3 dir = vec3( uTime, 0.0007, uTime );
     vec3 newPosition = ( data.rgb + vel + dir );
 
-    if( newPosition.y < -30.5 || newPosition.y > 5.0 || newPosition.x < -50.0 || newPosition.x > 50.0 || newPosition.z < -150.0 || newPosition.z > 150.0) newPosition = geomPositions.rgb;
+    float pLife = data.a - vel.x - (rand(vUv) * 0.5 + 0.1);
 
-    gl_FragColor = vec4(newPosition, 1.0);
+    if( pLife < 0.0 ){
+        pLife = 100.0;
+        newPosition = geomPositions.rgb;
+    }
+
+    gl_FragColor = vec4( newPosition, pLife );
+
 }

@@ -19,6 +19,16 @@ var Simulator = function( params ) {
     this.sizeH      = params.sizeH;
 
     this.pointSize  = params.pointSize || 0;
+    this.initialBuffer = params.initialBuffer;
+
+    this.boundary   = params.boundary || {
+            position : new THREE.Vector3( 0, 0, 0 ),
+            size : new THREE.Vector3( 10, 10, 10 )
+        };
+
+    this.directionFlow = params.directionFlow;
+
+    this.temVect = new THREE.Vector3();
 
     this.setup();
 };
@@ -39,7 +49,7 @@ Simulator.prototype.setup = function() {
     for (var i = 0; i < this.total; i++) {
 
         this.index2D.setXY( i, ( ( 2. * div * ( ( i % this.sizeW ) + 0.5 ) - 1 ) + 1 ) / 2,  ( ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) + 1 ) / 2 );
-        this.positions.setXYZ( i, Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5 );
+        this.positions.setXYZ( i, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z );
     }
 
     this.bufferGeometry = new THREE.BufferGeometry();
@@ -58,9 +68,7 @@ Simulator.prototype.setup = function() {
         vertexShader                : vs_bufferParticles,
         fragmentShader              : fs_bufferParticles,
 
-        //transparent                 : true,
-        //depthWrite                  : false,
-        //depthTest                   : false
+        transparent: true
 
     } );
 
@@ -68,14 +76,30 @@ Simulator.prototype.setup = function() {
 
     this.data = new Float32Array( this.sizeW * this.sizeH * 4 );
 
-    for( var i = 0; i < this.total; i ++ ) {
+    if( this.initialBuffer ) { // if initial buffer is defined we set the positions according
 
-        this.data[ i * 4 ] =  Math.random() * 10 - 5;
-        this.data[ i * 4 + 1 ] =  Math.random() * 10 - 5;
-        this.data[ i * 4 + 2 ] =  Math.random() * 10 - 5;
-        this.data[ i * 4 + 3 ] = 1; // frames life
+        for( var i = 0; i < this.total; i ++ ) {
+
+            this.data[ i * 4 ]     = this.initialBuffer[ i * 4 ];
+            this.data[ i * 4 + 1 ] = this.initialBuffer[ i * 4 ];
+            this.data[ i * 4 + 2 ] = this.initialBuffer[ i * 4 ];
+            this.data[ i * 4 + 3 ] = 1; // frames life
+
+        }
+
+    } else { // else we just set them randomly
+
+        for( var i = 0; i < this.total; i ++ ) {
+
+            this.data[ i * 4 ]     = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x + this.boundary.position.x;
+            this.data[ i * 4 + 1 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y + this.boundary.position.y;
+            this.data[ i * 4 + 2 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z + this.boundary.position.z;
+            this.data[ i * 4 + 3 ] = 1; // frames life
+
+        }
 
     }
+
 
     this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType, null, null, null, THREE.NearestFilter, THREE.NearestFilter);
     this.geometryRT.needsUpdate = true;
@@ -84,7 +108,15 @@ Simulator.prototype.setup = function() {
         uniforms: {
             'uPrevPositionsMap'     : { type: "t", value: this.geometryRT },
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
-            'uTime'                 : { type: "f", value: 0 }
+            'uTime'                 : { type: "f", value: 0 },
+            'uBoundary'             : { type: 'fv1', value : [
+                this.boundary.position.x,
+                this.boundary.position.y,
+                this.boundary.position.z,
+                this.boundary.size.x,
+                this.boundary.size.y,
+                this.boundary.size.z
+            ] }
         },
 
         vertexShader                : vs_simpleQuad,
@@ -102,7 +134,8 @@ Simulator.prototype.setup = function() {
 
 Simulator.prototype.update = function() {
 
-    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now() * 0.1) * 0.001;
+    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now()) * 0.001;
+    //this.updatePositionsMaterial.uniforms.uDirectionFlow.value = this.directionFlow || this.temVect.set( this.updatePositionsMaterial.uniforms.uTime.value, 0.0007, this.updatePositionsMaterial.uniforms.uTime.value )
     this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
     this.bufferMaterial.uniforms.uPositionsT.value = this.targets[ this.pingpong ];
     this.bufferMaterial.uniforms.map.value = this.targets[ 1 - this.pingpong ];
