@@ -29,6 +29,13 @@ var Simulator = function( params ) {
     this.directionFlow = params.directionFlow;
     this.locked = params.locked || 0;
 
+    this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
+
+    this.noiseTimeScale = params.noiseTimeScale || 0.6;
+    this.noisePositionScale = params.noisePositionScale || 0.005;
+    this.noiseScale = params.noiseScale || 0.002;
+    this.lifeTime = params.lifeTime || 100;
+
     this.temVect = new THREE.Vector3();
 
     this.setup();
@@ -62,6 +69,8 @@ Simulator.prototype.setup = function() {
         uniforms: {
             'textureMap'            : { type: "t", value : THREE.ImageUtils.loadTexture( 'assets/particle.png' ) },
             'uPositionsT'           : { type: "t", value : this.finalPositionsRT },
+            'uLifeTime'             : { type: "f", value: this.lifeTime },
+            'colorParticle'         : { type: "v3", value: this.colorParticle },
             'map'                   : { type: "t", value : this.finalPositionsRT },
             'uPointSize'            : { type: 'f', value : this.pointSize }
         },
@@ -111,10 +120,14 @@ Simulator.prototype.setup = function() {
             'uPrevPositionsMap'     : { type: "t", value: this.geometryRT },
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
+            'uLifeTime'             : { type: "f", value: this.lifeTime },
             'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3() },
             'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
             'uLock'                 : { type: "i", value: this.locked },
             'uCollision'            : { type: "v3", value: new THREE.Vector3() },
+            'uNoiseTimeScale'       : { type: "f", value: this.noiseTimeScale },
+            'uNoisePositionScale'   : { type: "f", value: this.noisePositionScale },
+            'uNoiseScale'           : { type: "f", value: this.noiseScale },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
                 this.boundary.position.y,

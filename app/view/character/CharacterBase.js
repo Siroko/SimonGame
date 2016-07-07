@@ -10,14 +10,19 @@ var fs = require('./../../glsl/fs-character.glsl');
 var Simulator = require('./../../utils/Simulator');
 
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal ){
 
     this.scene = scene;
     this.renderer = renderer;
-    //this.node = this.soundManager.getNode();
+    this.soundManager = soundmanager;
+    this.soundOverride = true;
     this.name = name;
     this.cuddleness = 100;
     this.life = 100;
+
+    this.color = color;
+    this.matcap = matcap;
+    this.matcapNormal = matcapNormal;
 
     this.scale = scale;
 
@@ -31,6 +36,7 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.happyTexture = THREE.ImageUtils.loadTexture('assets/faceCreatureHappy.png');
 
     this.returnFaceTimer = 0;
+    this.returnParticlesTimer = 0;
 
     this.setup();
 };
@@ -49,7 +55,9 @@ CharacterBase.prototype.setup = function(){
         uniforms: {
             'uTime': { type:'f', value:0 },
             'uTouch1': { type:'v3', value: this.positionTouch1 },
-            'uWorldPosition': { type:'v3', value: this.worldPosition }
+            'uWorldPosition': { type:'v3', value: this.worldPosition },
+            'normalMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal)},
+            'textureMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap)}
         },
         transparent: true,
         vertexShader: vs,
@@ -61,16 +69,14 @@ CharacterBase.prototype.setup = function(){
     this.mesh = new THREE.Mesh( this.geom, this.material );
     this.mesh.castShadow = true;
     this.mesh.position.copy( this.positionCharacter );
-
     this.mesh.temporal = this.positionCharacter.clone();
 
     this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
-    this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z * 1.8);
+    this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
 
     this.mesh.position.x = 1;
     this.mesh.position.y = 1;
     this.mesh.position.z = 1;
-
 
     this.faceMaterial = new THREE.MeshBasicMaterial({
         map: this.regularTexture,
@@ -86,7 +92,7 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
-    var particlesQuantity = 32;
+    var particlesQuantity = 128;
     var initBuffer = new Float32Array( particlesQuantity * particlesQuantity * 4 );
     for ( var i = 0; i < particlesQuantity * particlesQuantity; i++ ) {
 
@@ -114,17 +120,24 @@ CharacterBase.prototype.setup = function(){
     this.simulator = new Simulator({
         sizeW: particlesQuantity,
         sizeH: particlesQuantity,
-        directionFlow: new THREE.Vector3(0, 0.03, 0.01),
+        directionFlow: new THREE.Vector3(0, 0.017, 0.01),
         initialBuffer: initBuffer,
         pointSize: 2,
         locked: 1,
-        renderer: this.renderer
+        renderer: this.renderer,
+        lifeTime: 15,
+        colorParticle: this.color,
+        noiseTimeScale: 0.6,
+        noisePositionScale: 0.0025,
+        noiseScale: 0.002
+
     });
 
     this.scene.add( this.simulator.bufferMesh );
     this.simulator.bufferMesh.scale.set( this.scale, this.scale, this.scale );
+    this.simulator.bufferMesh.visible = false;
 
-    this.createLifeCuddleBars();
+    //this.createLifeCuddleBars();
 };
 
 CharacterBase.prototype.createLifeCuddleBars = function(){
@@ -195,17 +208,30 @@ CharacterBase.prototype.update = function( t ){
 
             this.faceMaterial.map = this.happyTexture;
             clearTimeout( this.returnFaceTimer );
-            this.returnFaceTimer = setTimeout( this.returnFaceBack.bind( this ), 500 );
+            this.returnFaceTimer = setTimeout( this.returnFaceBack.bind( this ), 100 );
+
+            clearTimeout( this.returnParticlesTimer );
+            this.returnParticlesTimer = setTimeout( this.returnParticlesBack.bind( this ), 5000 );
+
+            this.simulator.bufferMesh.visible = true;
 
             if( this.cuddleness > 100 ) this.cuddleness = 100;
 
             this.simulator.updatePositionsMaterial.uniforms.uLock.value = 0;
 
-            if( this.node ) this.soundManager.setValue( this.node, parseInt( this.name ) * 100 );
+            if( !this.soundManager[ 'xylo' + ( this.name + 1 )].playing() ){
+                this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+            } else {
+                if( this.soundOverride ){
+                    this.soundManager[ 'xylo' + ( this.name + 1 ) ].stop();
+                    this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+                }
+            }
 
+            this.soundOverride = false;
         } else {
+
             this.cuddleness -= 0.09;
-            if( this.node ) this.soundManager.setValue( this.node, 0 );
             if( this.cuddleness < 0 ) this.cuddleness = 0.0001;
 
             this.simulator.updatePositionsMaterial.uniforms.uLock.value = 1;
@@ -222,8 +248,10 @@ CharacterBase.prototype.update = function( t ){
     var lpercent = this.life / 100;
     var cpercent = this.cuddleness / 100;
 
-    this.lifeMesh.scale.y = lpercent;
-    this.cuddleMesh.scale.y = cpercent;
+    if( this.lifeMesh ) {
+        this.lifeMesh.scale.y = lpercent;
+        this.cuddleMesh.scale.y = cpercent;
+    }
 
     var speed = 0.0005;
 
@@ -235,13 +263,18 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
 
     this.calcPlane.position.copy( this.mesh.position );
-    //this.calcPlane.position.z -= 0.2 * this.scale;
+    this.calcPlane.position.z -= 0.1 ;
 
     //console.log( this["name"], this["life"], this["cuddleness"])
 
 };
 
+CharacterBase.prototype.returnParticlesBack = function(){
+    this.simulator.bufferMesh.visible = false;
+};
+
 CharacterBase.prototype.returnFaceBack = function(){
+    this.soundOverride = true;
     this.faceMaterial.map = this.regularTexture;
 };
 

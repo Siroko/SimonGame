@@ -19,6 +19,9 @@ uniform vec3 uWorldPosition;
 varying vec4 vPos;
 varying vec2 vUv;
 
+varying mat3 vNormalMatrix;
+varying vec4 vOPosition;
+varying vec3 vU;
 
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex
@@ -165,10 +168,14 @@ float snoise(vec4 v)
 //      pos.x += direction.x * d * 0.7;
 //      pos.y += direction.y * d * 0.7;
 
-        vec3 displacement = direction * d * 2.0;
+        vec3 displacement = direction * d * 3.0;
         pos += displacement;
 
       vPos = vec4( pos, 1.0 );
+
+      vOPosition = modelViewMatrix * vPos;
+      vU = normalize( vec3( modelViewMatrix * vPos ) );
+      vNormalMatrix = normalMatrix;
 
       gl_Position = projectionMatrix * modelViewMatrix * vPos;
 

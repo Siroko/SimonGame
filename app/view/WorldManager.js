@@ -6,14 +6,13 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
-//var SoundManager = require('./audio/SoundManager');
-var AudioManager = require('audio-manager');
+var SoundManager = require('./audio/SoundManager');
 
 var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
 
     this.renderer = renderer;
-    //this.am = new AudioManager();
-    //debugger;
+    this.sm = new SoundManager();
+
     this.dummyCamera = dummyCamera;
     this.camera = camera;
     this.scene = scene;
@@ -152,7 +151,18 @@ WorldManager.prototype.setup = function(){
     var totalChars = 4;
     var separation = 0.9;
     for (var i = 0; i < totalChars; i++) {
-        var character = new CharacterBase( new THREE.Vector3( ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ), false, i, 0.4, this.renderer, this.scene);
+        var character = new CharacterBase(
+            new THREE.Vector3( ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+            false,
+            i,
+            0.4,
+            this.renderer,
+            this.scene,
+            this.sm,
+            new THREE.Color(0x774432),
+            'assets/brass.jpg',
+            'assets/brass.jpg'
+        );
         this.characters.push( character );
 
     }
@@ -194,23 +204,8 @@ WorldManager.prototype.createBubbles = function( p ) {
 
 WorldManager.prototype.addEvents = function() {
 
-    this.onTouchStartHandler = this.onTouchStart.bind( this );
-    window.addEventListener( 'touchstart', this.onTouchStartHandler );
-
-    this.onTouchStart( null );
-
 };
 
-WorldManager.prototype.onTouchStart = function( e ) {
-
-    window.removeEventListener( 'touchstart', this.onTouchStartHandler );
-    //this.soundManager.start();
-
-    for (var i = 0; i < this.characters.length; i++) {
-        var char = this.characters[i];
-        //char.getNode();
-    }
-};
 
 WorldManager.prototype.update = function( timestamp ) {
 

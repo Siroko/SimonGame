@@ -21,51 +21,10 @@
     <script type="text/javascript" src="js/bundle.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-polyfill.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-manager.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.core.min.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.spatial.min.js"></script>
     <script>
-
         app.init();
-
-//        var AudioContext = AudioContext || webkitAudioContext;
-//        var context = new AudioContext();
-//
-//        var source = context.createOscillator();
-//        source.type = 'sine';
-//        source.frequency.setValueAtTime( 200, 0 );
-//
-//        var source2 = context.createOscillator();
-//        source2.type = 'triangle';
-//        source2.frequency.setValueAtTime( 200, 0 );
-//
-////        var filter = context.createBiquadFilter();
-////        filter.type = 7;
-////        filter.frequency.setValueAtTime( 100, 0 );
-//
-//        window.addEventListener( 'touchstart', startAudio );
-//
-//        function startAudio() {
-//
-//            window.removeEventListener( 'touchstart', startAudio );
-//            source.start(0);
-//            source2.start(0);
-//
-//        }
-//
-//        window.addEventListener( 'touchmove', function( e ) {
-//
-////            filter.frequency.setValueAtTime( 1000 * e.clientX / window.innerWidth, context.currentTime + .1 );
-//            source.frequency.setValueAtTime( 1000 * e.touches[0].clientY / window.innerHeight, context.currentTime + .1 );
-//            source2.frequency.setValueAtTime( 200 * e.touches[0].clientX / window.innerWidth, context.currentTime + .1 );
-//
-//        } );
-//
-//        var gain = context.createGain();
-//        gain.gain.value = 10;
-//
-//        source.connect( gain );
-//        source2.connect( gain );
-////        filter.connect( gain );
-//        gain.connect( context.destination );
-
     </script>
 </body>
 </html>

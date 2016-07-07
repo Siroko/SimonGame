@@ -4,59 +4,33 @@
 
 var SoundManager = function(){
 
-    this.MAX_OSC = 50;
-
-    this.oscillators = [];
     this.init();
 };
 
 SoundManager.prototype.init = function() {
 
-    var AudioContext = AudioContext || webkitAudioContext;
-    this.context = new AudioContext();
+    this.main = new Howl({
+        src : ['assets/sound/main.wav'],
+        loop: true
+    });
 
-    this.masterGain = this.context.createGain();
-    this.masterGain.gain.value = 10;
+    this.main.play();
 
-    for ( var i = 0; i < this.MAX_OSC; i++ ) {
+    this.xylo1 = new Howl( {
+        src: ['assets/sound/xylo_01.wav']
+    });
 
-        var osc =this. context.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime( 0, 0 );
+    this.xylo2 = new Howl( {
+        src: ['assets/sound/xylo_02.wav']
+    });
 
-        this.oscillators.push( osc );
+    this.xylo3 = new Howl( {
+        src: ['assets/sound/xylo_03.wav']
+    });
 
-        osc.connect( this.masterGain );
-    }
-
-    this.masterGain.connect( this.context.destination );
-
-};
-
-SoundManager.prototype.start = function() {
-    for (var i = 0; i < this.MAX_OSC; i++) {
-        this.oscillators[ i ].start( 0 );
-    }
-};
-
-SoundManager.prototype.getNode = function() {
-
-    var node = this.oscillators.pop();
-
-    return node;
-
-};
-
-SoundManager.prototype.releaseNode = function( node ) {
-
-    this.oscillators.push( node );
-
-};
-
-SoundManager.prototype.setValue = function( node, value ) {
-
-    node.frequency.setValueAtTime( value, this.context.currentTime + .1 );
-
+    this.xylo4 = new Howl( {
+        src: ['assets/sound/xylo_04.wav']
+    });
 };
 
 module.exports = SoundManager;

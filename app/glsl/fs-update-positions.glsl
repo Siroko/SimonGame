@@ -9,6 +9,10 @@ uniform float uBoundary[ 6 ];
 uniform vec3 uDirectionFlow;
 uniform vec3 uOffsetPosition;
 uniform vec3 uCollision;
+uniform float uLifeTime;
+uniform float uNoiseTimeScale;
+uniform float uNoisePositionScale;
+uniform float uNoiseScale;
 
 varying vec2 vUv;
 
@@ -128,9 +132,9 @@ vec4 simplexNoiseDerivatives (vec4 v) {
 vec3 getCurlVelocity( vec4 position ) {
 
     position.x += 3.0;
-    float NOISE_TIME_SCALE = 0.6;
-    float NOISE_SCALE = 0.002;
-    float NOISE_POSITION_SCALE = 0.005;
+    float NOISE_TIME_SCALE = uNoiseTimeScale;
+    float NOISE_SCALE = uNoiseScale;
+    float NOISE_POSITION_SCALE = uNoisePositionScale;
 
     vec3 oldPosition = position.rgb;
     vec3 noisePosition = oldPosition *  NOISE_POSITION_SCALE;
@@ -180,7 +184,7 @@ void main () {
 
     float pLife = data.a;
 
-    if( pLife < 15.0 ){
+    if( pLife < uLifeTime ){
      // restamos vida
         pLife = pLife -  vel.x - ( rand( vUv ) * 0.2 + 0.1 );
     }
@@ -188,11 +192,11 @@ void main () {
     vec3 newPosition = ( data.rgb + vel + dir );
 
     if( pLife < 0.0 ){
-        pLife = 15.0;
+        pLife = uLifeTime;
         newPosition = geomPositions.rgb + uOffsetPosition;
     }
 
-    if( uLock != 0 && pLife == 15.0 ){
+    if( uLock != 0 && pLife == uLifeTime ){
 
         newPosition = geomPositions.xyz + uOffsetPosition ;
     }
