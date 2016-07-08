@@ -11,6 +11,7 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.effect = effect;
 
     this.intersectPoint = new THREE.Vector3();
+    this.intersectPoint2 = new THREE.Vector3();
     this.sTSMat = new THREE.Matrix4();
 
     this.h1 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
@@ -45,7 +46,6 @@ GamePads.prototype.update = function( t ){
         // well as a non-null pose.
         if (gamepad && gamepad.pose) {
             vrGamepads.push(gamepad);
-            console.log(vrGamepads);
             //this.intersectPoint.quaternion.fromArray( gamepad.pose.orientation );
             this.handlers[ i ].position.fromArray( gamepad.pose.position );
             this.handlers[ i ].quaternion.fromArray( gamepad.pose.orientation );
@@ -53,21 +53,22 @@ GamePads.prototype.update = function( t ){
             this.handlers[ i ].applyMatrix( this.sTSMat );
 
             this.intersectPoint.copy( this.handlers[ 0 ].position );
+            this.intersectPoint2.copy( this.handlers[ 1 ].position );
 
-            if ("vibrate" in gamepad) {
-                for (var j = 0; j < gamepad.buttons.length; ++j) {
-                    if (gamepad.buttons[j].pressed) {
-                        //gamepad.vibrate(1000);
-                        // Vibrate the gamepad relative to the amount the button is pressed.
-                        var vibrationDelay = (500 * (1.0 - gamepad.buttons[j].value)) + 100;
-                        if (t - lastVibration > vibrationDelay) {
-                            gamepad.vibrate(100);
-                            lastVibration = t;
-                        }
-                        break;
-                    }
-                }
-            }
+            //if ("vibrate" in gamepad) {
+            //    for (var j = 0; j < gamepad.buttons.length; ++j) {
+            //        if (gamepad.buttons[j].pressed) {
+            //            //gamepad.vibrate(1000);
+            //            // Vibrate the gamepad relative to the amount the button is pressed.
+            //            var vibrationDelay = (500 * (1.0 - gamepad.buttons[j].value)) + 100;
+            //            if (t - lastVibration > vibrationDelay) {
+            //                gamepad.vibrate(100);
+            //                lastVibration = t;
+            //            }
+            //            break;
+            //        }
+            //    }
+            //}
         }
     }
 };

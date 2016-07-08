@@ -48,13 +48,17 @@ CharacterBase.prototype.getNode = function(){
 CharacterBase.prototype.setup = function(){
 
     this.positionTouch1 = new THREE.Vector3();
+    this.positionTouch2 = new THREE.Vector3();
+
+    this.positionsTouch = [ this.positionTouch1, this.positionTouch2 ];
+
     this.worldPosition = new THREE.Vector3();
 
     this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
     this.material = new THREE.RawShaderMaterial({
         uniforms: {
             'uTime': { type:'f', value:0 },
-            'uTouch1': { type:'v3', value: this.positionTouch1 },
+            'uTouch': { type:'v3v', value: [this.positionTouch1, this.positionTouch2] },
             'uWorldPosition': { type:'v3', value: this.worldPosition },
             'normalMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal)},
             'textureMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap)}
@@ -112,9 +116,6 @@ CharacterBase.prototype.setup = function(){
         initBuffer[ i * 4 + 2 ] =  z;
         initBuffer[ i * 4 + 3 ] = 15; // frames life
 
-        //var m = new THREE.Mesh(new THREE.SphereBufferGeometry(0.01, 5, 5), new THREE.MeshNormalMaterial() );
-        //this.scene.add( m );
-        //m.position.set( x, y, z );
     }
 
     this.simulator = new Simulator({
@@ -173,11 +174,8 @@ CharacterBase.prototype.update = function( t ){
     this.worldPosition.copy( this.mesh.position );
 
     this.material.uniforms.uTime.value = t;
-    this.material.uniforms.uTouch1.value = this.positionTouch1;
+    this.material.uniforms.uTouch.value = [this.positionTouch1, this.positionTouch2];
     this.material.uniforms.uWorldPosition.value = this.worldPosition;
-
-
-    //this.simulator.bufferMesh.position.copy( this.positionTouch1 );
 
     var div = .04;
     this.mesh.position.x -= this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * 0.84;
@@ -189,54 +187,70 @@ CharacterBase.prototype.update = function( t ){
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.y /= this.scale;
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.z /= this.scale;
 
-    var d = this.positionTouch1.distanceTo( this.mesh.position );
     var base = this.positionCharacterBase.clone();
-    if( this.correct ){
-        if (d < 0.6) {
-           base.copy(this.positionTouch1);
-        }
-    } else {
+    var prePositive = false;
+
+    for (var i = 0; i < this.positionsTouch.length; i++) {
+
+        var obj = this.positionsTouch[ i ];
+        var d = obj.distanceTo( this.mesh.position );
+
         if ( d < ( 0.5 * this.scale ) ) {
 
             var direction = new THREE.Vector3();
-            direction.subVectors(this.mesh.position, this.positionTouch1);
+            direction.subVectors(this.mesh.position, obj);
             direction.normalize();
             direction.multiplyScalar((0.5 * this.scale) - d);
+
             this.mesh.position.add(direction);
-
             this.cuddleness += 0.5;
-
             this.faceMaterial.map = this.happyTexture;
+
             clearTimeout( this.returnFaceTimer );
             this.returnFaceTimer = setTimeout( this.returnFaceBack.bind( this ), 100 );
 
             clearTimeout( this.returnParticlesTimer );
-            this.returnParticlesTimer = setTimeout( this.returnParticlesBack.bind( this ), 5000 );
+            this.returnParticlesTimer = setTimeout( this.returnParticlesBack.bind( this ), 2100 );
 
             this.simulator.bufferMesh.visible = true;
-
             if( this.cuddleness > 100 ) this.cuddleness = 100;
 
             this.simulator.updatePositionsMaterial.uniforms.uLock.value = 0;
 
             if( !this.soundManager[ 'xylo' + ( this.name + 1 )].playing() ){
+
                 this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+
+                prePositive = true;
+
             } else {
+
                 if( this.soundOverride ){
+
                     this.soundManager[ 'xylo' + ( this.name + 1 ) ].stop();
                     this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+
+                    prePositive = true;
+
                 }
+
             }
 
             this.soundOverride = false;
+
         } else {
 
             this.cuddleness -= 0.09;
             if( this.cuddleness < 0 ) this.cuddleness = 0.0001;
 
-            this.simulator.updatePositionsMaterial.uniforms.uLock.value = 1;
+            if( !prePositive ) {
+                this.simulator.updatePositionsMaterial.uniforms.uLock.value = 1;
+            }
+
         }
+
     }
+
 
     this.simulator.update();
 
@@ -264,8 +278,6 @@ CharacterBase.prototype.update = function( t ){
 
     this.calcPlane.position.copy( this.mesh.position );
     this.calcPlane.position.z -= 0.1 ;
-
-    //console.log( this["name"], this["life"], this["cuddleness"])
 
 };
 

@@ -13,6 +13,7 @@ var MousePad = function( scene, camera, worldManager ) {
     this.scene = scene;
     this.camera = camera;
     this.intersectPoint = new THREE.Vector3();
+    this.intersectPoint2 = new THREE.Vector3();
 
     this.addEvents();
 };
@@ -46,6 +47,7 @@ MousePad.prototype.update = function( t, objs ) {
     var intersects = this.raycaster.intersectObjects( objs );
     if (intersects.length > 0) {
         this.intersectPoint.copy(intersects[0].point);
+        this.intersectPoint2.copy(intersects[0].point);
     }
 };
 

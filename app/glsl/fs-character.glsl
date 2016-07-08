@@ -33,7 +33,7 @@ void main(){
 //        color = vec4(vec3(vDist), 1.0);
 
 
-    vec3 color = vec3( .2, .3, .3 );
+    vec3 color = vec3( .0, .0, .0 );
     vec2 texScale = vec2(1.0);
     float normalScale = 0.0;
     float useSSS = 1.0;

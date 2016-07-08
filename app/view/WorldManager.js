@@ -148,6 +148,29 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
+    var charsSetup = [
+        {
+            color: new THREE.Color(0xFF3377),
+            normalMap : 'assets/yellowmatcap.png',
+            matcap : 'assets/yellowmatcap.png'
+        },
+        {
+            color: new THREE.Color(0x119977),
+            normalMap : 'assets/brass.jpg',
+            matcap : 'assets/brass.jpg'
+        },
+        {
+            color: new THREE.Color(0xFFFFFF),
+            normalMap : 'assets/matcap1.jpg',
+            matcap : 'assets/matcap1.jpg'
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/lit-sphere-matball-example.jpg',
+            matcap : 'assets/lit-sphere-matball-example.jpg'
+        }
+
+    ]
     var totalChars = 4;
     var separation = 0.9;
     for (var i = 0; i < totalChars; i++) {
@@ -159,9 +182,9 @@ WorldManager.prototype.setup = function(){
             this.renderer,
             this.scene,
             this.sm,
-            new THREE.Color(0x774432),
-            'assets/brass.jpg',
-            'assets/brass.jpg'
+            charsSetup[i].color,
+            charsSetup[i].normalMap,
+            charsSetup[i].matcap
         );
         this.characters.push( character );
 
@@ -219,6 +242,7 @@ WorldManager.prototype.update = function( timestamp ) {
 
         char.update( timestamp );
         char.positionTouch1.copy( this.gamePads.intersectPoint );
+        char.positionTouch2.copy( this.gamePads.intersectPoint2 );
 
     }
 

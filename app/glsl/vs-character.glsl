@@ -13,7 +13,7 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
 uniform float uTime;
-uniform vec3 uTouch1;
+uniform vec3 uTouch[2];
 uniform vec3 uWorldPosition;
 
 varying vec4 vPos;
@@ -157,19 +157,25 @@ float snoise(vec4 v)
 
       vec3 pos = position;
       float noise = snoise( vec4( pos, uTime * 0.001 ) );
-      vec3 direction = uWorldPosition - uTouch1;
-      normalize( direction );
-
       vec3 vertexWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-
-      float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch1 ), 0.0, 1.0 );
-
       pos += normal * noise * 0.15;
-//      pos.x += direction.x * d * 0.7;
-//      pos.y += direction.y * d * 0.7;
 
-        vec3 displacement = direction * d * 3.0;
-        pos += displacement;
+      float distances[2];
+      vec3 displacement = vec3(0.0);
+
+      for( int i = 0; i < 2; i++ ) {
+
+          vec3 direction = uWorldPosition - uTouch[i];
+          normalize( direction );
+
+          float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
+
+          displacement += direction * d * 3.0;
+
+      }
+
+      normalize(displacement);
+      pos += displacement;
 
       vPos = vec4( pos, 1.0 );
 
