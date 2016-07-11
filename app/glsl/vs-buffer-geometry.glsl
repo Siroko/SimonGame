@@ -4,6 +4,7 @@ precision highp float;
 
 attribute vec3 position;
 attribute vec3 normal;
+attribute vec2 aV2I;
 attribute vec2 uv;
 
 uniform mat4 modelViewMatrix;
@@ -24,7 +25,7 @@ varying vec3 vU;
 
   void main(){
 
-      vec4 pos = texture2D( uPositionsTexture, uv );
+      vec4 pos = texture2D( uPositionsTexture, aV2I );
 
       vPos = pos;
       vOPosition = modelViewMatrix * vPos;

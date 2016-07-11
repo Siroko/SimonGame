@@ -142,10 +142,6 @@ Simulator.prototype.setup = function() {
         fragmentShader              : fs_updatePositions
     } );
 
-    var quad_geom = new THREE.PlaneBufferGeometry( 2, 2, 1, 1 );
-    this.quad = new THREE.Mesh( quad_geom, this.updatePositionsMaterial );
-    this.sceneRT.add( this.quad );
-
     this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
     this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
 

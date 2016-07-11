@@ -59,15 +59,21 @@ CharacterBase.prototype.setup = function(){
     this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
-        geom: this.geom,
-        'uniforms': {
-            'uTime': { type: 'f', value: 0 },
-            'uTouch': { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
+        'renderer'          : this.renderer,
+        'geom'              : this.geom,
+        'uniforms'          : {
+            'uTime'         : { type: 'f', value: 0 },
+            'uTouch'        : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
             'uWorldPosition': { type: 'v3', value: this.worldPosition },
-            'normalMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal ) },
-            'textureMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
+            'normalMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal ) },
+            'textureMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
         }
-    })
+    });
+
+    this.scene.add( this.displacedGeometry.planeDebug );
+
+    this.mesh = this.displacedGeometry.mesh;
+
     this.mesh.castShadow = true;
     this.mesh.position.copy( this.positionCharacter );
     this.mesh.temporal = this.positionCharacter.clone();
@@ -169,9 +175,9 @@ CharacterBase.prototype.update = function( t ){
 
     this.worldPosition.copy( this.mesh.position );
 
-    this.material.uniforms.uTime.value = t;
-    this.material.uniforms.uTouch.value = [this.positionTouch1, this.positionTouch2];
-    this.material.uniforms.uWorldPosition.value = this.worldPosition;
+    this.displacedGeometry.updateSpringMaterial.uniforms.uTime.value = t;
+    this.displacedGeometry.updateSpringMaterial.uniforms.uTouch.value = [ this.positionTouch1, this.positionTouch2 ];
+    this.displacedGeometry.updateSpringMaterial.uniforms.uWorldPosition.value = this.worldPosition;
 
     var div = .04;
     this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * 0.84;
@@ -182,7 +188,7 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.position.y -= this.mesh.temporal.y;
     this.mesh.position.z -= this.mesh.temporal.z;
 
-    this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.copy(this.mesh.position);
+    this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.copy( this.mesh.position );
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.x /= this.scale;
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.y /= this.scale;
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.z /= this.scale;

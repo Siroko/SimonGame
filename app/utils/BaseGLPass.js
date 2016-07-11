@@ -16,6 +16,10 @@ var BaseGLPass = function( params ) {
     this.sceneBuffer = new THREE.Scene();
 
     this.cameraOrto = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+
+    this.quad_geom = new THREE.PlaneBufferGeometry( 2, 2, 1, 1 );
+    this.quad = new THREE.Mesh( this.quad_geom, null );
+    this.sceneRT.add( this.quad );
 };
 
 BaseGLPass.prototype = Object.create( THREE.EventDispatcher.prototype );
@@ -28,14 +32,7 @@ BaseGLPass.prototype.pass = function( material, target ) {
 
 };
 
-BaseGLPass.prototype.passBuffer = function( material, target ) {
-
-    this.bufferMesh.geometry.material = material;
-    this.renderer.render( this.sceneBuffer, this.cameraOrto, target );
-
-};
-
-BaseGLPass.prototype.getRenderTarget = function( w, h, linear ) {
+BaseGLPass.prototype.getRenderTarget = function( w, h ) {
 
     var renderTarget = new THREE.WebGLRenderTarget( w, h, {
         wrapS: THREE.ClampToEdgeWrapping,
