@@ -170,10 +170,12 @@ float snoise(vec4 v)
 
           float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
 
-          displacement += direction * d * 3.0;
+          displacement += direction * d;
+          normalize( displacement );
 
       }
 
+      displacement *= 3.0;
       normalize(displacement);
       pos += displacement;
 

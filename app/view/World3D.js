@@ -18,7 +18,7 @@ var World3D = function( container ) {
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
-    //this.scene.fog      = new THREE.Fog( 0xefd1b5, 0.025);
+    this.scene.fog      = new THREE.Fog( 0xefd1b5, 100, 1000);
 
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.shadowMap.enabled = true;
@@ -29,7 +29,7 @@ var World3D = function( container ) {
     this.controls.standing = true;
 
     // Apply VR stereo rendering to renderer.
-    this.effect = new VREffect( this.renderer );
+    this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.5 );
     this.pointLight.position.set( 0, 82, 0 );
@@ -59,6 +59,15 @@ var World3D = function( container ) {
     });
 
     this.scene.add( this.simulator.bufferMesh );
+};
+
+World3D.prototype.onRenderLeft = function() {
+    console.log('rendering Left', this);
+
+};
+
+World3D.prototype.onRenderRight = function() {
+    console.log('rendering Right', this);
 };
 
 World3D.prototype.setup = function() {

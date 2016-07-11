@@ -2,13 +2,15 @@
  * Created by siroko on 6/27/16.
  */
 
-var ImprovedNoise = require('./../../utils/ImprovedNoise');
+
 var THREE = require('three');
+
 var vs = require('./../../glsl/vs-character.glsl');
 var fs = require('./../../glsl/fs-character.glsl');
 
+var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
-
+var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
 var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal ){
 
@@ -55,22 +57,17 @@ CharacterBase.prototype.setup = function(){
     this.worldPosition = new THREE.Vector3();
 
     this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
-    this.material = new THREE.RawShaderMaterial({
-        uniforms: {
-            'uTime': { type:'f', value:0 },
-            'uTouch': { type:'v3v', value: [this.positionTouch1, this.positionTouch2] },
-            'uWorldPosition': { type:'v3', value: this.worldPosition },
-            'normalMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal)},
-            'textureMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap)}
-        },
-        transparent: true,
-        vertexShader: vs,
-        fragmentShader: fs,
-        shading: THREE.FlatShading,
-        side: THREE.DoubleSide
-    } );
 
-    this.mesh = new THREE.Mesh( this.geom, this.material );
+    this.displacedGeometry = new GPUDisplacedGeometry({
+        geom: this.geom,
+        'uniforms': {
+            'uTime': { type: 'f', value: 0 },
+            'uTouch': { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
+            'uWorldPosition': { type: 'v3', value: this.worldPosition },
+            'normalMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal ) },
+            'textureMap': { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
+        }
+    })
     this.mesh.castShadow = true;
     this.mesh.position.copy( this.positionCharacter );
     this.mesh.temporal = this.positionCharacter.clone();
@@ -78,9 +75,9 @@ CharacterBase.prototype.setup = function(){
     this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
     this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
 
-    this.mesh.position.x = 1;
-    this.mesh.position.y = 1;
-    this.mesh.position.z = 1;
+    //this.mesh.position.x = 1;
+    //this.mesh.position.y = 1;
+    //this.mesh.position.z = 1;
 
     this.faceMaterial = new THREE.MeshBasicMaterial({
         map: this.regularTexture,
@@ -170,7 +167,6 @@ CharacterBase.prototype.addEvents = function(){
 
 CharacterBase.prototype.update = function( t ){
 
-
     this.worldPosition.copy( this.mesh.position );
 
     this.material.uniforms.uTime.value = t;
@@ -178,9 +174,13 @@ CharacterBase.prototype.update = function( t ){
     this.material.uniforms.uWorldPosition.value = this.worldPosition;
 
     var div = .04;
-    this.mesh.position.x -= this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * 0.84;
-    this.mesh.position.y -= this.mesh.temporal.y = ( this.mesh.temporal.y + ( this.mesh.position.y - this.positionCharacter.y ) * div ) * 0.84;
-    this.mesh.position.z -= this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * 0.84;
+    this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * 0.84;
+    this.mesh.temporal.y = ( this.mesh.temporal.y + ( this.mesh.position.y - this.positionCharacter.y ) * div ) * 0.84;
+    this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * 0.84;
+
+    this.mesh.position.x -= this.mesh.temporal.x;
+    this.mesh.position.y -= this.mesh.temporal.y;
+    this.mesh.position.z -= this.mesh.temporal.z;
 
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.copy(this.mesh.position);
     this.simulator.updatePositionsMaterial.uniforms.uOffsetPosition.value.x /= this.scale;

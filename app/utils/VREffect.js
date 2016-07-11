@@ -11,9 +11,12 @@
 
 var THREE = require('three');
 
-var VREffect = function ( renderer, onError, onReady ) {
+var VREffect = function ( renderer, onError, onReady, onRenderLeftEye, onRenderRightEye ) {
 
-	onReady = onReady || function() {}
+	onReady = onReady || function() {};
+
+	this.onRenderLeftEye = onRenderLeftEye || function() {};
+	this.onRenderRightEye = onRenderRightEye || function() {};
 
 	var vrHMD;
 	var isDeprecatedAPI = false;
@@ -293,11 +296,13 @@ var VREffect = function ( renderer, onError, onReady ) {
 			renderer.setViewport( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 			renderer.setScissor( renderRectL.x, renderRectL.y, renderRectL.width, renderRectL.height );
 			renderer.render( scene, cameraL );
+			this.onRenderLeftEye.call();
 
 			// render right eye
 			renderer.setViewport( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
 			renderer.setScissor( renderRectR.x, renderRectR.y, renderRectR.width, renderRectR.height );
 			renderer.render( scene, cameraR );
+			this.onRenderRightEye.call();
 
 			renderer.setScissorTest( false );
 
