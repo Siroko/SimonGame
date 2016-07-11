@@ -120,11 +120,15 @@ var GPUDisplacedGeometry = function( params ) {
     });
 
 
+
     this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.geometryRT}));
     this.planeDebug.rotation.x = Math.PI * 1.5;
 
     this.springPositionsTargets     = [  this.springRT,  this.springRT.clone() ];
     this.finalPositionsTargets      = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
+
+    this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );
+    this.pass( this.updatePositionsMaterial, this.finalPositionsTargets[ this.pingpong ] );
 };
 
 GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );
@@ -132,7 +136,6 @@ GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );
 GPUDisplacedGeometry.prototype.update = function() {
 
     this.updateSpringMaterial.uniforms.uPrevPositions.value = this.springPositionsTargets[ this.pingpong ];
-    this.updateSpringMaterial.uniforms.uBasePositions.value = this.springPositionsTargets[ 1 - this.pingpong ];
 
     this.updatePositionsMaterial.uniforms.uSpringTexture.value = this.springPositionsTargets[ 1 - this.pingpong ];
 
