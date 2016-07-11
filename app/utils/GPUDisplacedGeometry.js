@@ -119,8 +119,6 @@ var GPUDisplacedGeometry = function( params ) {
 
     });
 
-
-
     this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.geometryRT}));
     this.planeDebug.rotation.x = Math.PI * 1.5;
 
