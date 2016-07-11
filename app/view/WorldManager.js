@@ -248,7 +248,7 @@ WorldManager.prototype.update = function( timestamp ) {
 
     if( this.sun ){
         this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
-        this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
+       if( this.faceSun) this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
     }
 
     for (var r = 0; r < this.bubbles.length; r++) {
