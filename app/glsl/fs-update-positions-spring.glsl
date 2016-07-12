@@ -153,7 +153,7 @@ float snoise(vec4 v)
       vec3 vertexWorldPosition = (uModelMatrix * vec4(pos, 1.0)).xyz;
       pos += normal * noise * 0.15;
 
-      float distances[2];
+
       vec3 displacement = vec3(0.0);
 
       for( int i = 0; i < 2; i++ ) {

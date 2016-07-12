@@ -97,13 +97,14 @@ var GPUDisplacedGeometry = function( params ) {
     });
 
     this.mesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
+    this.mesh.updateMatrix();
 
     this.updateSpringMaterial = new THREE.RawShaderMaterial( {
         'uniforms': {
             'uBasePositions'        : { type: 't', value: this.geometryRT },
             'uPrevPositions'        : { type: 't', value: this.geometryRT },
             'uPrevPositionsGeom'    : { type: 't', value: this.geometryRT },
-            'uTime'                 : { type: 'f', value: 0 },
+            'uTime'                 : { type: 'f', value: 1 },
             'uTouch'                : params.uniforms.uTouch,
             'uWorldPosition'        : params.uniforms.uWorldPosition,
             'uModelMatrix'          : { type: 'm4', value: this.mesh.matrix }
@@ -125,7 +126,7 @@ var GPUDisplacedGeometry = function( params ) {
 
     });
 
-    this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.finalPositionsRT}));
+    this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.springRT}));
     this.planeDebug.rotation.x = Math.PI * 1.5;
 
     this.springPositionsTargets     = [  this.springRT,  this.springRT.clone() ];

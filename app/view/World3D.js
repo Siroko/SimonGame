@@ -74,7 +74,7 @@ World3D.prototype.setup = function() {
 
     this.renderer.setClearColor( 0x000000, 1 );
     this.container.appendChild( this.renderer.domElement );
-    this.render();
+    this.render( 0 );
 };
 
 
@@ -89,7 +89,8 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 1;
+        this.dummyCamera.position.z = 0.3;
+        this.dummyCamera.position.y = - 0.3;
     } else {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
     }

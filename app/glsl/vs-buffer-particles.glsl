@@ -29,7 +29,7 @@ void main()	{
     if( uPointSize != 0.0 ){
         gl_PointSize = uPointSize;
     } else {
-        gl_PointSize = pow( min( 150.0, .1 * ( 150.0 / length( mvPosition.xyz ) ) ), 2.0 ) + 5.0;
+        gl_PointSize = pow( min( 50.0, .1 * ( 50.0 / length( mvPosition.xyz ) ) ), 2.0 ) + 5.0;
     }
 
     gl_Position = projectionMatrix * modelViewMatrix * pos;

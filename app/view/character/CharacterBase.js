@@ -56,7 +56,7 @@ CharacterBase.prototype.setup = function(){
 
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
+    this.geom = new THREE.IcosahedronGeometry( 0.5, 1 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,
@@ -99,7 +99,7 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
-    var particlesQuantity = 32;
+    var particlesQuantity = 2;
     var initBuffer = new Float32Array( particlesQuantity * particlesQuantity * 4 );
     for ( var i = 0; i < particlesQuantity * particlesQuantity; i++ ) {
 
@@ -126,7 +126,7 @@ CharacterBase.prototype.setup = function(){
         sizeH: particlesQuantity,
         directionFlow: new THREE.Vector3(0, 0.017, 0.01),
         initialBuffer: initBuffer,
-        pointSize: 2,
+        pointSize: 0,
         locked: 1,
         renderer: this.renderer,
         lifeTime: 15,
