@@ -112,7 +112,9 @@ Simulator.prototype.setup = function() {
     }
 
 
-    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType, null, null, null, THREE.NearestFilter, THREE.NearestFilter);
+    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType );
+    this.geometryRT.minFilter = THREE.NearestFilter;
+    this.geometryRT.magFilter = THREE.NearestFilter;
     this.geometryRT.needsUpdate = true;
 
     this.updatePositionsMaterial = new THREE.RawShaderMaterial( {

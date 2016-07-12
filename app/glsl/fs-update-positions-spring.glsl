@@ -1,210 +1,181 @@
 precision highp float;
 precision highp sampler2D;
 
-uniform sampler2D uPrevPositionsMap;
-uniform sampler2D uGeomPositionsMap;
+uniform mat4 uModelMatrix;
+uniform sampler2D uBasePositions;
+uniform sampler2D uPrevPositions;
+uniform sampler2D uPrevPositionsGeom;
 uniform float uTime;
-uniform int uLock;
-uniform float uBoundary[ 6 ];
-uniform vec3 uDirectionFlow;
-uniform vec3 uOffsetPosition;
-uniform vec3 uCollision;
-uniform float uLifeTime;
-uniform float uNoiseTimeScale;
-uniform float uNoisePositionScale;
-uniform float uNoiseScale;
+uniform vec3 uTouch[2];
+uniform vec3 uWorldPosition;
 
 varying vec2 vUv;
 
-const int OCTAVES = 8;
+//
+// Description : Array and textureless GLSL 2D/3D/4D simplex
+//               noise functions.
+//      Author : Ian McEwan, Ashima Arts.
+//  Maintainer : stegu
+//     Lastmod : 20110822 (ijm)
+//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+//               Distributed under the MIT License. See LICENSE file.
+//               https://github.com/ashima/webgl-noise
+//               https://github.com/stegu/webgl-noise
+//
 
 vec4 mod289(vec4 x) {
-    vec4 r = x - floor(x * (1.0 / 289.0)) * 289.0;
-    return r;
-}
+  return x - floor(x * (1.0 / 289.0)) * 289.0; }
 
 float mod289(float x) {
-    float r = x - floor(x * (1.0 / 289.0)) * 289.0;
-    return r;
-}
+  return x - floor(x * (1.0 / 289.0)) * 289.0; }
 
 vec4 permute(vec4 x) {
-    vec4 r = mod289(((x*34.0)+1.0)*x);
-    return r;
+     return mod289(((x*34.0)+1.0)*x);
 }
 
 float permute(float x) {
-    float r = mod289(((x*34.0)+1.0)*x);
-    return r;
+     return mod289(((x*34.0)+1.0)*x);
 }
 
-vec4 taylorInvSqrt(vec4 r) {
-    vec4 f = 1.79284291400159 - 0.85373472095314 * r;
-    return f;
+vec4 taylorInvSqrt(vec4 r)
+{
+  return 1.79284291400159 - 0.85373472095314 * r;
 }
 
-float taylorInvSqrt(float r) {
-    float f = 1.79284291400159 - 0.85373472095314 * r;
-    return f;
+float taylorInvSqrt(float r)
+{
+  return 1.79284291400159 - 0.85373472095314 * r;
 }
 
-vec4 grad4(float j, vec4 ip) {
-    const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
-    vec4 p,s;
+vec4 grad4(float j, vec4 ip)
+  {
+  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
+  vec4 p,s;
 
-    p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;
-    p.w = 1.5 - dot(abs(p.xyz), ones.xyz);
-    s = vec4(lessThan(p, vec4(0.0)));
-    p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;
+  p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;
+  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);
+  s = vec4(lessThan(p, vec4(0.0)));
+  p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;
 
-    return p;
-}
+  return p;
+  }
 
-vec4 simplexNoiseDerivatives (vec4 v) {
-    const vec4  C = vec4( 0.138196601125011,0.276393202250021,0.414589803375032,-0.447213595499958);
+// (sqrt(5) - 1)/4 = F4, used once below
+#define F4 0.309016994374947451
 
-    vec4 i  = floor(v + dot(v, vec4(0.309016994374947451)) );
-    vec4 x0 = v -   i + dot(i, C.xxxx);
+float snoise(vec4 v)
+  {
+  const vec4  C = vec4( 0.138196601125011,  // (5 - sqrt(5))/20  G4
+                        0.276393202250021,  // 2 * G4
+                        0.414589803375032,  // 3 * G4
+                       -0.447213595499958); // -1 + 4 * G4
 
-    vec4 i0;
-    vec3 isX = step( x0.yzw, x0.xxx );
-    vec3 isYZ = step( x0.zww, x0.yyz );
-    i0.x = isX.x + isX.y + isX.z;
-    i0.yzw = 1.0 - isX;
-    i0.y += isYZ.x + isYZ.y;
-    i0.zw += 1.0 - isYZ.xy;
-    i0.z += isYZ.z;
-    i0.w += 1.0 - isYZ.z;
+// First corner
+  vec4 i  = floor(v + dot(v, vec4(F4)) );
+  vec4 x0 = v -   i + dot(i, C.xxxx);
 
-    vec4 i3 = clamp( i0, 0.0, 1.0 );
-    vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );
-    vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );
+// Other corners
 
-    vec4 x1 = x0 - i1 + C.xxxx;
-    vec4 x2 = x0 - i2 + C.yyyy;
-    vec4 x3 = x0 - i3 + C.zzzz;
-    vec4 x4 = x0 + C.wwww;
+// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)
+  vec4 i0;
+  vec3 isX = step( x0.yzw, x0.xxx );
+  vec3 isYZ = step( x0.zww, x0.yyz );
+//  i0.x = dot( isX, vec3( 1.0 ) );
+  i0.x = isX.x + isX.y + isX.z;
+  i0.yzw = 1.0 - isX;
+//  i0.y += dot( isYZ.xy, vec2( 1.0 ) );
+  i0.y += isYZ.x + isYZ.y;
+  i0.zw += 1.0 - isYZ.xy;
+  i0.z += isYZ.z;
+  i0.w += 1.0 - isYZ.z;
 
-    i = mod289(i);
-    float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);
-    vec4 j1 = permute( permute( permute( permute (
-                        i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))
-                      + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))
-                      + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))
-                      + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));
+  // i0 now contains the unique values 0,1,2,3 in each channel
+  vec4 i3 = clamp( i0, 0.0, 1.0 );
+  vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );
+  vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );
 
+  //  x0 = x0 - 0.0 + 0.0 * C.xxxx
+  //  x1 = x0 - i1  + 1.0 * C.xxxx
+  //  x2 = x0 - i2  + 2.0 * C.xxxx
+  //  x3 = x0 - i3  + 3.0 * C.xxxx
+  //  x4 = x0 - 1.0 + 4.0 * C.xxxx
+  vec4 x1 = x0 - i1 + C.xxxx;
+  vec4 x2 = x0 - i2 + C.yyyy;
+  vec4 x3 = x0 - i3 + C.zzzz;
+  vec4 x4 = x0 + C.wwww;
 
-    vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;
+// Permutations
+  i = mod289(i);
+  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);
+  vec4 j1 = permute( permute( permute( permute (
+             i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))
+           + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))
+           + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))
+           + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));
 
-    vec4 p0 = grad4(j0,   ip);
-    vec4 p1 = grad4(j1.x, ip);
-    vec4 p2 = grad4(j1.y, ip);
-    vec4 p3 = grad4(j1.z, ip);
-    vec4 p4 = grad4(j1.w, ip);
+// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope
+// 7*7*6 = 294, which is close to the ring size 17*17 = 289.
+  vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;
 
-    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-    p0 *= norm.x;
-    p1 *= norm.y;
-    p2 *= norm.z;
-    p3 *= norm.w;
-    p4 *= taylorInvSqrt(dot(p4,p4));
+  vec4 p0 = grad4(j0,   ip);
+  vec4 p1 = grad4(j1.x, ip);
+  vec4 p2 = grad4(j1.y, ip);
+  vec4 p3 = grad4(j1.z, ip);
+  vec4 p4 = grad4(j1.w, ip);
 
-    vec3 values0 = vec3(dot(p0, x0), dot(p1, x1), dot(p2, x2)); //value of contributions from each corner at point
-    vec2 values1 = vec2(dot(p3, x3), dot(p4, x4));
+// Normalise gradients
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  p0 *= norm.x;
+  p1 *= norm.y;
+  p2 *= norm.z;
+  p3 *= norm.w;
+  p4 *= taylorInvSqrt(dot(p4,p4));
 
-    vec3 m0 = max(0.5 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0); //(0.5 - x^2) where x is the distance
-    vec2 m1 = max(0.5 - vec2(dot(x3,x3), dot(x4,x4)), 0.0);
+// Mix contributions from the five corners
+  vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);
+  vec2 m1 = max(0.6 - vec2(dot(x3,x3), dot(x4,x4)            ), 0.0);
+  m0 = m0 * m0;
+  m1 = m1 * m1;
+  return 49.0 * ( dot(m0*m0, vec3( dot( p0, x0 ), dot( p1, x1 ), dot( p2, x2 )))
+               + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;
 
-    vec3 temp0 = -6.0 * m0 * m0 * values0;
-    vec2 temp1 = -6.0 * m1 * m1 * values1;
+  }
 
-    vec3 mmm0 = m0 * m0 * m0;
-    vec2 mmm1 = m1 * m1 * m1;
+  void main(){
 
-    float dx = temp0[0] * x0.x + temp0[1] * x1.x + temp0[2] * x2.x + temp1[0] * x3.x + temp1[1] * x4.x + mmm0[0] * p0.x + mmm0[1] * p1.x + mmm0[2] * p2.x + mmm1[0] * p3.x + mmm1[1] * p4.x;
-    float dy = temp0[0] * x0.y + temp0[1] * x1.y + temp0[2] * x2.y + temp1[0] * x3.y + temp1[1] * x4.y + mmm0[0] * p0.y + mmm0[1] * p1.y + mmm0[2] * p2.y + mmm1[0] * p3.y + mmm1[1] * p4.y;
-    float dz = temp0[0] * x0.z + temp0[1] * x1.z + temp0[2] * x2.z + temp1[0] * x3.z + temp1[1] * x4.z + mmm0[0] * p0.z + mmm0[1] * p1.z + mmm0[2] * p2.z + mmm1[0] * p3.z + mmm1[1] * p4.z;
-    float dw = temp0[0] * x0.w + temp0[1] * x1.w + temp0[2] * x2.w + temp1[0] * x3.w + temp1[1] * x4.w + mmm0[0] * p0.w + mmm0[1] * p1.w + mmm0[2] * p2.w + mmm1[0] * p3.w + mmm1[1] * p4.w;
+      vec3 pos = texture2D(uBasePositions, vUv).rgb;
+      vec3 prevPos = texture2D(uPrevPositions, vUv).rgb;
+      vec3 prevPosGeom = texture2D(uPrevPositionsGeom, vUv).rgb;
 
-    return vec4(dx, dy, dz, dw) * 49.0;
-}
+      float noise = snoise( vec4( pos, uTime * 0.001 ) );
+      vec3 normal = pos - uWorldPosition;
 
-vec3 getCurlVelocity( vec4 position ) {
+      vec3 vertexWorldPosition = (uModelMatrix * vec4(pos, 1.0)).xyz;
+      pos += normal * noise * 0.15;
 
-    position.x += 3.0;
-    float NOISE_TIME_SCALE = uNoiseTimeScale;
-    float NOISE_SCALE = uNoiseScale;
-    float NOISE_POSITION_SCALE = uNoisePositionScale;
+      float distances[2];
+      vec3 displacement = vec3(0.0);
 
-    vec3 oldPosition = position.rgb;
-    vec3 noisePosition = oldPosition *  NOISE_POSITION_SCALE;
+      for( int i = 0; i < 2; i++ ) {
 
-    float noiseTime = NOISE_TIME_SCALE;
+          vec3 direction = uWorldPosition - uTouch[i];
+          normalize( direction );
 
-    vec4 xNoisePotentialDerivatives = vec4(0.0);
-    vec4 yNoisePotentialDerivatives = vec4(0.0);
-    vec4 zNoisePotentialDerivatives = vec4(0.0);
+          float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
 
-    float persistence = 0.56;
+          displacement += direction * d;
+          normalize( displacement );
 
-    for (int i = 0; i < OCTAVES; ++i) {
-        float scale = (1.0 / 2.0) * pow(2.0, float(i));
+      }
 
-        float noiseScale = pow(persistence, float(i));
+      displacement *= 3.0;
+      normalize(displacement);
+      pos += displacement;
 
-        xNoisePotentialDerivatives += simplexNoiseDerivatives(vec4(noisePosition * pow(2.0, float(i)), noiseTime)) * noiseScale * scale;
-        yNoisePotentialDerivatives += simplexNoiseDerivatives(vec4((noisePosition + vec3(123.4, 129845.6, -1239.1)) * pow(2.0, float(i)), noiseTime)) * noiseScale * scale;
-        zNoisePotentialDerivatives += simplexNoiseDerivatives(vec4((noisePosition + vec3(-9519.0, 9051.0, -123.0)) * pow(2.0, float(i)), noiseTime)) * noiseScale * scale;
-    }
+      float div = .04;
+      float damping = 0.9;
 
-    //compute curl
-    vec3 noiseVelocity = vec3(
-                              zNoisePotentialDerivatives[1] - yNoisePotentialDerivatives[2],
-                              xNoisePotentialDerivatives[2] - zNoisePotentialDerivatives[0],
-                              yNoisePotentialDerivatives[0] - xNoisePotentialDerivatives[1]
-                              ) * NOISE_SCALE;
-    return noiseVelocity;
-}
+      vec3 spring = vec3( ( prevPos.x + ( prevPosGeom.x - pos.x ) * div ) * damping,  ( prevPos.y + ( prevPosGeom.y - pos.y )  * div ) * damping,  ( prevPos.z + ( prevPosGeom.z - pos.z ) * div ) * damping );
+      gl_FragColor = vec4( spring, 1.0 );
 
-float rand(vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-
-void main () {
-
-    vec2 uv = vUv;
-
-    vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
-    vec4 data = texture2D(uPrevPositionsMap, uv);
-
-    vec3 noiseVelocity = getCurlVelocity( data );
-
-    vec3 vel = noiseVelocity;
-    vec3 dir = uDirectionFlow;
-
-    float pLife = data.a;
-
-    if( pLife < uLifeTime ){
-     // restamos vida
-        pLife = pLife -  vel.x - ( rand( vUv ) * 0.2 + 0.1 );
-    }
-
-    vec3 newPosition = ( data.rgb + vel + dir );
-
-    if( pLife < 0.0 ){
-        pLife = uLifeTime;
-        newPosition = geomPositions.rgb + uOffsetPosition;
-    }
-
-    if( uLock != 0 && pLife == uLifeTime ){
-
-        newPosition = geomPositions.xyz + uOffsetPosition ;
-    }
-
-    if( uLock == 0 ){
-        pLife = pLife - 0.01;
-    }
-
-    gl_FragColor = vec4( newPosition, pLife );
-
-}
+  }

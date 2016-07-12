@@ -43,13 +43,13 @@ WorldManager.prototype.setup = function(){
 
     var mtlLoader = new MTLLoader();
     mtlLoader.setPath( 'assets/' );
-    mtlLoader.load( 'sceneRandom.mtl', (function( materials ) {
+    mtlLoader.load( 'sceneClouds.mtl', (function( materials ) {
         materials.preload();
 
         var objLoader = new OBJLoader();
         objLoader.setMaterials( materials );
         objLoader.setPath( 'assets/' );
-        objLoader.load( 'sceneRandom.obj', (function ( object ) {
+        objLoader.load( 'sceneClouds.obj', (function ( object ) {
             console.log( object );
             for (var i = 0; i < object.children.length; i++) {
                 var obj = object.children[i];
@@ -142,7 +142,7 @@ WorldManager.prototype.setup = function(){
             }
 
 
-            //this.scene.add( object );
+            this.scene.add( object );
 
         } ).bind( this ), onProgress, onError );
 

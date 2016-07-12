@@ -60,7 +60,9 @@ var GPUDisplacedGeometry = function( params ) {
         this.data[ i * 12 + 11 ]        = 1;
     }
 
-    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType, null, null, null, THREE.NearestFilter, THREE.NearestFilter);
+    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType);
+    this.geometryRT.minFilter = THREE.NearestFilter;
+    this.geometryRT.magFilter = THREE.NearestFilter;
     this.geometryRT.needsUpdate = true;
 
 
@@ -96,21 +98,25 @@ var GPUDisplacedGeometry = function( params ) {
 
     this.mesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
 
-    this.updateSpringMaterial = new THREE.RawShaderMaterial({
+    this.updateSpringMaterial = new THREE.RawShaderMaterial( {
         'uniforms': {
+            'uBasePositions'        : { type: 't', value: this.geometryRT },
             'uPrevPositions'        : { type: 't', value: this.geometryRT },
+            'uPrevPositionsGeom'    : { type: 't', value: this.geometryRT },
             'uTime'                 : { type: 'f', value: 0 },
-            'uTouch'                : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
-            'uWorldPosition'        : { type: 'v3', value: this.worldPosition }
+            'uTouch'                : params.uniforms.uTouch,
+            'uWorldPosition'        : params.uniforms.uWorldPosition,
+            'uModelMatrix'          : { type: 'm4', value: this.mesh.matrix }
         },
 
         vertexShader                : vs_simpleQuad,
         fragmentShader              : fs_updateSpring
 
-    });
+    } );
 
     this.updatePositionsMaterial = new THREE.RawShaderMaterial({
         'uniforms': {
+            'uPrevPositions'        : { type: 't', value: this.geometryRT },
             'uSpringTexture'        : { type: 't', value: this.springRT }
         },
 
@@ -119,7 +125,7 @@ var GPUDisplacedGeometry = function( params ) {
 
     });
 
-    this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.geometryRT}));
+    this.planeDebug = new THREE.Mesh( this.quad_geom, new THREE.MeshBasicMaterial({map:this.finalPositionsRT}));
     this.planeDebug.rotation.x = Math.PI * 1.5;
 
     this.springPositionsTargets     = [  this.springRT,  this.springRT.clone() ];
@@ -134,8 +140,10 @@ GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );
 GPUDisplacedGeometry.prototype.update = function() {
 
     this.updateSpringMaterial.uniforms.uPrevPositions.value = this.springPositionsTargets[ this.pingpong ];
+    this.updateSpringMaterial.uniforms.uPrevPositionsGeom.value = this.finalPositionsTargets[ this.pingpong ];
 
-    this.updatePositionsMaterial.uniforms.uSpringTexture.value = this.springPositionsTargets[ 1 - this.pingpong ];
+    this.updatePositionsMaterial.uniforms.uSpringTexture.value = this.springPositionsTargets[ this.pingpong ];
+    this.updatePositionsMaterial.uniforms.uPrevPositions.value = this.finalPositionsTargets[ this.pingpong ];
 
     this.bufferMaterial.uniforms.uPositionsTexture.value = this.finalPositionsTargets[ this.pingpong ];
 

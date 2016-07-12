@@ -18,7 +18,7 @@ var World3D = function( container ) {
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
-    this.scene.fog      = new THREE.Fog( 0xefd1b5, 100, 1000);
+    //this.scene.fog      = new THREE.Fog( 0xefd1b5, 100, 1000);
 
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.shadowMap.enabled = true;

@@ -70,7 +70,7 @@ CharacterBase.prototype.setup = function(){
         }
     });
 
-    this.scene.add( this.displacedGeometry.planeDebug );
+    //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
 
@@ -179,11 +179,11 @@ CharacterBase.prototype.update = function( t ){
     this.displacedGeometry.updateSpringMaterial.uniforms.uTouch.value = [ this.positionTouch1, this.positionTouch2 ];
     this.displacedGeometry.updateSpringMaterial.uniforms.uWorldPosition.value = this.worldPosition;
 
-    var div = .04;
-    this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * 0.84;
-    this.mesh.temporal.y = ( this.mesh.temporal.y + ( this.mesh.position.y - this.positionCharacter.y ) * div ) * 0.84;
-    this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * 0.84;
-
+    var div = 0.04;
+    var damp = 0.9;
+    this.mesh.temporal.x = ( this.mesh.temporal.x + ( this.mesh.position.x - this.positionCharacter.x ) * div ) * damp;
+    this.mesh.temporal.y = ( this.mesh.temporal.y + ( this.mesh.position.y - this.positionCharacter.y ) * div ) * damp;
+    this.mesh.temporal.z = ( this.mesh.temporal.z + ( this.mesh.position.z - this.positionCharacter.z ) * div ) * damp;
     this.mesh.position.x -= this.mesh.temporal.x;
     this.mesh.position.y -= this.mesh.temporal.y;
     this.mesh.position.z -= this.mesh.temporal.z;
@@ -259,6 +259,7 @@ CharacterBase.prototype.update = function( t ){
 
 
     this.simulator.update();
+    this.displacedGeometry.update();
 
     if( this.cuddleness <= 0.0001 ){
         this.life -= 0.9;
