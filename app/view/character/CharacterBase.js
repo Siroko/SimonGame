@@ -56,7 +56,7 @@ CharacterBase.prototype.setup = function(){
 
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 0.5, 1 );
+    this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,

@@ -7,6 +7,7 @@ var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
 var SoundManager = require('./audio/SoundManager');
+var UltraStarManager = require('./../utils/ultrastar/UltraStarManager');
 
 var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
 
@@ -23,6 +24,10 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
     this.charactersCalcPlane = [];
     this.mountainTorus = [];
     this.bubbles = [];
+
+    this.ultraStarManager = new UltraStarManager();
+    this.ultraStarManager.setSong( 1 );
+    this.scene.add( this.ultraStarManager.container );
 
     this.setup();
     this.addEvents();
@@ -260,6 +265,8 @@ WorldManager.prototype.update = function( timestamp ) {
         mesh.position.x += (Math.random() * 2 - 1 ) * 8;
         mesh.position.y += Math.random() * 2 - 1;
     }
+
+    this.ultraStarManager.update();
 
 
 };

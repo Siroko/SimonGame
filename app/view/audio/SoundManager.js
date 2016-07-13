@@ -9,12 +9,12 @@ var SoundManager = function(){
 
 SoundManager.prototype.init = function() {
 
-    this.main = new Howl({
-        src : ['assets/sound/main.wav'],
-        loop: true
-    });
-
-    this.main.play();
+    //this.main = new Howl({
+    //    src : ['assets/sound/main.wav'],
+    //    loop: true
+    //});
+    //
+    //this.main.play();
 
     this.xylo1 = new Howl( {
         src: ['assets/sound/xylo_01.wav']

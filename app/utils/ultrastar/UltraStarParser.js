@@ -11,15 +11,14 @@ var UltraStarParser = function() {
     this.gap = 0;
     this.lines = [];
 
-    this.dom = document.createElement( 'div' );
-    this.dom.className = 'player'
+    this.pathFiles = 'assets/ultrastar/'
 
 };
 
 UltraStarParser.prototype.load = function( songObject ) {
 
     this.song = songObject;
-    var src = songObject.file + '.txt';
+    var src = this.pathFiles + songObject.file + '.txt';
 
     return new Promise( function( resolve, reject ) {
 
@@ -44,9 +43,9 @@ UltraStarParser.prototype.get = function( time ) {
             return l;
         }
     }
-    return null;
+    //return line;
 
-}
+};
 
 UltraStarParser.prototype.parse = function( text ) {
 
@@ -61,8 +60,7 @@ UltraStarParser.prototype.parse = function( text ) {
             if( line[ 0 ] === ':' ) {
 
                 var parts = line.split( /:[\s]+([\S]+)[\s]+([\S]+)+[\s]+([\S]+)[\s]+([\S]+)/gmi );
-                var p = new SongPoint( parts[ 1 ], parts[ 2 ], parts[ 3 ], parts[ 4 ] )
-                this.lines.push( p );
+                var p = new SongPoint( parts[ 1 ], parts[ 2 ], parts[ 3 ], parts[ 4 ] );
                 this.lines.push( p );
                 if( pitches[ p.pitch ] ) pitches[ p.pitch ]++;
                 else pitches[ p.pitch ] = 1;
@@ -76,7 +74,7 @@ UltraStarParser.prototype.parse = function( text ) {
                 if( pitches[ p.pitch ] ) pitches[ p.pitch ]++;
                 else pitches[ p.pitch ] = 1;
 
-            } else if( line[ 0 ] === '-' ){
+            } else if( line[ 0 ] === '-' ) {
 
             } else if( line[ 0 ] === 'F' ) {
 
@@ -111,6 +109,4 @@ UltraStarParser.prototype.parse = function( text ) {
 
 };
 
-/*var audio = document.createElement( 'audio' );
- audio.src = 'Lady GaGa - Poker Face.mp3';
- audio.preload = true;*/
+module.exports = UltraStarParser;
