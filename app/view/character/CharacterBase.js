@@ -227,7 +227,7 @@ CharacterBase.prototype.update = function( t ){
             if( this.soundOverride) {
 
                 var delay = 0; // play one note every quarter second
-                var note = this.name + 80; // the MIDI note
+                var note = (this.name * 2) + 90; // the MIDI note
                 var velocity = 127; // how hard the note hits
 
                 MIDI.setVolume(0, 127);

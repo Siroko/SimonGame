@@ -146,7 +146,6 @@ WorldManager.prototype.setup = function(){
                 //});
             }
 
-
             this.scene.add( object );
 
         } ).bind( this ), onProgress, onError );
@@ -154,9 +153,9 @@ WorldManager.prototype.setup = function(){
     }).bind( this ) );
 
 
-    var instrument = 'kalimba';
+    var instrument = 'xylophone';
     MIDI.loadPlugin({
-        soundfontUrl: "assets/sound/midi/FluidR3_GM/",
+        soundfontUrl: "assets/sound/midi/MusyngKite/",
         instrument: instrument,
         onsuccess: (function() {
             MIDI.programChange(0, MIDI.GM.byName[instrument].number);
