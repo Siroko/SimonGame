@@ -26,7 +26,7 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
     this.bubbles = [];
 
     this.ultraStarManager = new UltraStarManager();
-    this.ultraStarManager.setSong( 1 );
+    this.ultraStarManager.setSong( 0 );
     this.scene.add( this.ultraStarManager.container );
 
     this.setup();
@@ -153,6 +153,20 @@ WorldManager.prototype.setup = function(){
 
     }).bind( this ) );
 
+
+    var instrument = 'kalimba';
+    MIDI.loadPlugin({
+        soundfontUrl: "assets/sound/midi/FluidR3_GM/",
+        instrument: instrument,
+        onsuccess: (function() {
+            MIDI.programChange(0, MIDI.GM.byName[instrument].number);
+            this.createCharacters();
+        }).bind( this )
+    });
+
+};
+
+WorldManager.prototype.createCharacters = function(){
     var charsSetup = [
         {
             color: new THREE.Color(0xFF3377),

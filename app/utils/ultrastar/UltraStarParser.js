@@ -21,13 +21,13 @@ UltraStarParser.prototype.load = function( songObject ) {
     var src = this.pathFiles + songObject.file + '.txt';
 
     return new Promise( function( resolve, reject ) {
-
-        fetch( src ).then( response =>
-            response.text().then( text => { this.parse( text ).then( function(){
-                resolve();
-            } );
-        } ) );
-
+        fetch( src ).then( (function( response ) {
+            response.text().then( (function( text ) {
+                this.parse( text ).then( function() {
+                    resolve();
+                } );
+            } ).bind( this ) )
+        }).bind( this) );
     }.bind( this ) );
 
 };
@@ -55,7 +55,7 @@ UltraStarParser.prototype.parse = function( text ) {
 
         var pitches = {};
 
-        this.text.forEach( line => {
+        this.text.forEach( (function( line ) {
 
             if( line[ 0 ] === ':' ) {
 
@@ -84,8 +84,9 @@ UltraStarParser.prototype.parse = function( text ) {
                 var parts = line.split( /#([\S]*):(.*)/gmi );
                 if( parts[ 1 ] === 'BPM' ) this.bpm = parseFloat( parts[ 2 ].replace( ',', '.' ) );
                 if( parts[ 1 ] === 'GAP' ) this.gap = parseFloat( parts[ 2 ] ) / 1000;
+                if( parts[ 1 ] === 'VIDEOGAP' ) this.gap += parseFloat( parts[ 2 ] );
             }
-        } );
+        } ).bind( this ) );
 
         this.bpm = 119;
         this.pitches = pitches;

@@ -15,7 +15,7 @@ var UltraStarManager = function(){
     this.container = new THREE.Object3D();
     this.container.position.z = -2;
     this.container.position.y = 35;
-    this.container.position.x = -19;
+    //this.container.position.x = -19;
 
     this.mainText = '';
 };
@@ -23,16 +23,16 @@ var UltraStarManager = function(){
 UltraStarManager.prototype.setSong = function( id ) {
     this.ultraStarParser.load( this.model.library[ id ] ).then( this.onSongParsed.bind( this ) );
 
-    this.main = new Howl({
-        src : ['assets/sound/'+this.model.library[ id ].file+'.wav'],
-        loop: true
-    });
+    //this.main = new Howl({
+    //    src : ['assets/sound/'+this.model.library[ id ].file+'.wav'],
+    //    loop: true
+    //});
 
 };
 
 UltraStarManager.prototype.onSongParsed = function() {
 
-    this.main.play();
+    //this.main.play();
 
     var geom = new THREE.BoxBufferGeometry(0.3, 0.3, 0.3, 2, 2, 2);
     var mat = new THREE.MeshBasicMaterial({color:0xFF0000});
@@ -57,18 +57,18 @@ UltraStarManager.prototype.update = function() {
     //this.container.position.y = this.main.pos()._pos;
 
 
-    if( this.main.playing() ){
-        var t = this.main.seek();
-        this.container.position.y = (t * 0.1) * -1;
-        //console.log( t );
-        var p = this.ultraStarParser.get( t );
-        if( p ){
-            if( this.mainText != p.text ) {
-                this.mainText = p.text;
-                console.log(this.mainText);
-            }
-        }
-    }
+    //if( this.main.playing() ){
+    //    var t = this.main.seek();
+    //    //this.container.position.y = (t) * -1;
+    //    //console.log( t );
+    //    var p = this.ultraStarParser.get( t );
+    //    if( p ){
+    //        if( this.mainText != p.text ) {
+    //            this.mainText = p.text;
+    //            console.log(this.mainText);
+    //        }
+    //    }
+    //}
 
 };
 

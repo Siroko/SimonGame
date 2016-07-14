@@ -3,6 +3,7 @@
  */
 var SongsModel = function() {
     this.library = [
+        { name: 'Morning Coffee', file: 'lullatone - morning coffee', id: 'UPQ3jmBUX8s', factor: 10 },
         { name: 'Mr. Brightside', file: 'The Killers - Human', id: 'gGdGFtwCNBE', factor: 19.6 },
         { name: 'Poker Face', file: 'Lady GaGa - Poker Face', id: 'bESGLojNYSo', factor: 15.91 },
         { name: 'Losing my religion', file: 'R.E.M. - Losing My Religion', id: 'xwtdhWltSIg', factor: 16 }

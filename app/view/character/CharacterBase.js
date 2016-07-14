@@ -56,7 +56,7 @@ CharacterBase.prototype.setup = function(){
 
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 0.5, 2 );
+    this.geom = new THREE.IcosahedronGeometry( 0.5, 1 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,
@@ -69,7 +69,7 @@ CharacterBase.prototype.setup = function(){
             'textureMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
         }
     });
-
+6
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
@@ -223,24 +223,37 @@ CharacterBase.prototype.update = function( t ){
 
             this.simulator.updatePositionsMaterial.uniforms.uLock.value = 0;
 
-            if( !this.soundManager[ 'xylo' + ( this.name + 1 )].playing() ){
 
-                this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+            if( this.soundOverride) {
 
-                prePositive = true;
+                var delay = 0; // play one note every quarter second
+                var note = this.name + 80; // the MIDI note
+                var velocity = 127; // how hard the note hits
 
-            } else {
-
-                if( this.soundOverride ){
-
-                    this.soundManager[ 'xylo' + ( this.name + 1 ) ].stop();
-                    this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
-
-                    prePositive = true;
-
-                }
+                MIDI.setVolume(0, 127);
+                MIDI.noteOn(0, note, velocity, delay);
+                MIDI.noteOff(0, note, delay + 0.75);
 
             }
+
+            //if( !this.soundManager[ 'xylo' + ( this.name + 1 )].playing() ){
+            //
+            //    //this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+            //
+            //    prePositive = true;
+            //
+            //} else {
+            //
+            //    if( this.soundOverride ){
+            //
+            //        //this.soundManager[ 'xylo' + ( this.name + 1 ) ].stop();
+            //        //this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
+            //
+            //        prePositive = true;
+            //
+            //    }
+            //
+            //}
 
             this.soundOverride = false;
 
