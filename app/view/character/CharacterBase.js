@@ -14,6 +14,8 @@ var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
 var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal ){
 
+    THREE.EventDispatcher.call( this );
+
     this.scene = scene;
     this.renderer = renderer;
     this.soundManager = soundmanager;
@@ -32,7 +34,6 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.positionCharacterBase = initPosition.clone();
 
     this.seed = Math.random();
-    this.correct = correct;
 
     this.regularTexture = THREE.ImageUtils.loadTexture('assets/faceCreature.png');
     this.happyTexture = THREE.ImageUtils.loadTexture('assets/faceCreatureHappy.png');
@@ -40,11 +41,17 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.returnFaceTimer = 0;
     this.returnParticlesTimer = 0;
 
+    this.notes = [70, 74, 75, 77];
+
     this.setup();
 };
 
-CharacterBase.prototype.getNode = function(){
+CharacterBase.prototype = Object.create( THREE.EventDispatcher.prototype );
+
+CharacterBase.prototype.getNode = function() {
+
     this.node = this.soundManager.getNode();
+
 };
 
 CharacterBase.prototype.setup = function(){
@@ -146,11 +153,11 @@ CharacterBase.prototype.setup = function(){
 
 CharacterBase.prototype.createLifeCuddleBars = function(){
 
-    this.lifeMat = new THREE.MeshBasicMaterial({
+    this.lifeMat = new THREE.MeshBasicMaterial( {
         color: 0xFFFFFF
-    });
+    } );
 
-    this.lifeGeom = new THREE.BoxBufferGeometry(0.1, 0.5, 0.1, 2, 2, 2);
+    this.lifeGeom = new THREE.BoxBufferGeometry( 0.1, 0.5, 0.1, 2, 2, 2 );
     this.lifeMesh = new THREE.Mesh( this.lifeGeom, this.lifeMat );
     this.lifeMesh.position.y = -0.6;
     this.lifeMesh.rotation.z = Math.PI * 0.5;
@@ -227,33 +234,22 @@ CharacterBase.prototype.update = function( t ){
             if( this.soundOverride) {
 
                 var delay = 0; // play one note every quarter second
-                var note = (this.name * 2) + 90; // the MIDI note
+                var note = this.notes[ this.name ]; // the MIDI note
                 var velocity = 127; // how hard the note hits
 
                 MIDI.setVolume(0, 127);
                 MIDI.noteOn(0, note, velocity, delay);
                 MIDI.noteOff(0, note, delay + 0.75);
 
-            }
+                prePositive = true;
 
-            //if( !this.soundManager[ 'xylo' + ( this.name + 1 )].playing() ){
-            //
-            //    //this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
-            //
-            //    prePositive = true;
-            //
-            //} else {
-            //
-            //    if( this.soundOverride ){
-            //
-            //        //this.soundManager[ 'xylo' + ( this.name + 1 ) ].stop();
-            //        //this.soundManager[ 'xylo' + ( this.name + 1 ) ].play();
-            //
-            //        prePositive = true;
-            //
-            //    }
-            //
-            //}
+                // dispatchEvent play sound
+                this.dispatchEvent({
+                    type: 'onPlaySound',
+                    idCharacter: this.name
+                });
+
+            }
 
             this.soundOverride = false;
 
@@ -269,7 +265,6 @@ CharacterBase.prototype.update = function( t ){
         }
 
     }
-
 
     this.simulator.update();
     this.displacedGeometry.update();

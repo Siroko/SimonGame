@@ -86,17 +86,7 @@ Simulator.prototype.setup = function() {
 
     this.data = new Float32Array( this.sizeW * this.sizeH * 4 );
 
-    if( this.initialBuffer ) { // if initial buffer is defined we set the positions according
-
-        //for( var i = 0; i < this.total; i ++ ) {
-        //
-        //    this.data[ i * 4 ]     = this.initialBuffer[ i ];
-        //    this.data[ i * 4 + 1 ] = this.initialBuffer[ i * 4 + 1];
-        //    this.data[ i * 4 + 2 ] = this.initialBuffer[ i * 4 + 2];
-        //    this.data[ i * 4 + 3 ] = 100; // frames life
-        //
-        //}
-
+    if( this.initialBuffer ) { // if initial buffer is defined just feed it to the data texture
         this.data = this.initialBuffer;
     } else { // else we just set them randomly
 

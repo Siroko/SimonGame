@@ -9,6 +9,8 @@ var CharacterBase = require('./character/CharacterBase');
 var SoundManager = require('./audio/SoundManager');
 var UltraStarManager = require('./../utils/ultrastar/UltraStarManager');
 
+var Simon = require('./../utils/logic/Simon');
+
 var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
 
     this.renderer = renderer;
@@ -25,9 +27,11 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
     this.mountainTorus = [];
     this.bubbles = [];
 
-    this.ultraStarManager = new UltraStarManager();
-    this.ultraStarManager.setSong( 0 );
-    this.scene.add( this.ultraStarManager.container );
+    //this.ultraStarManager = new UltraStarManager();
+    //this.ultraStarManager.setSong( 0 );
+    //this.scene.add( this.ultraStarManager.container );
+
+    this.simon = new Simon();
 
     this.setup();
     this.addEvents();
@@ -160,6 +164,7 @@ WorldManager.prototype.setup = function(){
         onsuccess: (function() {
             MIDI.programChange(0, MIDI.GM.byName[instrument].number);
             this.createCharacters();
+            this.simon.startGame();
         }).bind( this )
     });
 
@@ -193,6 +198,7 @@ WorldManager.prototype.createCharacters = function(){
     var totalChars = 4;
     var separation = 0.9;
     for (var i = 0; i < totalChars; i++) {
+
         var character = new CharacterBase(
             new THREE.Vector3( ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
             false,
@@ -205,19 +211,27 @@ WorldManager.prototype.createCharacters = function(){
             charsSetup[i].normalMap,
             charsSetup[i].matcap
         );
+        character.addEventListener('onPlaySound', this.onCharacterPlaySound.bind( this ) );
         this.characters.push( character );
 
     }
 
     for (var i = 0; i < this.characters.length; i++) {
+
         var char = this.characters[i];
         this.scene.add( char.mesh );
         this.scene.add( char.calcPlane );
 
         this.charactersMesh.push( char.mesh );
         this.charactersCalcPlane.push( char.calcPlane );
+
     }
 
+};
+
+WorldManager.prototype.onCharacterPlaySound = function( e ) {
+
+    this.simon.setHumanNote( e.idCharacter );
 };
 
 WorldManager.prototype.createBubbles = function( p ) {
@@ -262,7 +276,6 @@ WorldManager.prototype.update = function( timestamp ) {
         char.update( timestamp );
         char.positionTouch1.copy( this.gamePads.intersectPoint );
         char.positionTouch2.copy( this.gamePads.intersectPoint2 );
-
     }
 
     if( this.sun ){
@@ -279,7 +292,7 @@ WorldManager.prototype.update = function( timestamp ) {
         mesh.position.y += Math.random() * 2 - 1;
     }
 
-    this.ultraStarManager.update();
+    //this.ultraStarManager.update();
 
 
 };

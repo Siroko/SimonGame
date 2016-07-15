@@ -23,16 +23,16 @@ var UltraStarManager = function(){
 UltraStarManager.prototype.setSong = function( id ) {
     this.ultraStarParser.load( this.model.library[ id ] ).then( this.onSongParsed.bind( this ) );
 
-    this.main = new Howl({
-        src : ['assets/sound/'+this.model.library[ id ].file+'.wav'],
-        loop: true
-    });
+    //this.main = new Howl({
+    //    src : ['assets/sound/'+this.model.library[ id ].file+'.wav'],
+    //    loop: true
+    //});
 
 };
 
 UltraStarManager.prototype.onSongParsed = function() {
 
-    this.main.play();
+    //this.main.play();
 
     var geom = new THREE.BoxBufferGeometry(0.3, 0.3, 0.3, 2, 2, 2);
     var mat = new THREE.MeshBasicMaterial({color:0xFF0000});
