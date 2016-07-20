@@ -17,10 +17,11 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.intersectPoint2 = new THREE.Vector3();
     this.sTSMat = new THREE.Matrix4();
     this.tmpVector = new THREE.Vector3();
+    this.tmpVector2 = new THREE.Vector3();
 
     this.h1 = new THREE.Object3D();
     this.h1.matrixAutoUpdate = false;
-    this.h2 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
+    this.h2 = new THREE.Object3D();
     this.h2.matrixAutoUpdate = false;
     this.handlers = [ this.h1, this.h2 ];
 
@@ -54,6 +55,18 @@ GamePads.prototype.loadAssets = function(){
             }
         }
         this.h1.add(object);
+
+    } ).bind( this ), onProgress, onError );
+
+    objLoader.load( 'handL.obj', ( function ( object ) {
+
+        for (var i = 0; i < object.children.length; i++) {
+            var obj = object.children[i];
+            if( obj.name.indexOf('bola') >= 0 ){
+                this.h2Handler =  obj;
+            }
+        }
+        this.h2.add(object);
 
     } ).bind( this ), onProgress, onError );
 
@@ -93,9 +106,15 @@ GamePads.prototype.update = function( t ){
                 this.tmpVector.set( -0.1, 0.3, -0.35);
                 this.tmpVector.applyMatrix4( this.h1Handler.matrixWorld );
             }
-            this.intersectPoint.copy( this.tmpVector );
 
-            this.intersectPoint2.copy( this.handlers[ 1 ].position );
+            if( this.h2Handler ) {
+                this.h2Handler.updateMatrixWorld();
+                this.tmpVector2.set( 0.1, 0.3, -0.35);
+                this.tmpVector2.applyMatrix4( this.h2Handler.matrixWorld );
+            }
+
+            this.intersectPoint.copy( this.tmpVector );
+            this.intersectPoint2.copy( this.tmpVector2 );
 
             //if ("vibrate" in gamepad) {
             //    for (var j = 0; j < gamepad.buttons.length; ++j) {
