@@ -17,7 +17,7 @@ var GPUDisplacedGeometry = function( params ) {
     BaseGLPass.call( this, params );
 
     this.geom = params.geom;
-    this.pingpong           = 0;
+    this.pingpong = 0;
 
     if( this.geom.faces ) {
         var totalGeomVertices = this.geom.faces.length * 3;

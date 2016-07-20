@@ -3,6 +3,9 @@
  */
 
 var THREE = require('three');
+
+var OBJLoader = require('./../../utils/OBJLoader');
+
 var GamePads = function( scene, camera, worldManager, effect ){
 
     this.worldManager = worldManager;
@@ -13,8 +16,9 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.intersectPoint = new THREE.Vector3();
     this.intersectPoint2 = new THREE.Vector3();
     this.sTSMat = new THREE.Matrix4();
+    this.tmpVector = new THREE.Vector3();
 
-    this.h1 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
+    this.h1 = new THREE.Object3D();
     this.h1.matrixAutoUpdate = false;
     this.h2 = new THREE.Mesh( new THREE.BoxBufferGeometry( 0.1, 0.1, 0.1, 1, 1, 1), new THREE.MeshNormalMaterial() );
     this.h2.matrixAutoUpdate = false;
@@ -23,10 +27,39 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.scene.add( this.h1 );
     this.scene.add( this.h2 );
 
+    this.loadAssets();
+
+};
+
+
+GamePads.prototype.loadAssets = function(){
+    var onProgress = function ( xhr ) {
+        if ( xhr.lengthComputable ) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+        }
+    };
+
+    var onError = function ( xhr ) {
+    };
+
+    var objLoader = new OBJLoader();
+    objLoader.setPath( 'assets/' );
+    objLoader.load( 'handR.obj', ( function ( object ) {
+
+        for (var i = 0; i < object.children.length; i++) {
+            var obj = object.children[i];
+            if( obj.name.indexOf('bola') >= 0 ){
+                this.h1Handler =  obj;
+            }
+        }
+        this.h1.add(object);
+
+    } ).bind( this ), onProgress, onError );
+
 };
 
 GamePads.prototype.update = function( t ){
-
 
     // Loop over every gamepad and if we find any that have a pose use it.
     var vrGamepads = [];
@@ -44,15 +77,24 @@ GamePads.prototype.update = function( t ){
 
         // The array may contain undefined gamepads, so check for that as
         // well as a non-null pose.
-        if (gamepad && gamepad.pose) {
+        if ( gamepad && gamepad.pose ) {
+
             vrGamepads.push(gamepad);
+
             //this.intersectPoint.quaternion.fromArray( gamepad.pose.orientation );
             this.handlers[ i ].position.fromArray( gamepad.pose.position );
             this.handlers[ i ].quaternion.fromArray( gamepad.pose.orientation );
             this.handlers[ i ].updateMatrix();
             this.handlers[ i ].applyMatrix( this.sTSMat );
+            this.handlers[ i ].updateMatrixWorld();
 
-            this.intersectPoint.copy( this.handlers[ 0 ].position );
+            if( this.h1Handler ) {
+                this.h1Handler.updateMatrixWorld();
+                this.tmpVector.set( -0.1, 0.3, -0.35);
+                this.tmpVector.applyMatrix4( this.h1Handler.matrixWorld );
+            }
+            this.intersectPoint.copy( this.tmpVector );
+
             this.intersectPoint2.copy( this.handlers[ 1 ].position );
 
             //if ("vibrate" in gamepad) {
