@@ -19,7 +19,12 @@ var GPUDisplacedGeometry = function( params ) {
     this.geom = params.geom;
     this.pingpong           = 0;
 
-    var totalGeomVertices   = this.geom.faces.length * 3;
+    if( this.geom.faces ) {
+        var totalGeomVertices = this.geom.faces.length * 3;
+    } else {
+        var totalGeomVertices = this.geom.attributes.position.array.length / 3;
+    }
+
     var sqrtTotalGeom       = Math.sqrt( totalGeomVertices );
     // Aproximatino to the nearest upper power of two number
     var totalPOT            = Math.pow( 2, Math.ceil( Math.log( sqrtTotalGeom ) / Math.log( 2 ) ) );
@@ -33,31 +38,50 @@ var GPUDisplacedGeometry = function( params ) {
     this.springRT           = this.getRenderTarget( this.sizeW, this.sizeH );
 
     var volume = 10;
-    this.data = new Float32Array( this.total * 4 );
 
-    var v;
-    var vertices = this.geom.vertices;
-    for( var i = 0; i < this.geom.faces.length; i ++ ) {
+    this.data = new Float32Array(this.total * 4);
 
-        var face = this.geom.faces[ i ];
+    if( this.geom.faces ) {
 
-        v = vertices[ face.a ];
-        this.data[ i * 12 ]             = v.x;
-        this.data[ i * 12 + 1 ]         = v.y;
-        this.data[ i * 12 + 2 ]         = v.z;
-        this.data[ i * 12 + 3 ]         = 1;
+        var v;
+        var vertices = this.geom.vertices;
+        for (var i = 0; i < this.geom.faces.length; i++) {
 
-        v = vertices[ face.b ];
-        this.data[ i * 12 + 4 ]         = v.x;
-        this.data[ i * 12 + 5 ]         = v.y;
-        this.data[ i * 12 + 6 ]         = v.z;
-        this.data[ i * 12 + 7 ]         = 1;
+            var face = this.geom.faces[i];
 
-        v = vertices[ face.c ];
-        this.data[ i * 12 + 8 ]         = v.x;
-        this.data[ i * 12 + 9 ]         = v.y;
-        this.data[ i * 12 + 10 ]        = v.z;
-        this.data[ i * 12 + 11 ]        = 1;
+            v = vertices[face.a];
+            this.data[i * 12] = v.x;
+            this.data[i * 12 + 1] = v.y;
+            this.data[i * 12 + 2] = v.z;
+            this.data[i * 12 + 3] = 1;
+
+            v = vertices[face.b];
+            this.data[i * 12 + 4] = v.x;
+            this.data[i * 12 + 5] = v.y;
+            this.data[i * 12 + 6] = v.z;
+            this.data[i * 12 + 7] = 1;
+
+            v = vertices[face.c];
+            this.data[i * 12 + 8] = v.x;
+            this.data[i * 12 + 9] = v.y;
+            this.data[i * 12 + 10] = v.z;
+            this.data[i * 12 + 11] = 1;
+        }
+
+    } else {
+        var it = 0;
+        for (var i = 0; i < this.geom.attributes.position.array.length; i++) {
+
+            var position = this.geom.attributes.position.array[ i ];
+            this.data[ it ] = position;
+
+            if( ( i + 1 ) % 3 == 0 && i != 0 ) {
+                it++;
+                this.data[ it ] = 1;
+            }
+            it ++;
+
+        }
     }
 
     this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType);
@@ -76,9 +100,18 @@ var GPUDisplacedGeometry = function( params ) {
         uv.x = ( i % this.sizeW ) / this.sizeW;
         if ( i % this.sizeW == 0 && i != 0) uv.y += div;
         this.index2D.setXY( i, uv.x, uv.y );
-
-        this.positions.setXYZ( i, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume );
+        if( this.geom.faces ) {
+            this.positions.setXYZ(i, ( ( Math.random() * 10 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume);
+        } else {
+            if( this.geom.attributes.position.array[ i * 3 ] ) {
+                this.positions.setXYZ( i, this.geom.attributes.position.array[i * 3], this.geom.attributes.position.array[i * 3 + 1], this.geom.attributes.position.array[i * 3 + 2] );
+            } else {
+                this.positions.setXYZ( i, 0, 0, 0 );
+            }
+        }
     }
+
+    console.log( this.total, this.sizeW);
 
     this.bufferGeometry = new THREE.BufferGeometry();
     this.bufferGeometry.addAttribute( 'aV2I', this.index2D );
@@ -134,6 +167,8 @@ var GPUDisplacedGeometry = function( params ) {
 
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );
     this.pass( this.updatePositionsMaterial, this.finalPositionsTargets[ this.pingpong ] );
+
+
 };
 
 GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );

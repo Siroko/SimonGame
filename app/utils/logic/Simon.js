@@ -6,8 +6,8 @@ var Simon = function(){
 
     this.score = 0; // user score
     this.speed = 250; // speed of the notes to be played
-    this.paddingRounds = 400; // time in miliseconds between rounds
-    this.padding = 400; // time in miliseconds between notes
+    this.paddingRounds = 1200; // time in miliseconds between rounds
+    this.padding = 600; // time in miliseconds between notes
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
     this.notes = [70, 74, 75, 77]; // current notes
@@ -27,8 +27,8 @@ Simon.prototype._setDefault = function() { // set default values
 
     this.score = 0; // user score
     this.speed = 250; // speed of the notes to be played
-    this.paddingRounds = 400; // time in miliseconds between rounds
-    this.padding = 400; // time in miliseconds between notes
+    this.paddingRounds = 1200; // time in miliseconds between rounds
+    this.padding = 600; // time in miliseconds between notes
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
     this.isPlaying = true; // flag for testing if its playing right now
@@ -117,7 +117,7 @@ Simon.prototype._gameOver = function() {
         this._setDefault();
         this.startGame();
 
-    } ).bind( this ), 1000 );
+    } ).bind( this ), 3000 );
 
 };
 
