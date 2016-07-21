@@ -10,6 +10,8 @@ var MousePad = require('./gamepads/MousePad');
 
 var Simulator = require('./../utils/Simulator');
 
+var Mirror = require('./../utils/Mirror');
+
 var World3D = function( container ) {
 
     this.container      = container;
@@ -21,8 +23,6 @@ var World3D = function( container ) {
     //this.scene.fog      = new THREE.Fog( 0xefd1b5, 100, 1000);
 
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Apply VR headset positional data to camera.
     this.controls       = new VRControls( this.camera );
@@ -59,6 +59,17 @@ var World3D = function( container ) {
     });
 
     this.scene.add( this.simulator.bufferMesh );
+
+
+    this.floorGeom = new THREE.PlaneBufferGeometry( 10, 10, 2 );
+
+    this.groundMirror = new Mirror( this.renderer, this.camera, { clipBias: 1, textureWidth: 1024, textureHeight: 1024, color: 0x777777 } );
+
+    this.mirrorMesh = new THREE.Mesh( this.floorGeom, this.groundMirror.material );
+    this.mirrorMesh.add( this.groundMirror );
+    this.mirrorMesh.rotateX( - Math.PI / 2 );
+    this.scene.add( this.mirrorMesh );
+
 };
 
 World3D.prototype.onRenderLeft = function() {
@@ -117,6 +128,7 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
+    this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
     this.worldManager.update( timestamp );
