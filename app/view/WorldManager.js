@@ -52,113 +52,111 @@ WorldManager.prototype.setup = function(){
     var onError = function ( xhr ) {
     };
 
-    //var mtlLoader = new MTLLoader();
-    //mtlLoader.setPath( 'assets/' );
-    //mtlLoader.load( 'sceneClouds.mtl', (function( materials ) {
-    //    materials.preload();
-    //
-    //    var objLoader = new OBJLoader();
-    //    objLoader.setMaterials( materials );
-    //    objLoader.setPath( 'assets/' );
-    //    objLoader.load( 'sceneClouds.obj', (function ( object ) {
-    //        console.log( object );
-    //        for (var i = 0; i < object.children.length; i++) {
-    //            var obj = object.children[i];
-    //            if( obj.name.indexOf('sun') >= 0  ) {
-    //                obj.material.emissive = new THREE.Color().setRGB(0.949, 0.416, 0.129);
-    //                obj.material.specular = new THREE.Color('#555555');
-    //                obj.material.shininess = 0;
-    //
-    //                this.sun = obj;
-    //
-    //            }
-    //            if( obj.name.indexOf('mountainTorus') >= 0  ) {
-    //                obj.material.emissive = new THREE.Color('#555555');
-    //                obj.material.transparent = true;
-    //                obj.material.opacity = 0.7;
-    //
-    //                obj.castShadow = true;
-    //                obj.receiveShadow = true;
-    //
-    //                this.mountainTorus.push( obj );
-    //
-    //            }
-    //
-    //            if( obj.name.indexOf('CloudGeom') >= 0  ) {
-    //                obj.material = new THREE.MeshPhongMaterial({
-    //                    map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
-    //                    transparent : true,
-    //                    emissive : new THREE.Color().setRGB(0,0,0),
-    //                    specular : new THREE.Color('#FFFFFF'),
-    //                    shininess : 0
-    //                });
-    //
-    //            }
-    //
-    //            if( obj.name.indexOf('water') >= 0  ) {
-    //                obj.material.transparent = true;
-    //                obj.material.opacity = 0.8;
-    //
-    //            }
-    //
-    //            if( obj.name.indexOf('faceSun') >= 0  ) {
-    //                obj.material = new THREE.MeshBasicMaterial({
-    //                    map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
-    //                    depthWrite : false,
-    //                    transparent : true
-    //                });
-    //
-    //                var texture = obj.material.map;
-    //                //texture.generateMipmaps = false;
-    //                texture.magFilter = THREE.LinearFilter;
-    //                texture.minFilter = THREE.LinearFilter;
-    //
-    //                this.faceSun = obj;
-    //
-    //            }
-    //
-    //            if( obj.name.indexOf('ground') >= 0  ) {
-    //
-    //                var t = THREE.ImageUtils.loadTexture('assets/test_Light.jpg');
-    //
-    //                for (var j = 0; j < obj.material.materials.length; j++) {
-    //                    var mat = obj.material.materials[j];
-    //                    mat.map = t;
-    //                }
-    //
-    //                this.ground = obj;
-    //            }
-    //
-    //            if( obj.name.indexOf('stone') >= 0  ) {
-    //                obj.material.emissive = new THREE.Color('#000000');
-    //                obj.material.specular = new THREE.Color('#000000');
-    //                obj.material.color = new THREE.Color('#555555');
-    //                obj.material.shininess = 0;
-    //
-    //                obj.castShadow = true;
-    //                obj.receiveShadow = true;
-    //
-    //            }
-    //
-    //            if( obj.name.indexOf('cascadeBottom') >= 0  ) {
-    //                obj.material.visible = false;
-    //                this.createBubbles( obj.position );
-    //            }
-    //
-    //            obj.geometry.computeBoundingSphere();
-    //            //obj.material = new THREE.MeshBasicMaterial({
-    //            //    color: 0xff0000,
-    //            //    wireframe: true
-    //            //});
-    //        }
-    //
-    //        this.scene.add( object );
-    //
-    //    } ).bind( this ), onProgress, onError );
-    //
-    //}).bind( this ) );
+    var mtlLoader = new MTLLoader();
+    mtlLoader.setPath( 'assets/' );
+    mtlLoader.load( 'sceneClouds.mtl', (function( materials ) {
+        materials.preload();
 
+        var objLoader = new OBJLoader();
+        objLoader.setMaterials( materials );
+        objLoader.setPath( 'assets/' );
+        objLoader.load( 'sceneClouds.obj', (function ( object ) {
+            console.log( object );
+            for (var i = 0; i < object.children.length; i++) {
+                var obj = object.children[i];
+                if( obj.name.indexOf('sun') >= 0  ) {
+                    obj.material.emissive = new THREE.Color().setRGB(0.949, 0.416, 0.129);
+                    obj.material.specular = new THREE.Color('#555555');
+                    obj.material.shininess = 0;
 
+                    this.sun = obj;
+
+                }
+                if( obj.name.indexOf('mountainTorus') >= 0  ) {
+                    obj.material.emissive = new THREE.Color('#555555');
+                    obj.material.transparent = true;
+                    obj.material.opacity = 0.7;
+
+                    obj.castShadow = true;
+                    obj.receiveShadow = true;
+
+                    this.mountainTorus.push( obj );
+
+                }
+
+                if( obj.name.indexOf('CloudGeom') >= 0  ) {
+                    obj.material = new THREE.MeshPhongMaterial({
+                        map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
+                        transparent : true,
+                        emissive : new THREE.Color().setRGB(0,0,0),
+                        specular : new THREE.Color('#FFFFFF'),
+                        shininess : 0
+                    });
+
+                }
+
+                if( obj.name.indexOf('water') >= 0  ) {
+                    obj.material.transparent = true;
+                    obj.material.opacity = 0.8;
+
+                }
+
+                if( obj.name.indexOf('faceSun') >= 0  ) {
+                    obj.material = new THREE.MeshBasicMaterial({
+                        map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
+                        depthWrite : false,
+                        transparent : true
+                    });
+
+                    var texture = obj.material.map;
+                    //texture.generateMipmaps = false;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.minFilter = THREE.LinearFilter;
+
+                    this.faceSun = obj;
+
+                }
+
+                if( obj.name.indexOf('ground') >= 0  ) {
+
+                    var t = THREE.ImageUtils.loadTexture('assets/test_Light.jpg');
+
+                    for (var j = 0; j < obj.material.materials.length; j++) {
+                        var mat = obj.material.materials[j];
+                        mat.map = t;
+                    }
+
+                    this.ground = obj;
+                }
+
+                if( obj.name.indexOf('stone') >= 0  ) {
+                    obj.material.emissive = new THREE.Color('#000000');
+                    obj.material.specular = new THREE.Color('#000000');
+                    obj.material.color = new THREE.Color('#555555');
+                    obj.material.shininess = 0;
+
+                    obj.castShadow = true;
+                    obj.receiveShadow = true;
+
+                }
+
+                if( obj.name.indexOf('cascadeBottom') >= 0  ) {
+                    obj.material.visible = false;
+                    this.createBubbles( obj.position );
+                }
+
+                obj.geometry.computeBoundingSphere();
+                //obj.material = new THREE.MeshBasicMaterial({
+                //    color: 0xff0000,
+                //    wireframe: true
+                //});
+            }
+
+            this.scene.add( object );
+
+        } ).bind( this ), onProgress, onError );
+
+    }).bind( this ) );
 
     var instrument = 'xylophone';
     MIDI.loadPlugin({

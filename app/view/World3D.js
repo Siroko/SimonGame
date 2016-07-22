@@ -61,13 +61,14 @@ var World3D = function( container ) {
     this.scene.add( this.simulator.bufferMesh );
 
 
-    this.floorGeom = new THREE.PlaneBufferGeometry( 10, 10, 2 );
+    this.floorGeom = new THREE.PlaneBufferGeometry( 100, 100, 2 );
 
-    this.groundMirror = new Mirror( this.renderer, this.camera, { clipBias: 1, textureWidth: 1024, textureHeight: 1024, color: 0x777777 } );
+    this.groundMirror = new Mirror( this.renderer, this.camera, { clipBias: 0.00000001, textureWidth: 1024, textureHeight: 1024, color: 0x777777, debugMode: true } );
 
     this.mirrorMesh = new THREE.Mesh( this.floorGeom, this.groundMirror.material );
     this.mirrorMesh.add( this.groundMirror );
     this.mirrorMesh.rotateX( - Math.PI / 2 );
+    this.mirrorMesh.position.y = 0.1;
     this.scene.add( this.mirrorMesh );
 
 };
@@ -151,6 +152,7 @@ World3D.prototype.onResize = function( w, h ) {
     this.effect.setSize( w, h );
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.groundMirror.updateTextureMatrix();
     //
     //this.renderer.domElement.style.width = "100%";
     //this.renderer.domElement.style.height = "100%";
