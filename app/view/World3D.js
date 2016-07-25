@@ -129,7 +129,7 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.groundMirror.render();
+    //this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
     this.worldManager.update( timestamp );
@@ -152,7 +152,7 @@ World3D.prototype.onResize = function( w, h ) {
     this.effect.setSize( w, h );
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    this.groundMirror.updateTextureMatrix();
+    //this.groundMirror.updateTextureMatrix();
     //
     //this.renderer.domElement.style.width = "100%";
     //this.renderer.domElement.style.height = "100%";
