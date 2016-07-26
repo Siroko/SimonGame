@@ -30,7 +30,9 @@ varying vec3 vU;
       vPos = pos;
       vOPosition = modelViewMatrix * vPos;
       vU = normalize( vec3( modelViewMatrix * vPos ) );
+      vUv = aV2I;
       vNormalMatrix = normalMatrix;
+
 
       gl_Position = projectionMatrix * modelViewMatrix * vPos;
 

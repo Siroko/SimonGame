@@ -65,7 +65,7 @@ WorldManager.prototype.setup = function(){
             for (var i = 0; i < object.children.length; i++) {
                 var obj = object.children[i];
                 if( obj.name.indexOf('sun') >= 0  ) {
-                    obj.material.emissive = new THREE.Color().setRGB(0.949, 0.416, 0.129);
+                    obj.material.emissive = new THREE.Color().setRGB(89 / 255, 88 / 255, 2 / 255);
                     obj.material.specular = new THREE.Color('#555555');
                     obj.material.shininess = 0;
 
@@ -73,7 +73,7 @@ WorldManager.prototype.setup = function(){
 
                 }
                 if( obj.name.indexOf('mountainTorus') >= 0  ) {
-                    obj.material.emissive = new THREE.Color('#555555');
+                    //obj.material.emissive = new THREE.Color('#555555');
                     obj.material.transparent = true;
                     obj.material.opacity = 0.7;
 
@@ -102,6 +102,7 @@ WorldManager.prototype.setup = function(){
                 }
 
                 if( obj.name.indexOf('faceSun') >= 0  ) {
+                    obj.visible = false;
                     obj.material = new THREE.MeshBasicMaterial({
                         map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
                         depthWrite : false,

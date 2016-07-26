@@ -119,9 +119,12 @@ var GPUDisplacedGeometry = function( params ) {
 
     this.bufferMaterial = new THREE.RawShaderMaterial({
         'uniforms': {
-            'uPositionsTexture'     : { type: 't', value: this.geometryRT },
-            'normalMap'             : params.uniforms.normalMap,
-            'textureMap'            : params.uniforms.textureMap
+            "uPositionsTexture": {type: 't', value: this.geometryRT},
+            "normalMap": params.uniforms.normalMap,
+            "textureMap": params.uniforms.textureMap,
+            "pointLightPosition": {type: 'v3v', value: [window.pointLights[0].position,window.pointLights[1].position ] },
+            "pointLightColor": {type: 'v3v', value: [ window.pointLights[0].color,window.pointLights[1].color ] },
+            "pointLightIntensity": {type: 'fv', value: [ window.pointLights[0].intensity,window.pointLights[1].intensity ] }
         },
 
         vertexShader                : vs_bufferGeometry,
@@ -175,6 +178,7 @@ GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );
 
 GPUDisplacedGeometry.prototype.update = function() {
 
+
     this.updateSpringMaterial.uniforms.uPrevPositions.value = this.springPositionsTargets[ this.pingpong ];
     this.updateSpringMaterial.uniforms.uPrevPositionsGeom.value = this.finalPositionsTargets[ this.pingpong ];
 
@@ -182,7 +186,7 @@ GPUDisplacedGeometry.prototype.update = function() {
     this.updatePositionsMaterial.uniforms.uPrevPositions.value = this.finalPositionsTargets[ this.pingpong ];
 
     this.bufferMaterial.uniforms.uPositionsTexture.value = this.finalPositionsTargets[ this.pingpong ];
-
+    this.bufferMaterial.needsUpdate = true;;
 
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );

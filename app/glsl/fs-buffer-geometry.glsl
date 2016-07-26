@@ -1,4 +1,5 @@
 #extension GL_OES_standard_derivatives : enable
+#define MAX_POINT_LIGHTS 2
 
 precision highp float;
 precision highp sampler2D;
@@ -6,11 +7,16 @@ precision highp sampler2D;
 uniform sampler2D textureMap;
 uniform sampler2D normalMap;
 
+uniform vec3 pointLightColor[MAX_POINT_LIGHTS];
+uniform vec3 pointLightPosition[MAX_POINT_LIGHTS];
+uniform float pointLightIntensity[MAX_POINT_LIGHTS];
+
 varying vec4 vPos;
 
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
+varying vec2 vUv;
 
 float random(vec3 scale,float seed){return fract(sin(dot(gl_FragCoord.xyz+seed,scale))*43758.5453+seed);}
 
@@ -88,5 +94,15 @@ void main(){
     float nn = .05 * random( vec3( 1. ), length( gl_FragCoord ) );
     base += vec3( nn );
 
-    gl_FragColor = vec4(base.rgb, 1.);
+    // Pretty basic lambertian lighting...
+    vec4 addedLights = vec4( 0.0, 0.0, 0.0, 1.0 );
+    for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
+
+        vec3 lightDirection = normalize( vPos.rgb - pointLightPosition[ l ] );
+        addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
+
+    }
+
+    gl_FragColor = vec4( base.rgb , 1.) * addedLights;
+
 }

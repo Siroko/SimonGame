@@ -72,6 +72,7 @@ CharacterBase.prototype.setup = function(){
             'uTime'         : { type: 'f', value: 0 },
             'uTouch'        : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
             'uWorldPosition': { type: 'v3', value: this.worldPosition },
+
             'normalMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal ) },
             'textureMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
         }
@@ -92,18 +93,19 @@ CharacterBase.prototype.setup = function(){
     //this.mesh.position.y = 1;
     //this.mesh.position.z = 1;
 
-    this.faceMaterial = new THREE.MeshBasicMaterial({
-        map: this.regularTexture,
-        transparent: true,
-        depthWrite: false,
-        depthTest: false
-    });
-    this.faceGeom = new THREE.PlaneBufferGeometry(0.6, 0.3, 2, 2);
-    this.facePlane = new THREE.Mesh( this.faceGeom, this.faceMaterial );
-    this.facePlane.rotation.x = Math.PI * 2;
-    this.facePlane.position.z = 0.3;
-
-    this.mesh.add( this.facePlane );
+    //this.faceMaterial = new THREE.MeshBasicMaterial({
+    //    map: this.regularTexture,
+    //    transparent: true,
+    //    alphaTest: 0.5
+    //    //depthWrite: false,
+    //    //depthTest: false
+    //});
+    //this.faceGeom = new THREE.PlaneBufferGeometry(0.6, 0.3, 2, 2);
+    //this.facePlane = new THREE.Mesh( this.faceGeom, this.faceMaterial );
+    //this.facePlane.rotation.x = Math.PI * 2;
+    //this.facePlane.position.z = 0.6;
+    //
+    //this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
     var particlesQuantity = 2;
@@ -217,7 +219,7 @@ CharacterBase.prototype.update = function( t ){
 
             this.mesh.position.add(direction);
             this.cuddleness += 0.5;
-            this.faceMaterial.map = this.happyTexture;
+            //this.faceMaterial.map = this.happyTexture;
 
             clearTimeout( this.returnFaceTimer );
             this.returnFaceTimer = setTimeout( this.returnFaceBack.bind( this ), 100 );
@@ -238,8 +240,8 @@ CharacterBase.prototype.update = function( t ){
                 var velocity = 127; // how hard the note hits
 
                 MIDI.setVolume(0, 127);
-                MIDI.noteOn(0, note, velocity, delay);
-                MIDI.noteOff(0, note, delay + 0.75);
+                //MIDI.noteOn(0, note, velocity, delay);
+                //MIDI.noteOff(0, note, delay + 0.75);
 
                 prePositive = true;
 
@@ -302,7 +304,7 @@ CharacterBase.prototype.returnParticlesBack = function(){
 
 CharacterBase.prototype.returnFaceBack = function(){
     this.soundOverride = true;
-    this.faceMaterial.map = this.regularTexture;
+    //this.faceMaterial.map = this.regularTexture;
 };
 
 module.exports = CharacterBase;
