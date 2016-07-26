@@ -25,6 +25,8 @@ var GPUDisplacedGeometry = function( params ) {
         var totalGeomVertices = this.geom.attributes.position.array.length / 3;
     }
 
+    this.lights             = params.lights || [];
+    
     var sqrtTotalGeom       = Math.sqrt( totalGeomVertices );
     // Aproximatino to the nearest upper power of two number
     var totalPOT            = Math.pow( 2, Math.ceil( Math.log( sqrtTotalGeom ) / Math.log( 2 ) ) );

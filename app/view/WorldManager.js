@@ -132,7 +132,7 @@ WorldManager.prototype.setup = function(){
 
                 if( obj.name.indexOf('stone') >= 0  ) {
                     obj.material.emissive = new THREE.Color('#000000');
-                    obj.material.specular = new THREE.Color('#000000');
+                    obj.material.specular = new THREE.Color('#000000')
                     obj.material.color = new THREE.Color('#555555');
                     obj.material.shininess = 0;
 
