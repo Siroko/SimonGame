@@ -156,6 +156,31 @@ WorldManager.prototype.setup = function(){
 
         } ).bind( this ), onProgress, onError );
 
+    }).bind( this ), onProgress, onError );
+
+    var objLoader = new OBJLoader();
+    objLoader.setPath( 'assets/' );
+    objLoader.load( 'startPlane.obj', (function ( object ) {
+
+        for (var i = 0; i < object.children.length; i++) {
+            var obj = object.children[i];
+            if (obj.name.indexOf('collisionBox') >= 0) {
+                this.collisionBox = obj;
+            }
+
+            if (obj.name.indexOf('planeBase') >= 0) {
+                obj.material = new THREE.MeshBasicMaterial({
+                        map : THREE.ImageUtils.loadTexture('assets/start.png'),
+                        transparent: true,
+                        depthTest: false,
+                        depthWrite: false
+                    })
+            }
+        }
+
+        object.position.y = 1.5;
+        object.position.z = -0.65;
+        this.scene.add( object );
     }).bind( this ) );
 
     var instrument = 'xylophone';
@@ -210,7 +235,8 @@ WorldManager.prototype.createCharacters = function(){
             this.sm,
             charsSetup[i].color,
             charsSetup[i].normalMap,
-            charsSetup[i].matcap
+            charsSetup[i].matcap,
+            window.pointLights
         );
         character.addEventListener('onPlaySound', this.onCharacterPlaySound.bind( this ) );
         this.characters.push( character );
@@ -228,17 +254,17 @@ WorldManager.prototype.createCharacters = function(){
 
     }
 
-    this.planeInfo = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.5, 1.5, 1, 1), new THREE.MeshBasicMaterial({
-        map : THREE.ImageUtils.loadTexture('assets/start.png'),
-        transparent: true,
-        depthTest: false,
-        depthWrite: false
-    }));
-
-    //this.planeInfo.rotation.y = Math.PI * 0.5;
-    this.planeInfo.position.y = 1.5;
-    this.planeInfo.position.z = -0.65;
-    this.scene.add( this.planeInfo );
+    //this.planeInfo = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.5, 1.5, 1, 1), new THREE.MeshBasicMaterial({
+    //    map : THREE.ImageUtils.loadTexture('assets/start.png'),
+    //    transparent: true,
+    //    depthTest: false,
+    //    depthWrite: false
+    //}));
+    //
+    ////this.planeInfo.rotation.y = Math.PI * 0.5;
+    //this.planeInfo.position.y = 1.5;
+    //this.planeInfo.position.z = -0.65;
+    //this.scene.add( this.planeInfo );
 
 };
 

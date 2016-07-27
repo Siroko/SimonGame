@@ -10,6 +10,7 @@ uniform sampler2D normalMap;
 uniform vec3 pointLightColor[MAX_POINT_LIGHTS];
 uniform vec3 pointLightPosition[MAX_POINT_LIGHTS];
 uniform float pointLightIntensity[MAX_POINT_LIGHTS];
+uniform float uLights;
 
 varying vec4 vPos;
 
@@ -96,11 +97,16 @@ void main(){
 
     // Pretty basic lambertian lighting...
     vec4 addedLights = vec4( 0.0, 0.0, 0.0, 1.0 );
-    for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
 
-        vec3 lightDirection = normalize( vPos.rgb - pointLightPosition[ l ] );
-        addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
+    if( uLights == 1.0 ){
+        for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
 
+            vec3 lightDirection = normalize( vOPosition.rgb - pointLightPosition[ l ] );
+            addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
+
+        }
+    } else {
+        addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
     }
 
     gl_FragColor = vec4( base.rgb , 1.) * addedLights;

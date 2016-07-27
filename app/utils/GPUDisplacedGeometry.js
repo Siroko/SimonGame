@@ -25,7 +25,7 @@ var GPUDisplacedGeometry = function( params ) {
         var totalGeomVertices = this.geom.attributes.position.array.length / 3;
     }
 
-    this.lights             = params.lights || [];
+    this.lights             = params.lights;
     
     var sqrtTotalGeom       = Math.sqrt( totalGeomVertices );
     // Aproximatino to the nearest upper power of two number
@@ -41,7 +41,7 @@ var GPUDisplacedGeometry = function( params ) {
 
     var volume = 10;
 
-    this.data = new Float32Array(this.total * 4);
+    this.data = new Float32Array( this.total * 4 );
 
     if( this.geom.faces ) {
 
@@ -119,20 +119,36 @@ var GPUDisplacedGeometry = function( params ) {
     this.bufferGeometry.addAttribute( 'aV2I', this.index2D );
     this.bufferGeometry.addAttribute( 'position', this.positions );
 
-    this.bufferMaterial = new THREE.RawShaderMaterial({
-        'uniforms': {
-            "uPositionsTexture": {type: 't', value: this.geometryRT},
-            "normalMap": params.uniforms.normalMap,
-            "textureMap": params.uniforms.textureMap,
-            "pointLightPosition": {type: 'v3v', value: [window.pointLights[0].position,window.pointLights[1].position ] },
-            "pointLightColor": {type: 'v3v', value: [ window.pointLights[0].color,window.pointLights[1].color ] },
-            "pointLightIntensity": {type: 'fv', value: [ window.pointLights[0].intensity,window.pointLights[1].intensity ] }
-        },
+    if( this.lights ) {
+        this.bufferMaterial = new THREE.RawShaderMaterial({
+            'uniforms': {
+                "uLights": { type: 'f', value: 1 },
+                "uPositionsTexture": { type: 't', value: this.geometryRT },
+                "normalMap": params.uniforms.normalMap,
+                "textureMap": params.uniforms.textureMap,
+                "pointLightPosition": { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] },
+                "pointLightColor": { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]},
+                "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
+            },
 
-        vertexShader                : vs_bufferGeometry,
-        fragmentShader              : fs_bufferGeometry
+            vertexShader: vs_bufferGeometry,
+            fragmentShader: fs_bufferGeometry
 
-    });
+        });
+    } else {
+        this.bufferMaterial = new THREE.RawShaderMaterial({
+            'uniforms': {
+                "uLights": { type: 'f', value: 0 },
+                "uPositionsTexture": {type: 't', value: this.geometryRT},
+                "normalMap": params.uniforms.normalMap,
+                "textureMap": params.uniforms.textureMap
+            },
+
+            vertexShader: vs_bufferGeometry,
+            fragmentShader: fs_bufferGeometry
+
+        });
+    }
 
     this.mesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
     this.mesh.updateMatrix();

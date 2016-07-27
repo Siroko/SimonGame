@@ -12,10 +12,11 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal, lights ){
 
     THREE.EventDispatcher.call( this );
 
+    this.lights = lights;
     this.scene = scene;
     this.renderer = renderer;
     this.soundManager = soundmanager;
@@ -68,6 +69,7 @@ CharacterBase.prototype.setup = function(){
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,
         'geom'              : this.geom,
+        'lights'            : this.lights,
         'uniforms'          : {
             'uTime'         : { type: 'f', value: 0 },
             'uTouch'        : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
