@@ -76,12 +76,12 @@ var World3D = function( container ) {
 };
 
 World3D.prototype.onRenderLeft = function() {
-    console.log('rendering Left', this);
+    // console.log('rendering Left', this);
 
 };
 
 World3D.prototype.onRenderRight = function() {
-    console.log('rendering Right', this);
+    // console.log('rendering Right', this);
 };
 
 World3D.prototype.setup = function() {
