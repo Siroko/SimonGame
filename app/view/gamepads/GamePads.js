@@ -28,6 +28,7 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.scene.add( this.h1 );
     this.scene.add( this.h2 );
 
+
     this.loadAssets();
 
 };

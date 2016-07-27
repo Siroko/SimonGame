@@ -65,7 +65,7 @@ WorldManager.prototype.setup = function(){
             for (var i = 0; i < object.children.length; i++) {
                 var obj = object.children[i];
                 if( obj.name.indexOf('sun') >= 0  ) {
-                    obj.material.emissive = new THREE.Color().setRGB(89 / 255, 88 / 255, 2 / 255);
+                    obj.material.emissive = new THREE.Color().setRGB(20 / 255, 20 / 255, 0.2 / 255);
                     obj.material.specular = new THREE.Color('#555555');
                     obj.material.shininess = 0;
 
@@ -74,8 +74,8 @@ WorldManager.prototype.setup = function(){
                 }
                 if( obj.name.indexOf('mountainTorus') >= 0  ) {
                     //obj.material.emissive = new THREE.Color('#555555');
-                    obj.material.transparent = true;
-                    obj.material.opacity = 0.7;
+                    //obj.material.transparent = true;
+                    //obj.material.opacity = 0.7;
 
                     obj.castShadow = true;
                     obj.receiveShadow = true;
@@ -87,7 +87,6 @@ WorldManager.prototype.setup = function(){
                 if( obj.name.indexOf('CloudGeom') >= 0  ) {
                     obj.material = new THREE.MeshPhongMaterial({
                         map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
-                        transparent : true,
                         emissive : new THREE.Color().setRGB(0,0,0),
                         specular : new THREE.Color('#FFFFFF'),
                         shininess : 0
@@ -96,8 +95,8 @@ WorldManager.prototype.setup = function(){
                 }
 
                 if( obj.name.indexOf('water') >= 0  ) {
-                    obj.material.transparent = true;
-                    obj.material.opacity = 0.8;
+                    //obj.material.transparent = true;
+                    //obj.material.opacity = 0.8;
 
                 }
 
@@ -228,6 +227,18 @@ WorldManager.prototype.createCharacters = function(){
         this.charactersCalcPlane.push( char.calcPlane );
 
     }
+
+    this.planeInfo = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.5, 1.5, 1, 1), new THREE.MeshBasicMaterial({
+        map : THREE.ImageUtils.loadTexture('assets/start.png'),
+        transparent: true,
+        depthTest: false,
+        depthWrite: false
+    }));
+
+    //this.planeInfo.rotation.y = Math.PI * 0.5;
+    this.planeInfo.position.y = 1.5;
+    this.planeInfo.position.z = -0.65;
+    this.scene.add( this.planeInfo );
 
 };
 
