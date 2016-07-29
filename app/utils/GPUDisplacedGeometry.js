@@ -209,6 +209,9 @@ GPUDisplacedGeometry.prototype.update = function() {
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );
     this.pass( this.updatePositionsMaterial, this.finalPositionsTargets[ this.pingpong ] );
+
+    this.bufferMaterial.uniforms.pointLightIntensity.value[0] = this.lights[0].intensity;
+    this.bufferMaterial.uniforms.pointLightIntensity.value[1] = this.lights[1].intensity;
 };
 
 

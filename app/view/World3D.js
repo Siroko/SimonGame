@@ -146,6 +146,9 @@ World3D.prototype.render = function( timestamp ) {
 
     this.pointer.position.copy( this.gamePads.intersectPoint );
 
+    this.pointLight.intensity = 0.1 + ((Math.sin( timestamp * 0.001 ) + 1) / 4);
+    this.pointLight2.intensity = 0.1 + ((Math.sin( timestamp * 0.001 ) + 1) / 4);
+
 };
 
 World3D.prototype.onResize = function( w, h ) {
