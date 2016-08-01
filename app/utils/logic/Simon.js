@@ -11,15 +11,21 @@ var Simon = function(){
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
     this.notes = [70, 74, 75, 77]; // current notes
-    this.isPlaying = true; // flag for testing if its playing right now
+    this.isPlaying = false; // flag for testing if its playing right now
+
+    this.isGameRunning = false;
 
 };
 
 Simon.prototype.startGame = function() {
 
+
     this._addNote();
     this._playPattern();
 
+    this.isPlaying = true;
+
+    this.isGameRunning = true;
 };
 
 
@@ -31,7 +37,9 @@ Simon.prototype._setDefault = function() { // set default values
     this.padding = 600; // time in miliseconds between notes
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
-    this.isPlaying = true; // flag for testing if its playing right now
+    this.isPlaying = false; // flag for testing if its playing right now
+
+    this.isGameRunning = false;
 
 };
 
@@ -67,9 +75,9 @@ Simon.prototype._playNote = function(){
     var delay = 0; // play one note every quarter second
     var velocity = 127; // how hard the note hits
 
-    //MIDI.setVolume(0, 127);
-    //MIDI.noteOn(0, note, velocity, delay);
-    //MIDI.noteOff(0, note, delay + 0.75);
+    MIDI.setVolume(0, 127);
+    MIDI.noteOn(0, note, velocity, delay);
+    MIDI.noteOff(0, note, delay + 0.75);
 
     this.currentNoteIndex ++;
 
@@ -115,32 +123,46 @@ Simon.prototype._gameOver = function() {
     setTimeout( ( function(){
 
         this._setDefault();
+
         this.startGame();
 
-    } ).bind( this ), 3000 );
+    } ).bind( this ), 4000 );
+
+    ////debugger;
+    //var note = 60;
+    //var delay = 0; // play one note every quarter second
+    //var velocity = 127; // how hard the note hits
+    //
+    //MIDI.setVolume(0, 127);
+    //MIDI.noteOn(0, note, velocity, delay);
+    //MIDI.noteOff(0, note, 2);
 
 };
 
 Simon.prototype.setHumanNote = function( noteIndex ) {
 
-    console.log( this.notes[ noteIndex ] , 'user added' );
-    this.userPattern.push( this.notes[ noteIndex ] );
-    if( this._checkIfCorrect() ){
+    if( this.isGameRunning ) {
+        console.log( this.notes[ noteIndex ] , 'user added' );
+        this.userPattern.push(this.notes[noteIndex]);
+        if (this._checkIfCorrect()) {
 
-        if( this.userPattern.length === this.machinePattern.length ) {
-            setTimeout( ( function(){
+            if (this.userPattern.length === this.machinePattern.length) {
+                setTimeout(( function () {
 
-                this._addNote();
-                this._playPattern();
-                this.userPattern = [];
+                    this._addNote();
+                    this._playPattern();
+                    this.userPattern = [];
 
-            } ).bind( this ), this.paddingRounds );
+                } ).bind(this), this.paddingRounds);
+            }
+
+        } else {
+            // stop current wrong note
+            MIDI.noteOff(0, this.notes[noteIndex], 0);
+
+            this._gameOver();
+
         }
-
-    } else {
-
-        this._gameOver();
-
     }
 
 };

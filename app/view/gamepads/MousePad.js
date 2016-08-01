@@ -5,6 +5,9 @@
 var THREE = require('three');
 
 var MousePad = function( scene, camera, worldManager ) {
+
+    THREE.EventDispatcher.call( this );
+
     this.worldManager = worldManager;
 
     this.raycaster = new THREE.Raycaster();
@@ -16,13 +19,35 @@ var MousePad = function( scene, camera, worldManager ) {
     this.intersectPoint2 = new THREE.Vector3();
 
     this.addEvents();
+
 };
 
+MousePad.prototype = Object.create( THREE.EventDispatcher.prototype );
 
-MousePad.prototype.addEvents = function(){
-    this.mouseMoveHandler = this.onMouseMove.bind( this )
-    window.addEventListener('mousemove', this.mouseMoveHandler );
-    window.addEventListener('touchend', this.onTouchEnd.bind( this ) );
+MousePad.prototype.addEvents = function() {
+
+    this.mouseMoveHandler = this.onMouseMove.bind( this );
+    this.mouseClickHandler = this.mouseClick.bind( this );
+
+    window.addEventListener( 'mousemove', this.mouseMoveHandler );
+    window.addEventListener( 'click', this.mouseClickHandler );
+    window.addEventListener( 'touchend', this.onTouchEnd.bind( this ) );
+
+};
+
+MousePad.prototype.mouseClick = function( e ) {
+
+    this.raycaster.setFromCamera(this.screenVector, this.camera);
+
+    var intersects = this.raycaster.intersectObjects( [this.worldManager.collisionBox] );
+    if (intersects.length > 0) {
+
+        this.dispatchEvent( {
+            type: 'onStartGame'
+        } );
+
+        window.removeEventListener( 'click', this.mouseClickHandler );
+    }
 };
 
 MousePad.prototype.onMouseMove = function( e ){

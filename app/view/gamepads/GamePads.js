@@ -8,6 +8,10 @@ var OBJLoader = require('./../../utils/OBJLoader');
 
 var GamePads = function( scene, camera, worldManager, effect ){
 
+    THREE.EventDispatcher.call( this );
+
+    this.started = false;
+
     this.worldManager = worldManager;
     this.scene = scene;
     this.camera = camera;
@@ -28,11 +32,11 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.scene.add( this.h1 );
     this.scene.add( this.h2 );
 
-
     this.loadAssets();
 
 };
 
+GamePads.prototype = Object.create( THREE.EventDispatcher.prototype );
 
 GamePads.prototype.loadAssets = function(){
     var onProgress = function ( xhr ) {
@@ -70,6 +74,19 @@ GamePads.prototype.loadAssets = function(){
         this.h2.add(object);
 
     } ).bind( this ), onProgress, onError );
+
+};
+
+GamePads.prototype.checkStart = function(){
+
+
+
+    if( this.intersectPoint.distanceTo( this.worldManager.collisionBox.position ) < 0.1 ) {
+        this.started = true;
+        this.dispatchEvent( {
+            type: 'onStartGame'
+        } );
+    }
 
 };
 
@@ -116,6 +133,8 @@ GamePads.prototype.update = function( t ){
 
             this.intersectPoint.copy( this.tmpVector );
             this.intersectPoint2.copy( this.tmpVector2 );
+
+            if( !this.started ) this.checkStart();
 
             //if ("vibrate" in gamepad) {
             //    for (var j = 0; j < gamepad.buttons.length; ++j) {

@@ -20,9 +20,13 @@ var GPUDisplacedGeometry = function( params ) {
     this.pingpong = 0;
 
     if( this.geom.faces ) {
+
         var totalGeomVertices = this.geom.faces.length * 3;
+
     } else {
+
         var totalGeomVertices = this.geom.attributes.position.array.length / 3;
+
     }
 
     this.lights             = params.lights;
@@ -52,22 +56,22 @@ var GPUDisplacedGeometry = function( params ) {
             var face = this.geom.faces[i];
 
             v = vertices[face.a];
-            this.data[i * 12] = v.x;
-            this.data[i * 12 + 1] = v.y;
-            this.data[i * 12 + 2] = v.z;
-            this.data[i * 12 + 3] = 1;
+            this.data[i * 12]       = v.x;
+            this.data[i * 12 + 1]   = v.y;
+            this.data[i * 12 + 2]   = v.z;
+            this.data[i * 12 + 3]   = 1;
 
             v = vertices[face.b];
-            this.data[i * 12 + 4] = v.x;
-            this.data[i * 12 + 5] = v.y;
-            this.data[i * 12 + 6] = v.z;
-            this.data[i * 12 + 7] = 1;
+            this.data[i * 12 + 4]   = v.x;
+            this.data[i * 12 + 5]   = v.y;
+            this.data[i * 12 + 6]   = v.z;
+            this.data[i * 12 + 7]   = 1;
 
             v = vertices[face.c];
-            this.data[i * 12 + 8] = v.x;
-            this.data[i * 12 + 9] = v.y;
-            this.data[i * 12 + 10] = v.z;
-            this.data[i * 12 + 11] = 1;
+            this.data[i * 12 + 8]   = v.x;
+            this.data[i * 12 + 9]   = v.y;
+            this.data[i * 12 + 10]  = v.z;
+            this.data[i * 12 + 11]  = 1;
         }
 
     } else {
@@ -79,7 +83,7 @@ var GPUDisplacedGeometry = function( params ) {
 
             if( ( i + 1 ) % 3 == 0 && i != 0 ) {
                 it++;
-                this.data[ it ] = 1;
+                this.data[ it ]     = 1;
             }
             it ++;
 

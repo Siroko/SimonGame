@@ -8,11 +8,15 @@ var WorldManager = require('./WorldManager');
 var GamePads = require('./gamepads/GamePads');
 var MousePad = require('./gamepads/MousePad');
 
+var TweenMax = require('gsap');
+
 var Simulator = require('./../utils/Simulator');
 
 var Mirror = require('./../utils/Mirror');
 
 var World3D = function( container ) {
+
+    this.isInited       = false;
 
     this.container      = container;
 
@@ -101,22 +105,51 @@ World3D.prototype.addEvents = function() {
 
 World3D.prototype.onInitializeManager = function( n, o ) {
 
+    this.worldManager = new WorldManager( this.scene, this.camera, this.dummyCamera, this.renderer );
+
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
+
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
         this.dummyCamera.position.z = 0.3;
         this.dummyCamera.position.y = - 0.3;
+
     } else {
+
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
+
     }
 
-    this.worldManager = new WorldManager( this.scene, this.camera, this.gamePads, this.dummyCamera, this.renderer );
+    this.gamePads.addEventListener( 'onStartGame', this.startGame.bind( this ) );
 
-    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial({
+    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial( {
+
         transparent:true
-    }) );
+
+    } ) );
+
     this.scene.add( this.pointer );
 
     this.setup();
+
+};
+
+World3D.prototype.startGame = function( e ) {
+
+    TweenMax.to( this.pointLight, 2, {
+        intensity : 0.5
+    });
+
+    TweenMax.to( this.pointLight2, 2, {
+        intensity : 0.5
+    });
+
+    TweenMax.to( this.worldManager.planeStartContainer.position, 1, {
+        y : 10,
+        ease : 'Expo.easeIn'
+    });
+
+    this.worldManager.simon.startGame();
+
 };
 
 World3D.prototype.onModeChange = function( n, o ) {
@@ -134,7 +167,7 @@ World3D.prototype.render = function( timestamp ) {
     //this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
-    this.worldManager.update( timestamp );
+    this.worldManager.update( timestamp, this.gamePads );
     // Update VR headset position and apply to camera.
     this.controls.update();
 
@@ -145,9 +178,6 @@ World3D.prototype.render = function( timestamp ) {
     this.manager.render( this.scene, this.camera, timestamp);
 
     this.pointer.position.copy( this.gamePads.intersectPoint );
-
-    this.pointLight.intensity = 0.1 + ((Math.sin( timestamp * 0.001 ) + 1) / 4);
-    this.pointLight2.intensity = 0.1 + ((Math.sin( timestamp * 0.001 ) + 1) / 4);
 
 };
 

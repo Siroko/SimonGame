@@ -13,7 +13,7 @@ var Simon = require('./../utils/logic/Simon');
 
 
 
-var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
+var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
     this.renderer = renderer;
     this.sm = new SoundManager();
@@ -21,7 +21,6 @@ var WorldManager = function( scene, camera, gamepads, dummyCamera, renderer ) {
     this.dummyCamera = dummyCamera;
     this.camera = camera;
     this.scene = scene;
-    this.gamePads = gamepads;
 
     this.characters = [];
     this.charactersMesh = [];
@@ -164,7 +163,7 @@ WorldManager.prototype.setup = function(){
 
         for (var i = 0; i < object.children.length; i++) {
             var obj = object.children[i];
-            if (obj.name.indexOf('collisionBox') >= 0) {
+            if (obj.name.indexOf('collision') >= 0) {
                 this.collisionBox = obj;
             }
 
@@ -180,6 +179,7 @@ WorldManager.prototype.setup = function(){
 
         object.position.y = 1.5;
         object.position.z = -0.65;
+        this.planeStartContainer = object;
         this.scene.add( object );
     }).bind( this ) );
 
@@ -190,7 +190,7 @@ WorldManager.prototype.setup = function(){
         onsuccess: (function() {
             MIDI.programChange(0, MIDI.GM.byName[instrument].number);
             this.createCharacters();
-            this.simon.startGame();
+
         }).bind( this )
     });
 
@@ -302,7 +302,7 @@ WorldManager.prototype.addEvents = function() {
 };
 
 
-WorldManager.prototype.update = function( timestamp ) {
+WorldManager.prototype.update = function( timestamp, gamePads ) {
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
@@ -313,8 +313,8 @@ WorldManager.prototype.update = function( timestamp ) {
         }
 
         char.update( timestamp );
-        char.positionTouch1.copy( this.gamePads.intersectPoint );
-        char.positionTouch2.copy( this.gamePads.intersectPoint2 );
+        char.positionTouch1.copy( gamePads.intersectPoint );
+        char.positionTouch2.copy( gamePads.intersectPoint2 );
     }
 
     if( this.sun ){
