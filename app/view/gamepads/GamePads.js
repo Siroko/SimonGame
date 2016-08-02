@@ -55,6 +55,7 @@ GamePads.prototype.loadAssets = function(){
 
         for (var i = 0; i < object.children.length; i++) {
             var obj = object.children[i];
+            obj.geometry.computeVertexNormals();
             if( obj.name.indexOf('bola') >= 0 ){
                 this.h1Handler =  obj;
             }
@@ -67,6 +68,7 @@ GamePads.prototype.loadAssets = function(){
 
         for (var i = 0; i < object.children.length; i++) {
             var obj = object.children[i];
+            obj.geometry.computeVertexNormals();
             if( obj.name.indexOf('bola') >= 0 ){
                 this.h2Handler =  obj;
             }
@@ -79,9 +81,7 @@ GamePads.prototype.loadAssets = function(){
 
 GamePads.prototype.checkStart = function(){
 
-
-
-    if( this.intersectPoint.distanceTo( this.worldManager.collisionBox.position ) < 0.1 ) {
+    if( this.intersectPoint.distanceTo( this.worldManager.collisionBox.position ) < 0.5 ) {
         this.started = true;
         this.dispatchEvent( {
             type: 'onStartGame'

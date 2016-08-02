@@ -2,7 +2,11 @@
  * Created by siroko on 7/15/16.
  */
 
+var THREE = require( 'three' );
+
 var Simon = function(){
+
+    THREE.EventDispatcher.call( this );
 
     this.score = 0; // user score
     this.speed = 250; // speed of the notes to be played
@@ -16,6 +20,8 @@ var Simon = function(){
     this.isGameRunning = false;
 
 };
+
+Simon.prototype = Object.create( THREE.EventDispatcher.prototype );
 
 Simon.prototype.startGame = function() {
 
@@ -38,8 +44,6 @@ Simon.prototype._setDefault = function() { // set default values
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
     this.isPlaying = false; // flag for testing if its playing right now
-
-    this.isGameRunning = false;
 
 };
 
@@ -118,24 +122,26 @@ Simon.prototype._checkIfCorrect = function () {
 
 Simon.prototype._gameOver = function() {
 
-    console.log( 'GAME OVER' );
-
     setTimeout( ( function(){
 
         this._setDefault();
 
-        this.startGame();
-
     } ).bind( this ), 4000 );
 
+    this.isGameRunning = false;
+
     ////debugger;
-    //var note = 60;
-    //var delay = 0; // play one note every quarter second
-    //var velocity = 127; // how hard the note hits
-    //
-    //MIDI.setVolume(0, 127);
-    //MIDI.noteOn(0, note, velocity, delay);
-    //MIDI.noteOff(0, note, 2);
+    var note = 60;
+    var delay = 0; // play one note every quarter second
+    var velocity = 127; // how hard the note hits
+
+    MIDI.setVolume(0, 127);
+    MIDI.noteOn(0, note, velocity, delay);
+    MIDI.noteOff(0, note, 2);
+
+    this.dispatchEvent({
+        type: 'gameOver'
+    });
 
 };
 
@@ -147,6 +153,7 @@ Simon.prototype.setHumanNote = function( noteIndex ) {
         if (this._checkIfCorrect()) {
 
             if (this.userPattern.length === this.machinePattern.length) {
+
                 setTimeout(( function () {
 
                     this._addNote();
@@ -154,17 +161,16 @@ Simon.prototype.setHumanNote = function( noteIndex ) {
                     this.userPattern = [];
 
                 } ).bind(this), this.paddingRounds);
+
             }
 
         } else {
             // stop current wrong note
             MIDI.noteOff(0, this.notes[noteIndex], 0);
-
+            MIDI.setVolume(0, 0);
             this._gameOver();
-
         }
     }
-
 };
 
 module.exports = Simon;

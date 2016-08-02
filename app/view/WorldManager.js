@@ -11,9 +11,9 @@ var UltraStarManager = require('./../utils/ultrastar/UltraStarManager');
 
 var Simon = require('./../utils/logic/Simon');
 
-
-
 var WorldManager = function( scene, camera, dummyCamera, renderer ) {
+
+    THREE.EventDispatcher.call( this );
 
     this.renderer = renderer;
     this.sm = new SoundManager();
@@ -38,6 +38,8 @@ var WorldManager = function( scene, camera, dummyCamera, renderer ) {
     this.addEvents();
 
 };
+
+WorldManager.prototype = Object.create( THREE.EventDispatcher.prototype );
 
 WorldManager.prototype.setup = function(){
 
@@ -299,8 +301,16 @@ WorldManager.prototype.createBubbles = function( p ) {
 
 WorldManager.prototype.addEvents = function() {
 
+    this.simon.addEventListener('gameOver', this.onGameOver.bind( this ) );
+
 };
 
+WorldManager.prototype.onGameOver = function() {
+
+    this.dispatchEvent( {
+        type : 'gameOver'
+    } );
+};
 
 WorldManager.prototype.update = function( timestamp, gamePads ) {
 

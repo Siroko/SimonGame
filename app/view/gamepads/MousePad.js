@@ -46,7 +46,6 @@ MousePad.prototype.mouseClick = function( e ) {
             type: 'onStartGame'
         } );
 
-        window.removeEventListener( 'click', this.mouseClickHandler );
     }
 };
 

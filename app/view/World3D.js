@@ -36,11 +36,11 @@ var World3D = function( container ) {
     this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
     this.pointLight = new THREE.PointLight( 0xFFFFFF, 0 );
-    this.pointLight.position.set( 0, 82, 0 );
+    this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x333566, 0.3 );
-    this.pointLight2.position.set( 0, 82, 0 );
+    this.pointLight2 = new THREE.PointLight( 0x664411, 0.3 );
+    this.pointLight2.position.set( 0, 3, 1 );
      this.scene.add( this.pointLight2 );
 
     window.pointLights = [ this.pointLight, this.pointLight2 ];
@@ -120,6 +120,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
     }
 
     this.gamePads.addEventListener( 'onStartGame', this.startGame.bind( this ) );
+    this.worldManager.addEventListener( 'gameOver', this.onGameOver.bind( this ) );
 
     this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial( {
 
@@ -136,7 +137,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 World3D.prototype.startGame = function( e ) {
 
     TweenMax.to( this.pointLight, 2, {
-        intensity : 0.5
+        intensity : 0.7
     });
 
     TweenMax.to( this.pointLight2, 2, {
@@ -149,6 +150,25 @@ World3D.prototype.startGame = function( e ) {
     });
 
     this.worldManager.simon.startGame();
+
+};
+
+World3D.prototype.onGameOver = function( e ) {
+
+    TweenMax.to( this.pointLight, 2, {
+        intensity : 0
+    });
+
+    TweenMax.to( this.pointLight2, 2, {
+        intensity : 0.3
+    });
+
+    TweenMax.to( this.worldManager.planeStartContainer.position, 2, {
+        y : 1.5,
+        ease : 'Expo.easeOut'
+    });
+
+    this.gamePads.started = false;
 
 };
 
