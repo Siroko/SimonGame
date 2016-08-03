@@ -302,10 +302,37 @@ WorldManager.prototype.createBubbles = function( p ) {
 WorldManager.prototype.addEvents = function() {
 
     this.simon.addEventListener('gameOver', this.onGameOver.bind( this ) );
+    this.simon.addEventListener( 'playNote', this.onPlayNote.bind( this ) );
 
 };
 
-WorldManager.prototype.onGameOver = function() {
+WorldManager.prototype.onPlayNote = function( e ) {
+
+    var char = this.characters[ e.index ];
+
+    char.halo.scale.set( 1, 1, 1 );
+
+    TweenMax.to( char.halo.material, 0.5, {
+        opacity: 0.5,
+        ease : 'Expo.easeIn'
+    } );
+
+    TweenMax.to( char.halo.scale, 1, {
+        x: 2.5,
+        z: 2.5,
+        y: 2.5,
+        ease : 'Expo.easeIn'
+    } );
+
+    TweenMax.to( char.halo.material, 0.5, {
+        opacity: 0,
+        delay : 0.5,
+        ease : 'Expo.easeOut'
+    } );
+
+};
+
+WorldManager.prototype.onGameOver = function( e ) {
 
     this.dispatchEvent( {
         type : 'gameOver'

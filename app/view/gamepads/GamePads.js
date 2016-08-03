@@ -29,6 +29,8 @@ var GamePads = function( scene, camera, worldManager, effect ){
     this.h2.matrixAutoUpdate = false;
     this.handlers = [ this.h1, this.h2 ];
 
+    this.tmpVect = new THREE.Vector3();
+
     this.scene.add( this.h1 );
     this.scene.add( this.h2 );
 
@@ -81,11 +83,15 @@ GamePads.prototype.loadAssets = function(){
 
 GamePads.prototype.checkStart = function(){
 
-    if( this.intersectPoint.distanceTo( this.worldManager.collisionBox.position ) < 0.5 ) {
+    this.worldManager.collisionBox.getWorldPosition( this.tmpVect );
+
+    if( this.intersectPoint.distanceTo( this.tmpVect ) < 0.1 ) {
+
         this.started = true;
         this.dispatchEvent( {
             type: 'onStartGame'
         } );
+
     }
 
 };
@@ -134,7 +140,11 @@ GamePads.prototype.update = function( t ){
             this.intersectPoint.copy( this.tmpVector );
             this.intersectPoint2.copy( this.tmpVector2 );
 
-            if( !this.started ) this.checkStart();
+            try {
+                if (!this.started) this.checkStart();
+            } catch( e ) {
+                console.log( e );
+            }
 
             //if ("vibrate" in gamepad) {
             //    for (var j = 0; j < gamepad.buttons.length; ++j) {

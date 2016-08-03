@@ -16,16 +16,11 @@ var Mirror = require('./../utils/Mirror');
 
 var World3D = function( container ) {
 
-    this.isInited       = false;
-
     this.container      = container;
-
     this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
-    //this.scene.fog      = new THREE.Fog( 0xefd1b5, 100, 1000);
-
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
 
     // Apply VR headset positional data to camera.
@@ -41,7 +36,7 @@ var World3D = function( container ) {
 
     this.pointLight2 = new THREE.PointLight( 0x664411, 0.3 );
     this.pointLight2.position.set( 0, 3, 1 );
-     this.scene.add( this.pointLight2 );
+    this.scene.add( this.pointLight2 );
 
     window.pointLights = [ this.pointLight, this.pointLight2 ];
 
@@ -54,6 +49,7 @@ var World3D = function( container ) {
         hideButton: false, // Default: false.
         isUndistorted: false // Default: false.
     };
+
     this.manager = new WebVRManager( this.renderer, this.effect, params );
     this.addEvents();
 
@@ -66,26 +62,14 @@ var World3D = function( container ) {
 
     this.scene.add( this.simulator.bufferMesh );
 
-
-    this.floorGeom = new THREE.PlaneBufferGeometry( 100, 100, 2 );
-
-    //this.groundMirror = new Mirror( this.renderer, this.camera, { clipBias: 0.00000001, textureWidth: 1024, textureHeight: 1024, color: 0x777777, debugMode: true } );
-    //
-    //this.mirrorMesh = new THREE.Mesh( this.floorGeom, this.groundMirror.material );
-    //this.mirrorMesh.add( this.groundMirror );
-    //this.mirrorMesh.rotateX( - Math.PI / 2 );
-    //this.mirrorMesh.position.y = 0.1;
-    //this.scene.add( this.mirrorMesh );
-
 };
 
 World3D.prototype.onRenderLeft = function() {
-    // console.log('rendering Left', this);
 
 };
 
 World3D.prototype.onRenderRight = function() {
-    // console.log('rendering Right', this);
+
 };
 
 World3D.prototype.setup = function() {
@@ -149,7 +133,10 @@ World3D.prototype.startGame = function( e ) {
         ease : 'Expo.easeIn'
     });
 
-    this.worldManager.simon.startGame();
+    setTimeout( ( function(){
+        this.worldManager.simon.startGame();
+    } ).bind( this ), 1000 );
+
 
 };
 

@@ -25,12 +25,12 @@ Simon.prototype = Object.create( THREE.EventDispatcher.prototype );
 
 Simon.prototype.startGame = function() {
 
+    console.log('starting GAME_________________');
 
     this._addNote();
     this._playPattern();
 
     this.isPlaying = true;
-
     this.isGameRunning = true;
 };
 
@@ -85,9 +85,20 @@ Simon.prototype._playNote = function(){
 
     this.currentNoteIndex ++;
 
+    console.log( 'index note ', this.notes.indexOf( note ) );
+    this.dispatchEvent({
+        type: 'playNote',
+        index: this.notes.indexOf( note )
+
+    });
+
     if( this.currentNoteIndex < this.machinePattern.length ) {
 
-        setTimeout( this._playNote.bind( this ), this.padding );
+        setTimeout( (function(){
+            this._playNote();
+
+
+        }).bind( this ) , this.padding );
 
     } else {
 
@@ -126,7 +137,13 @@ Simon.prototype._gameOver = function() {
 
         this._setDefault();
 
-    } ).bind( this ), 4000 );
+
+
+    } ).bind( this ), 2000 );
+
+    this.dispatchEvent({
+        type: 'gameOver'
+    });
 
     this.isGameRunning = false;
 
@@ -139,9 +156,7 @@ Simon.prototype._gameOver = function() {
     MIDI.noteOn(0, note, velocity, delay);
     MIDI.noteOff(0, note, 2);
 
-    this.dispatchEvent({
-        type: 'gameOver'
-    });
+
 
 };
 

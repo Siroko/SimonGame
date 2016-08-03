@@ -44,6 +44,17 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
     this.notes = [70, 74, 75, 77];
 
+    this.halo = new THREE.Mesh( new THREE.IcosahedronGeometry( 0.55, 1 ), new THREE.MeshBasicMaterial({
+        color: this.color,
+        transparent : true,
+        opacity: 0,
+        depthWrite: false,
+        depthTest: false
+    } ) );
+
+    //this.halo.z = 0.3;
+
+
     this.setup();
 };
 
@@ -80,6 +91,7 @@ CharacterBase.prototype.setup = function(){
         }
     });
 6
+
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
@@ -87,6 +99,8 @@ CharacterBase.prototype.setup = function(){
     this.mesh.castShadow = true;
     this.mesh.position.copy( this.positionCharacter );
     this.mesh.temporal = this.positionCharacter.clone();
+
+    this.mesh.add( this.halo );
 
     this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
     this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
@@ -109,7 +123,7 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
-    var particlesQuantity = 2;
+    var particlesQuantity = 16;
     var initBuffer = new Float32Array( particlesQuantity * particlesQuantity * 4 );
     for ( var i = 0; i < particlesQuantity * particlesQuantity; i++ ) {
 
@@ -136,7 +150,7 @@ CharacterBase.prototype.setup = function(){
         sizeH: particlesQuantity,
         directionFlow: new THREE.Vector3(0, 0.017, 0.01),
         initialBuffer: initBuffer,
-        pointSize: 0,
+        pointSize: 3,
         locked: 1,
         renderer: this.renderer,
         lifeTime: 15,
