@@ -309,26 +309,27 @@ WorldManager.prototype.addEvents = function() {
 WorldManager.prototype.onPlayNote = function( e ) {
 
     var char = this.characters[ e.index ];
+    if( char ) {
+        char.halo.scale.set(1.2, 1.2, 1.2);
 
-    char.halo.scale.set( 1, 1, 1 );
+        TweenMax.to(char.halo.material, 0.1, {
+            opacity: 0.8,
+            ease: 'Expo.easeOut'
+        });
 
-    TweenMax.to( char.halo.material, 0.5, {
-        opacity: 0.5,
-        ease : 'Expo.easeIn'
-    } );
+        TweenMax.to(char.halo.scale, 1, {
+            x: 1.4,
+            z: 1.4,
+            y: 1.4,
+            ease: 'Expo.easeOut'
+        });
 
-    TweenMax.to( char.halo.scale, 1, {
-        x: 2.5,
-        z: 2.5,
-        y: 2.5,
-        ease : 'Expo.easeIn'
-    } );
-
-    TweenMax.to( char.halo.material, 0.5, {
-        opacity: 0,
-        delay : 0.5,
-        ease : 'Expo.easeOut'
-    } );
+        TweenMax.to(char.halo.material, 0.9, {
+            opacity: 0,
+            delay: 0.2,
+            ease: 'Expo.easeOut'
+        });
+    }
 
 };
 

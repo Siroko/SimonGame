@@ -123,7 +123,7 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
-    var particlesQuantity = 16;
+    var particlesQuantity = 4;
     var initBuffer = new Float32Array( particlesQuantity * particlesQuantity * 4 );
     for ( var i = 0; i < particlesQuantity * particlesQuantity; i++ ) {
 
@@ -309,7 +309,6 @@ CharacterBase.prototype.update = function( t ){
     this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
 
     this.calcPlane.position.copy( this.mesh.position );
-    // this.calcPlane.position.z += 0.1 ;
 
 };
 

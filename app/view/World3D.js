@@ -94,7 +94,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
 
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 0.3;
+        this.dummyCamera.position.z = 0.6;
         this.dummyCamera.position.y = - 0.3;
 
     } else {
@@ -105,14 +105,6 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 
     this.gamePads.addEventListener( 'onStartGame', this.startGame.bind( this ) );
     this.worldManager.addEventListener( 'gameOver', this.onGameOver.bind( this ) );
-
-    this.pointer = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshNormalMaterial( {
-
-        transparent:true
-
-    } ) );
-
-    this.scene.add( this.pointer );
 
     this.setup();
 
@@ -183,8 +175,6 @@ World3D.prototype.render = function( timestamp ) {
     this.renderer.setClearColor( 0x202020 );
     this.renderer.setRenderTarget( null ); // add this line
     this.manager.render( this.scene, this.camera, timestamp);
-
-    this.pointer.position.copy( this.gamePads.intersectPoint );
 
 };
 

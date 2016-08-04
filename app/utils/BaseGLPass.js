@@ -20,6 +20,12 @@ var BaseGLPass = function( params ) {
     this.quad_geom = new THREE.PlaneBufferGeometry( 2, 2, 1, 1 );
     this.quad = new THREE.Mesh( this.quad_geom, null );
     this.sceneRT.add( this.quad );
+
+    this.textureType = THREE.FloatType;
+    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if(iOS) {
+        this.textureType = THREE.HalfFloatType;
+    }
 };
 
 BaseGLPass.prototype = Object.create( THREE.EventDispatcher.prototype );
@@ -40,7 +46,7 @@ BaseGLPass.prototype.getRenderTarget = function( w, h ) {
         minFilter: THREE.NearestFilter,
         magFilter: THREE.NearestFilter,
         format: THREE.RGBAFormat,
-        type: THREE.HalfFloatType,
+        type: this.textureType,
         stencilBuffer: false,
         depthBuffer: false,
         generateMipmaps: false
