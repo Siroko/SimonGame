@@ -85,7 +85,7 @@ GamePads.prototype.checkStart = function(){
 
     this.worldManager.collisionBox.getWorldPosition( this.tmpVect );
 
-    if( this.intersectPoint.distanceTo( this.tmpVect ) < 0.1 ) {
+    if( this.intersectPoint.distanceTo( this.tmpVect ) < 0.1 || this.intersectPoint2.distanceTo( this.tmpVect ) < 0.1 ) {
 
         this.started = true;
         this.dispatchEvent( {
