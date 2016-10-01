@@ -28,10 +28,6 @@ var WorldManager = function( scene, camera, dummyCamera, renderer ) {
     this.mountainTorus = [];
     this.bubbles = [];
 
-    //this.ultraStarManager = new UltraStarManager();
-    //this.ultraStarManager.setSong( 0 );
-    //this.scene.add( this.ultraStarManager.container );
-
     this.simon = new Simon();
 
     this.setup();
@@ -153,7 +149,7 @@ WorldManager.prototype.setup = function(){
                 //});
             }
 
-            this.scene.add( object );
+            // this.scene.add( object );
 
         } ).bind( this ), onProgress, onError );
 
@@ -272,7 +268,7 @@ WorldManager.prototype.createCharacters = function(){
 
 WorldManager.prototype.onCharacterPlaySound = function( e ) {
 
-    this.simon.setHumanNote( e.idCharacter );
+    // this.simon.setHumanNote( e.idCharacter );
 };
 
 WorldManager.prototype.createBubbles = function( p ) {
@@ -301,8 +297,8 @@ WorldManager.prototype.createBubbles = function( p ) {
 
 WorldManager.prototype.addEvents = function() {
 
-    this.simon.addEventListener('gameOver', this.onGameOver.bind( this ) );
-    this.simon.addEventListener( 'playNote', this.onPlayNote.bind( this ) );
+    // this.simon.addEventListener('gameOver', this.onGameOver.bind( this ) );
+    // this.simon.addEventListener( 'playNote', this.onPlayNote.bind( this ) );
 
 };
 
