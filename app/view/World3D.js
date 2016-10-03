@@ -30,11 +30,11 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
-    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0 );
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.7 );
     this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x664411, 0.3 );
+    this.pointLight2 = new THREE.PointLight( 0x664411, 0.5 );
     this.pointLight2.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight2 );
 
@@ -103,51 +103,9 @@ World3D.prototype.onInitializeManager = function( n, o ) {
 
     }
 
-    this.gamePads.addEventListener( 'onStartGame', this.startGame.bind( this ) );
-    this.worldManager.addEventListener( 'gameOver', this.onGameOver.bind( this ) );
+    this.dummyCamera.position.z = 0.9;
 
     this.setup();
-
-};
-
-World3D.prototype.startGame = function( e ) {
-
-    TweenMax.to( this.pointLight, 2, {
-        intensity : 0.7
-    });
-
-    TweenMax.to( this.pointLight2, 2, {
-        intensity : 0.5
-    });
-
-    TweenMax.to( this.worldManager.planeStartContainer.position, 1, {
-        y : 10,
-        ease : 'Expo.easeIn'
-    });
-
-    setTimeout( ( function(){
-        this.worldManager.simon.startGame();
-    } ).bind( this ), 1000 );
-
-
-};
-
-World3D.prototype.onGameOver = function( e ) {
-
-    TweenMax.to( this.pointLight, 2, {
-        intensity : 0
-    });
-
-    TweenMax.to( this.pointLight2, 2, {
-        intensity : 0.3
-    });
-
-    TweenMax.to( this.worldManager.planeStartContainer.position, 2, {
-        y : 1.5,
-        ease : 'Expo.easeOut'
-    });
-
-    this.gamePads.started = false;
 
 };
 
@@ -172,8 +130,9 @@ World3D.prototype.render = function( timestamp ) {
 
     this.simulator.update();
     // Render the scene through the manager.
-    this.renderer.setClearColor( 0x202020 );
+    this.renderer.setClearColor( 0x171513 );
     this.renderer.setRenderTarget( null ); // add this line
+    this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);
 
 };
@@ -184,10 +143,7 @@ World3D.prototype.onResize = function( w, h ) {
     this.effect.setSize( w, h );
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    //this.groundMirror.updateTextureMatrix();
-    //
-    //this.renderer.domElement.style.width = "100%";
-    //this.renderer.domElement.style.height = "100%";
+
 };
 
 module.exports = World3D;

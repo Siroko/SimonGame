@@ -12,14 +12,13 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal, lights ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, color, matcap, matcapNormal, lights ){
 
     THREE.EventDispatcher.call( this );
 
     this.lights = lights;
     this.scene = scene;
     this.renderer = renderer;
-    this.soundManager = soundmanager;
     this.soundOverride = true;
     this.name = name;
     this.cuddleness = 100;
@@ -60,12 +59,6 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
 CharacterBase.prototype = Object.create( THREE.EventDispatcher.prototype );
 
-CharacterBase.prototype.getNode = function() {
-
-    this.node = this.soundManager.getNode();
-
-};
-
 CharacterBase.prototype.setup = function(){
 
     this.positionTouch1 = new THREE.Vector3();
@@ -95,8 +88,9 @@ CharacterBase.prototype.setup = function(){
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
-
     this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+
     this.mesh.position.copy( this.positionCharacter );
     this.mesh.temporal = this.positionCharacter.clone();
 
@@ -123,7 +117,7 @@ CharacterBase.prototype.setup = function(){
     this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
-    var particlesQuantity = 128;
+    var particlesQuantity = 32;
     var initBuffer = new Float32Array( particlesQuantity * particlesQuantity * 4 );
     for ( var i = 0; i < particlesQuantity * particlesQuantity; i++ ) {
 
@@ -154,14 +148,14 @@ CharacterBase.prototype.setup = function(){
         locked: 1,
         renderer: this.renderer,
         lifeTime: 15,
-        colorParticle: this.color,
+        colorParticle: new THREE.Vector3(1.0, 1.0, 1.0),
         noiseTimeScale: 0.6,
         noisePositionScale: 0.0025,
         noiseScale: 0.002
 
     });
 
-    this.scene.add( this.simulator.bufferMesh );
+    // this.scene.add( this.simulator.bufferMesh );
     this.simulator.bufferMesh.scale.set( this.scale, this.scale, this.scale );
     this.simulator.bufferMesh.visible = false;
 
@@ -283,7 +277,7 @@ CharacterBase.prototype.update = function( t ){
 
     }
 
-    this.simulator.update();
+    // this.simulator.update();
     this.displacedGeometry.update();
 
     if( this.cuddleness <= 0.0001 ){

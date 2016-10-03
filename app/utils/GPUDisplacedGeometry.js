@@ -7,6 +7,7 @@ var THREE = require('three');
 var BaseGLPass = require('./BaseGLPass');
 
 var vs_bufferGeometry   = require('../glsl/vs-buffer-geometry.glsl');
+var vs_depthBufferGeometry = require('../glsl/vs-depth-buffer-geometry.glsl');
 var fs_bufferGeometry   = require('../glsl/fs-buffer-geometry.glsl');
 var vs_simpleQuad       = require('../glsl/vs-simple-quad.glsl');
 var fs_updatePositions  = require('../glsl/fs-update-positions-geometry.glsl');
@@ -107,7 +108,7 @@ var GPUDisplacedGeometry = function( params ) {
         if ( i % this.sizeW == 0 && i != 0) uv.y += div;
         this.index2D.setXY( i, uv.x, uv.y );
         if( this.geom.faces ) {
-            this.positions.setXYZ(i, ( ( Math.random() * 10 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume, ( ( Math.random() * 2 - 1 ) * 0.5 ) * volume);
+            this.positions.setXYZ(i, this.data[i * 4], this.data[i * 4 + 1], this.data[i * 4 + 2] );
         } else {
             if( this.geom.attributes.position.array[ i * 3 ] ) {
                 this.positions.setXYZ( i, this.geom.attributes.position.array[i * 3], this.geom.attributes.position.array[i * 3 + 1], this.geom.attributes.position.array[i * 3 + 2] );
@@ -126,6 +127,7 @@ var GPUDisplacedGeometry = function( params ) {
     if( this.lights ) {
         this.bufferMaterial = new THREE.RawShaderMaterial({
             'uniforms': {
+                "opacity": { value: 1.0 },
                 "uLights": { type: 'f', value: 1 },
                 "uPositionsTexture": { type: 't', value: this.geometryRT },
                 "normalMap": params.uniforms.normalMap,
@@ -135,11 +137,13 @@ var GPUDisplacedGeometry = function( params ) {
                 "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
             },
 
-            vertexShader: vs_bufferGeometry,
-            fragmentShader: fs_bufferGeometry
+            vertexShader: "#define USE_SHADOWMAP\n" + vs_bufferGeometry,
+            fragmentShader: "#define USE_SHADOWMAP\n#define DEPTH_PACKING 3201\n#define NUM_CLIPPING_PLANES 0\n" + fs_bufferGeometry,
+            transparent: true
 
-        });
+        } );
     } else {
+
         this.bufferMaterial = new THREE.RawShaderMaterial({
             'uniforms': {
                 "uLights": { type: 'f', value: 0 },
@@ -155,6 +159,14 @@ var GPUDisplacedGeometry = function( params ) {
     }
 
     this.mesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
+    // magic here
+    this.mesh.customDepthMaterial = new THREE.ShaderMaterial( {
+        vertexShader: vs_depthBufferGeometry,
+        fragmentShader: "#define DEPTH_PACKING 3201\n" + THREE.ShaderLib.depth.fragmentShader,
+
+        uniforms: this.bufferMaterial.uniforms
+    } );
+
     this.mesh.updateMatrix();
 
     this.updateSpringMaterial = new THREE.RawShaderMaterial( {
@@ -193,13 +205,11 @@ var GPUDisplacedGeometry = function( params ) {
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );
     this.pass( this.updatePositionsMaterial, this.finalPositionsTargets[ this.pingpong ] );
 
-
 };
 
 GPUDisplacedGeometry.prototype = Object.create( BaseGLPass.prototype );
 
 GPUDisplacedGeometry.prototype.update = function() {
-
 
     this.updateSpringMaterial.uniforms.uPrevPositions.value = this.springPositionsTargets[ this.pingpong ];
     this.updateSpringMaterial.uniforms.uPrevPositionsGeom.value = this.finalPositionsTargets[ this.pingpong ];
@@ -217,6 +227,5 @@ GPUDisplacedGeometry.prototype.update = function() {
     this.bufferMaterial.uniforms.pointLightIntensity.value[0] = this.lights[0].intensity;
     this.bufferMaterial.uniforms.pointLightIntensity.value[1] = this.lights[1].intensity;
 };
-
 
 module.exports = GPUDisplacedGeometry;

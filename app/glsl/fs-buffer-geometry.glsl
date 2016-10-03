@@ -1,8 +1,8 @@
 #extension GL_OES_standard_derivatives : enable
-#define MAX_POINT_LIGHTS 2
-
 precision highp float;
 precision highp sampler2D;
+
+#define MAX_POINT_LIGHTS 2
 
 uniform sampler2D textureMap;
 uniform sampler2D normalMap;
@@ -19,6 +19,16 @@ varying vec4 vOPosition;
 varying vec3 vU;
 varying vec2 vUv;
 
+
+uniform float opacity;
+
+#include <common>
+#include <packing>
+#include <bsdfs>
+#include <lights_pars>
+#include <shadowmap_pars_fragment>
+#include <shadowmask_pars_fragment>
+
 float random(vec3 scale,float seed){return fract(sin(dot(gl_FragCoord.xyz+seed,scale))*43758.5453+seed);}
 
 void main(){
@@ -31,14 +41,6 @@ void main(){
     vec3 vONormal = n;
 
     vec3 c1 = vec3(1.0, 1.0, 1.0);
-//    vec4 color = vec4( .5 + .5 * n, 1.0 );
-
-//        float invRed = 1.5 - color.r;
-//        color.r += invRed * 0.4;
-//        color.g += invRed * 0.4;
-//
-//        color = vec4(vec3(vDist), 1.0);
-
 
     vec3 color = vec3( .0, .0, .0 );
     vec2 texScale = vec2(1.0);
@@ -96,19 +98,23 @@ void main(){
     base += vec3( nn );
 
     // Pretty basic lambertian lighting...
-    vec4 addedLights = vec4( 0.0, 0.0, 0.0, 1.0 );
+    vec4 addedLights = vec4( 0.5, 0.5, 0.5, 1.0 );
 
     if( uLights == 1.0 ){
+
         for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
 
             vec3 lightDirection = normalize( vOPosition.rgb - pointLightPosition[ l ] );
             addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
 
         }
+
     } else {
+
         addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
+
     }
 
-    gl_FragColor = vec4( base.rgb , 1.) * addedLights;
+    gl_FragColor = vec4( base.rgb * addedLights.rgb , 1.0 );
 
 }
