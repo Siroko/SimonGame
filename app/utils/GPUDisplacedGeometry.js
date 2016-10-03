@@ -137,8 +137,8 @@ var GPUDisplacedGeometry = function( params ) {
                 "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
             },
 
-            vertexShader: "#define USE_SHADOWMAP\n" + vs_bufferGeometry,
-            fragmentShader: "#define USE_SHADOWMAP\n#define DEPTH_PACKING 3201\n#define NUM_CLIPPING_PLANES 0\n" + fs_bufferGeometry,
+            vertexShader: vs_bufferGeometry,
+            fragmentShader: fs_bufferGeometry,
             transparent: true
 
         } );
