@@ -70,13 +70,13 @@ WorldManager.prototype.setupShadows = function() {
     var SHADOW_MAP_WIDTH = 2048;
     var SHADOW_MAP_HEIGHT = 2048;
 
-    this.light = new THREE.SpotLight( 0xcccccc, 0.1 );
-    this.light.distance = 100;
-    this.light.penumbra = 20;
-    this.light.decay = 1;
+    this.light = new THREE.SpotLight( 0xffffff, 0.1 );
+    this.light.distance = 10;
+    this.light.penumbra = 0.1;
+    this.light.decay = 0;
     this.light.angle = Math.PI * 0.3;
     this.light.position.set( 0, 1.9, 0 );
-    this.light.target.position.set( 0, 0, 0 );
+    this.light.target.position.set( 0, 0, 0.6 );
 
     this.light.castShadow = true;
 

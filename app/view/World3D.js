@@ -30,13 +30,16 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
-    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.7 );
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.4 );
     this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x664411, 0.5 );
+    this.pointLight2 = new THREE.PointLight( 0x664411, 0.2 );
     this.pointLight2.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight2 );
+
+    this.amb = new THREE.AmbientLight( 0x8C857C, 1 );
+    this.scene.add( this.amb );
 
     window.pointLights = [ this.pointLight, this.pointLight2 ];
 
@@ -130,7 +133,7 @@ World3D.prototype.render = function( timestamp ) {
 
     this.simulator.update();
     // Render the scene through the manager.
-    this.renderer.setClearColor( 0x171513 );
+    this.renderer.setClearColor( 0x958D83 );
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);

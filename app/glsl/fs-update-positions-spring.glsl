@@ -146,12 +146,11 @@ float snoise(vec4 v)
       vec3 pos = texture2D(uBasePositions, vUv).rgb;
       vec3 prevPos = texture2D(uPrevPositions, vUv).rgb;
       vec3 prevPosGeom = texture2D(uPrevPositionsGeom, vUv).rgb;
-
-      float noise = snoise( vec4( pos, uTime * 0.001 ) );
+      vec3 vertexWorldPosition = (uModelMatrix * vec4(pos, 1.0)).xyz;
+      float noise = snoise( vec4( pos + vertexWorldPosition, uTime * 0.001 ) );
       vec3 normal = pos - uWorldPosition;
 
-      vec3 vertexWorldPosition = (uModelMatrix * vec4(pos, 1.0)).xyz;
-      pos += normal * noise * 0.15;
+      pos += normal * noise * 0.1;
 
 
       vec3 displacement = vec3(0.0);
@@ -161,7 +160,7 @@ float snoise(vec4 v)
           vec3 direction = uWorldPosition - uTouch[i];
           normalize( direction );
 
-          float d = clamp( 0.2 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
+          float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
 
           displacement += direction * d;
           normalize( displacement );

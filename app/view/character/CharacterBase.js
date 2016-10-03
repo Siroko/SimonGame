@@ -248,9 +248,9 @@ CharacterBase.prototype.update = function( t ){
                 var note = this.notes[ this.name ]; // the MIDI note
                 var velocity = 127; // how hard the note hits
 
-                MIDI.setVolume(0, 127);
-                MIDI.noteOn(0, note, velocity, delay);
-                MIDI.noteOff(0, note, delay + 0.75);
+                // MIDI.setVolume(0, 127);
+                // MIDI.noteOn(0, note, velocity, delay);
+                // MIDI.noteOff(0, note, delay + 0.75);
 
                 prePositive = true;
 
@@ -295,8 +295,8 @@ CharacterBase.prototype.update = function( t ){
 
     var speed = 0.0005;
 
-    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.5 * this.scale));
-    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * (0.5 * this.scale));
+    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed,  this.name + Date.now() * speed ) * (0.5 * this.scale));
+    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + this.name + Date.now() * speed, Date.now() * speed) * (0.5 * this.scale));
     this.positionCharacter.z = base.z;
 
     this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
