@@ -69,8 +69,8 @@ WorldManager.prototype.setup = function(){
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 2048;
-    var SHADOW_MAP_HEIGHT = 2048;
+    var SHADOW_MAP_WIDTH = 1024;
+    var SHADOW_MAP_HEIGHT = 1024;
 
     this.light = new THREE.SpotLight( 0xffffff, 0.1 );
     this.light.distance = 10;
@@ -83,7 +83,7 @@ WorldManager.prototype.setupShadows = function() {
     this.light.castShadow = true;
 
     this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 110, 1, 0.5, 5 ) );
-    this.light.shadow.bias = 0.0001;
+    this.light.shadow.bias = 0.01;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     this.light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
@@ -98,24 +98,7 @@ WorldManager.prototype.setupShadows = function() {
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
-
-    // this.planeDebug = new THREE.Mesh( new THREE.PlaneBufferGeometry( 0.5, 0.5, 1, 1), new THREE.RawShaderMaterial({
-    //     'uniforms': {
-    //         'tShadow' : { type:'t', value: this.light.shadow.map }
-    //     },
-    //     defines: {
-    //         'USE_SHADOWMAP': '',
-    //         'DEPTH_PACKING': '3201'
-    //     },
-    //     vertexShader: require('./../glsl/vs-simple-shadow-quad.glsl'),
-    //     fragmentShader: require('./../glsl/fs-simple-shadow-quad.glsl')
-    //
-    // }) );
-    // this.planeDebug.position.set( -1, 2, -1 );
-    // this.planeDebug.castShadows = true;
-    // this.planeDebug.receiveShadows = true;
-    // this.scene.add( this.planeDebug );
+    // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
 
     this.lightShadowMapViewer = new ShadowMapViewer( this.light );
     this.lightShadowMapViewer.position.x = 0;

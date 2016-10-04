@@ -112,15 +112,8 @@ void main(){
         addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
     }
 
-//    vec4 t = texture2D( spotShadowMap[ 0 ], vUv );
-
-    SpotLight spotLight = spotLights[ 0 ];
-    vec3 cShadow = vec3(
-        bool( spotLight.shadow ) ? getShadow( spotShadowMap[ 0 ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ 0 ] ) : 1.0,
-        bool( spotLight.shadow ) ? getShadow( spotShadowMap[ 0 ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ 0 ] ) : .0,
-        bool( spotLight.shadow ) ? getShadow( spotShadowMap[ 0 ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ 0 ] ) : 1.0
-    );
-
-    gl_FragColor = vec4(vec3(base.rgb * addedLights.rgb * cShadow),  1.0);
+    float shadowMask = (getShadowMask() + .8);
+    shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
+    gl_FragColor = vec4(vec3(base.rgb * addedLights.rgb * shadowMask ),  1.0);
 
 }
