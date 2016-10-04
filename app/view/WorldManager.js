@@ -41,15 +41,16 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    var geom = new THREE.IcosahedronGeometry( 0.01, 1 );
+    var geom = new THREE.IcosahedronGeometry( 0.1, 1 );
     var m = new THREE.MeshPhongMaterial({
         color: 0xFF00FF
     });
-    this.mesh = new THREE.Mesh( geom, m );
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
-    this.mesh.position.y = 1;
-    this.scene.add( this.mesh );
+    this.cosica = new THREE.Mesh( geom, m );
+    this.cosica.castShadow = true;
+    this.cosica.receiveShadow = true;
+    this.cosica.position.y = 1.4;
+    this.cosica.position.z = -0.25;
+    this.scene.add( this.cosica );
 
 
     var instrument = 'xylophone';
@@ -74,9 +75,9 @@ WorldManager.prototype.setupShadows = function() {
     this.light.distance = 10;
     this.light.penumbra = 0.1;
     this.light.decay = 0;
-    this.light.angle = Math.PI * 0.3;
+    this.light.angle = Math.PI * 0.4;
     this.light.position.set( 0, 1.9, 0 );
-    this.light.target.position.set( 0, 0, 0.6 );
+    this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
 
@@ -96,7 +97,7 @@ WorldManager.prototype.setupShadows = function() {
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
+    // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
 
 };
 
@@ -178,8 +179,6 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
         char.positionTouch1.copy( gamePads.intersectPoint );
         char.positionTouch2.copy( gamePads.intersectPoint2 );
     }
-
-    this.mesh.position.x = Math.sin( timestamp * 0.00001 ) * 2;
 
 };
 

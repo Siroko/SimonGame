@@ -19,6 +19,7 @@ varying vec4 vOPosition;
 varying vec3 vU;
 varying vec2 vUv;
 
+varying vec4 vWorldPosition;
 
 uniform float opacity;
 
@@ -101,20 +102,14 @@ void main(){
     vec4 addedLights = vec4( 0.5, 0.5, 0.5, 1.0 );
 
     if( uLights == 1.0 ){
-
         for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
-
             vec3 lightDirection = normalize( vOPosition.rgb - pointLightPosition[ l ] );
             addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
-
         }
-
     } else {
-
         addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
-
     }
 
-    gl_FragColor = vec4( base.rgb * addedLights.rgb , 1.0 );
+    gl_FragColor = vec4( base.rgb * addedLights.rgb * ( getShadowMask() ), 1.0 );
 
 }

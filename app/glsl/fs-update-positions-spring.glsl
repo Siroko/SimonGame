@@ -10,6 +10,7 @@ uniform vec3 uTouch[2];
 uniform vec3 uWorldPosition;
 
 varying vec2 vUv;
+varying vec4 vWorldPosition;
 
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex

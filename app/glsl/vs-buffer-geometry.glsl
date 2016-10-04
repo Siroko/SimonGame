@@ -21,6 +21,7 @@ varying vec2 vUv;
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
+varying vec4 vWorldPosition;
 
 #include <shadowmap_pars_vertex>
 
@@ -34,6 +35,7 @@ varying vec3 vU;
       vU = normalize( vec3( modelViewMatrix * vPos ) );
       vUv = aV2I;
       vNormalMatrix = normalMatrix;
+      vWorldPosition = modelMatrix * vec4(pos.xyz, 1.0);
 
       #include <begin_vertex>
       #include <project_vertex>
