@@ -145,9 +145,10 @@ var GPUDisplacedGeometry = function( params ) {
             fragmentShader: fs_bufferGeometry
 
         } );
+
         this.bufferMaterial.lights = true;
         this.bufferMaterial = new THREE.ShadowMaterial();
-
+        this.bufferMaterial.extensions.derivatives = true;
         this.bufferMaterial.uniforms["opacity"] =  { value: 1.0 };
         this.bufferMaterial.uniforms["uLights"] = { type: 'f', value: 1 };
         this.bufferMaterial.uniforms["uPositionsTexture"] = { type: 't', value: this.geometryRT };

@@ -30,11 +30,11 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
-    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.3 );
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.4 );
     this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x664411, 0.1 );
+    this.pointLight2 = new THREE.PointLight( 0x664411, 0.2 );
     this.pointLight2.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight2 );
 
@@ -137,9 +137,9 @@ World3D.prototype.render = function( timestamp ) {
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);
-    if( this.worldManager.light.shadow.map ){
-        this.worldManager.lightShadowMapViewer.render( this.renderer );
-    }
+    // if( this.worldManager.light.shadow.map ){
+    //     this.worldManager.lightShadowMapViewer.render( this.renderer );
+    // }
 
 };
 

@@ -24,6 +24,8 @@ var MousePad = function( scene, camera, worldManager ) {
 
     } ) );
 
+    this.pointer.castShadow=true;
+
     this.scene.add( this.pointer );
 
     this.pointerB = new THREE.Mesh( new THREE.SphereBufferGeometry( 0.01, 10, 10), new THREE.MeshBasicMaterial( {
@@ -32,7 +34,7 @@ var MousePad = function( scene, camera, worldManager ) {
         opacity: 0.5
 
     } ) );
-
+    this.pointerB.castShadow=true;
     this.scene.add( this.pointerB );
 
     this.addEvents();

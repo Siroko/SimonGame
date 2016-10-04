@@ -100,12 +100,12 @@ WorldManager.prototype.setupShadows = function() {
 
     // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
 
-    this.lightShadowMapViewer = new ShadowMapViewer( this.light );
-    this.lightShadowMapViewer.position.x = 0;
-    this.lightShadowMapViewer.position.y = 0;
-    this.lightShadowMapViewer.size.width = 256;
-    this.lightShadowMapViewer.size.height = 256;
-    this.lightShadowMapViewer.update();
+    // this.lightShadowMapViewer = new ShadowMapViewer( this.light );
+    // this.lightShadowMapViewer.position.x = 0;
+    // this.lightShadowMapViewer.position.y = 0;
+    // this.lightShadowMapViewer.size.width = 256;
+    // this.lightShadowMapViewer.size.height = 256;
+    // this.lightShadowMapViewer.update();
 
 
 
