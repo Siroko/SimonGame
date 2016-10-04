@@ -6,6 +6,7 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
+var ShadowMapViewer = require('./../utils/ShadowMapViewer');
 
 var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
@@ -48,7 +49,7 @@ WorldManager.prototype.setup = function(){
     this.cosica = new THREE.Mesh( geom, m );
     this.cosica.castShadow = true;
     this.cosica.receiveShadow = true;
-    this.cosica.position.y = 1.4;
+    this.cosica.position.y = 1.3;
     this.cosica.position.z = -0.25;
     this.scene.add( this.cosica );
 
@@ -81,7 +82,7 @@ WorldManager.prototype.setupShadows = function() {
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.SpotLightShadow( new THREE.PerspectiveCamera( 110, 1, 0.5, 5 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 110, 1, 0.5, 5 ) );
     this.light.shadow.bias = 0.0001;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
@@ -97,7 +98,33 @@ WorldManager.prototype.setupShadows = function() {
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
+    this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
+
+    // this.planeDebug = new THREE.Mesh( new THREE.PlaneBufferGeometry( 0.5, 0.5, 1, 1), new THREE.RawShaderMaterial({
+    //     'uniforms': {
+    //         'tShadow' : { type:'t', value: this.light.shadow.map }
+    //     },
+    //     defines: {
+    //         'USE_SHADOWMAP': '',
+    //         'DEPTH_PACKING': '3201'
+    //     },
+    //     vertexShader: require('./../glsl/vs-simple-shadow-quad.glsl'),
+    //     fragmentShader: require('./../glsl/fs-simple-shadow-quad.glsl')
+    //
+    // }) );
+    // this.planeDebug.position.set( -1, 2, -1 );
+    // this.planeDebug.castShadows = true;
+    // this.planeDebug.receiveShadows = true;
+    // this.scene.add( this.planeDebug );
+
+    this.lightShadowMapViewer = new ShadowMapViewer( this.light );
+    this.lightShadowMapViewer.position.x = 0;
+    this.lightShadowMapViewer.position.y = 0;
+    this.lightShadowMapViewer.size.width = 256;
+    this.lightShadowMapViewer.size.height = 256;
+    this.lightShadowMapViewer.update();
+
+
 
 };
 
@@ -127,9 +154,9 @@ WorldManager.prototype.createCharacters = function(){
 
     ];
 
-    var totalChars = 4;
+    var totalChars = charsSetup.length;
     var separation = 0.9;
-    for (var i = 0; i < totalChars; i++) {
+    for ( var i = 0; i < totalChars; i++ ) {
 
         var character = new CharacterBase(
             new THREE.Vector3( 0.2 + ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
@@ -178,7 +205,10 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
         char.update( timestamp );
         char.positionTouch1.copy( gamePads.intersectPoint );
         char.positionTouch2.copy( gamePads.intersectPoint2 );
+
     }
+
+    this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;
 
 };
 

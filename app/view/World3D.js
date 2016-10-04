@@ -137,6 +137,9 @@ World3D.prototype.render = function( timestamp ) {
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);
+    if( this.worldManager.light.shadow.map ){
+        this.worldManager.lightShadowMapViewer.render( this.renderer );
+    }
 
 };
 

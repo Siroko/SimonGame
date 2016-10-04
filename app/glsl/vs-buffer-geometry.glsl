@@ -1,17 +1,4 @@
-#extension GL_OES_standard_derivatives : enable
-
-precision highp float;
-
-attribute vec3 position;
-attribute vec3 normal;
 attribute vec2 aV2I;
-attribute vec2 uv;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
 
 uniform sampler2D uPositionsTexture;
 
@@ -35,6 +22,7 @@ varying vec4 vWorldPosition;
       vU = normalize( vec3( modelViewMatrix * vPos ) );
       vUv = aV2I;
       vNormalMatrix = normalMatrix;
+
       vWorldPosition = modelMatrix * vec4(pos.xyz, 1.0);
 
       #include <begin_vertex>

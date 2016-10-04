@@ -145,6 +145,19 @@ var GPUDisplacedGeometry = function( params ) {
             fragmentShader: fs_bufferGeometry
 
         } );
+        this.bufferMaterial.lights = true;
+        this.bufferMaterial = new THREE.ShadowMaterial();
+
+        this.bufferMaterial.uniforms["opacity"] =  { value: 1.0 };
+        this.bufferMaterial.uniforms["uLights"] = { type: 'f', value: 1 };
+        this.bufferMaterial.uniforms["uPositionsTexture"] = { type: 't', value: this.geometryRT };
+        this.bufferMaterial.uniforms["normalMap"] = params.uniforms.normalMap;
+        this.bufferMaterial.uniforms["textureMap"] = params.uniforms.textureMap;
+        this.bufferMaterial.uniforms["pointLightPosition"] = { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] };
+        this.bufferMaterial.uniforms["pointLightColor"] = { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]};
+        this.bufferMaterial.uniforms["pointLightIntensity"] = { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] };
+        this.bufferMaterial.vertexShader = vs_bufferGeometry;
+        this.bufferMaterial.fragmentShader = fs_bufferGeometry;
 
     } else {
 
@@ -165,6 +178,7 @@ var GPUDisplacedGeometry = function( params ) {
     this.mesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
     // magic here
     this.mesh.customDepthMaterial = new THREE.ShaderMaterial( {
+
         defines: {
             'USE_SHADOWMAP': '',
             'DEPTH_PACKING': '3201'

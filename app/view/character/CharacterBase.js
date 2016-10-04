@@ -88,13 +88,14 @@ CharacterBase.prototype.setup = function(){
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
+    this.displacedGeometry.mesh.name = 'cosica';
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 
     this.mesh.position.copy( this.positionCharacter );
     this.mesh.temporal = this.positionCharacter.clone();
 
-    this.mesh.add( this.halo );
+    // this.mesh.add( this.halo );
 
     this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
     this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
