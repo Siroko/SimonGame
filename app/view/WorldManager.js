@@ -8,6 +8,7 @@ var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
 
+
 var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
     THREE.EventDispatcher.call( this );
@@ -82,7 +83,7 @@ WorldManager.prototype.setupShadows = function() {
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 110, 1, 0.5, 5 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 130, 1, 0.5, 5 ) );
     this.light.shadow.bias = 0.01;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
@@ -117,32 +118,44 @@ WorldManager.prototype.createCharacters = function(){
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/yellowmatcap.png',
-            matcap : 'assets/yellowmatcap.png'
+            matcap : 'assets/yellowmatcap.png',
+            letter: 'G'
         },
         {
             color: new THREE.Color(0x119977),
             normalMap : 'assets/brass.jpg',
-            matcap : 'assets/brass.jpg'
+            matcap : 'assets/brass.jpg',
+            letter: 'P'
         },
         {
             color: new THREE.Color(0xFFFFFF),
             normalMap : 'assets/matcap1.jpg',
-            matcap : 'assets/matcap1.jpg'
+            matcap : 'assets/matcap1.jpg',
+            letter: 'G'
         },
         {
             color: new THREE.Color(0x774432),
             normalMap : 'assets/lit-sphere-matball-example.jpg',
-            matcap : 'assets/lit-sphere-matball-example.jpg'
+            matcap : 'assets/lit-sphere-matball-example.jpg',
+            letter: 'P'
+        },
+        {
+            color: new THREE.Color(0xFF3377),
+            normalMap : 'assets/yellowmatcap.png',
+            matcap : 'assets/yellowmatcap.png',
+            letter: 'U'
         }
 
     ];
 
-    var totalChars = charsSetup.length;
+    this.totalChars = charsSetup.length;
+    this.loadedModels = 0;
     var separation = 0.9;
-    for ( var i = 0; i < totalChars; i++ ) {
+
+    for ( var i = 0; i < this.totalChars; i++ ) {
 
         var character = new CharacterBase(
-            new THREE.Vector3( 0.2 + ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+            new THREE.Vector3( ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
             false,
             i,
             0.4,
@@ -151,24 +164,33 @@ WorldManager.prototype.createCharacters = function(){
             charsSetup[i].color,
             charsSetup[i].normalMap,
             charsSetup[i].matcap,
-            window.pointLights
+            window.pointLights,
+            charsSetup[i].letter
         );
 
+        character.addEventListener( 'onLoadModel', this.onLoadCharModel.bind( this ) );
         this.characters.push( character );
 
     }
+};
 
-    for (var i = 0; i < this.characters.length; i++) {
+WorldManager.prototype.onLoadCharModel = function( e ){
 
-        var char = this.characters[i];
-        this.scene.add( char.mesh );
-        this.scene.add( char.calcPlane );
+    this.loadedModels++;
 
-        this.charactersMesh.push( char.mesh );
-        this.charactersCalcPlane.push( char.calcPlane );
+    if( this.loadedModels === this.totalChars) {
 
+        for (var i = 0; i < this.characters.length; i++) {
+
+            var char = this.characters[i];
+            this.scene.add(char.mesh);
+            this.scene.add(char.calcPlane);
+
+            this.charactersMesh.push(char.mesh);
+            this.charactersCalcPlane.push(char.calcPlane);
+
+        }
     }
-
 };
 
 WorldManager.prototype.addEvents = function() {
@@ -179,15 +201,17 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
-        if( this.dummyCamera.position.z != 0 ) {
-            char.mesh.lookAt( this.dummyCamera.position );
-        } else {
-            char.mesh.lookAt(this.camera.position);
-        }
+        if( char.mesh ) {
+            if (this.dummyCamera.position.z != 0) {
+                char.mesh.lookAt(this.dummyCamera.position);
+            } else {
+                char.mesh.lookAt(this.camera.position);
+            }
 
-        char.update( timestamp );
-        char.positionTouch1.copy( gamePads.intersectPoint );
-        char.positionTouch2.copy( gamePads.intersectPoint2 );
+            char.update(timestamp);
+            char.positionTouch1.copy(gamePads.intersectPoint);
+            char.positionTouch2.copy(gamePads.intersectPoint2);
+        }
 
     }
 

@@ -82,7 +82,6 @@ World3D.prototype.setup = function() {
     this.render( 0 );
 };
 
-
 World3D.prototype.addEvents = function() {
 
     this.manager.on('initialized', this.onInitializeManager.bind( this ) );

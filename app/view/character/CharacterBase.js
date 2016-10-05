@@ -12,7 +12,7 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, color, matcap, matcapNormal, lights ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, color, matcap, matcapNormal, lights, letter ){
 
     THREE.EventDispatcher.call( this );
 
@@ -43,21 +43,32 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
     this.notes = [70, 74, 75, 77];
 
-    this.halo = new THREE.Mesh( new THREE.IcosahedronGeometry( 0.55, 1 ), new THREE.MeshBasicMaterial({
-        color: this.color,
-        transparent : true,
-        opacity: 0,
-        depthWrite: false,
-        depthTest: false
-    } ) );
+   this.loadModel( letter );
 
-    //this.halo.z = 0.3;
-
-
-    this.setup();
 };
 
 CharacterBase.prototype = Object.create( THREE.EventDispatcher.prototype );
+
+CharacterBase.prototype.loadModel = function(name) {
+
+    var loader = new THREE.JSONLoader();
+    var url = 'assets/letters/' + name + '.json';
+    loader.load( url, this.onLoadGeom.bind( this ) );
+
+};
+
+CharacterBase.prototype.onLoadGeom = function( geometry, materials) {
+
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+
+    this.geom = geometry;
+
+    this.setup();
+    this.dispatchEvent( {
+        type: 'onLoadModel'
+    } );
+};
 
 CharacterBase.prototype.setup = function(){
 
@@ -68,7 +79,7 @@ CharacterBase.prototype.setup = function(){
 
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 0.5, 5 );
+    // this.geom = new THREE.IcosahedronGeometry( 0.5, 3 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,
@@ -83,7 +94,6 @@ CharacterBase.prototype.setup = function(){
             'textureMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
         }
     });
-6
 
     //this.scene.add( this.displacedGeometry.planeDebug );
 
