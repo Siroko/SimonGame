@@ -117,32 +117,32 @@ WorldManager.prototype.createCharacters = function(){
     var charsSetup = [
         {
             color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/yellowmatcap.png',
-            matcap : 'assets/yellowmatcap.png',
+            normalMap : 'assets/rainbow.jpg',
+            matcap : 'assets/rainbow.jpg',
             letter: 'G'
         },
         {
             color: new THREE.Color(0x119977),
-            normalMap : 'assets/brass.jpg',
-            matcap : 'assets/brass.jpg',
+            normalMap : 'assets/rainbow.jpg',
+            matcap : 'assets/rainbow.jpg',
             letter: 'P'
         },
         {
             color: new THREE.Color(0xFFFFFF),
-            normalMap : 'assets/matcap1.jpg',
-            matcap : 'assets/matcap1.jpg',
+            normalMap : 'assets/rainbow.jpg',
+            matcap : 'assets/rainbow.jpg',
             letter: 'G'
         },
         {
             color: new THREE.Color(0x774432),
-            normalMap : 'assets/lit-sphere-matball-example.jpg',
-            matcap : 'assets/lit-sphere-matball-example.jpg',
+            normalMap : 'assets/rainbow.jpg',
+            matcap : 'assets/rainbow.jpg',
             letter: 'P'
         },
         {
             color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/yellowmatcap.png',
-            matcap : 'assets/yellowmatcap.png',
+            normalMap : 'assets/rainbow.jpg',
+            matcap : 'assets/rainbow.jpg',
             letter: 'U'
         }
 
