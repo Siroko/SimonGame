@@ -13,12 +13,15 @@ uniform mat3 normalMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
+varying vec4 vGeomPosition;
 
 void main(){
 
     vec4 pos = texture2D( uGeometryTexture, index2D.zw );
     vec4 offset = texture2D( uSimulationTexture, index2D.xy );
     vec3 p = offset.rgb + pos.rgb;
+
+   vGeomPosition = pos;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 

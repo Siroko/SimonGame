@@ -75,6 +75,7 @@ var GPUGeometry = function( params ) {
         }
     }
 
+    console.log( this.data );
     this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType);
     this.geometryRT.minFilter = THREE.NearestFilter;
     this.geometryRT.magFilter = THREE.NearestFilter;
