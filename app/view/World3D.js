@@ -8,11 +8,7 @@ var WorldManager = require('./WorldManager');
 var GamePads = require('./gamepads/GamePads');
 var MousePad = require('./gamepads/MousePad');
 
-var TweenMax = require('gsap');
-
 var Simulator = require('./../utils/Simulator');
-
-var Mirror = require('./../utils/Mirror');
 
 var World3D = function( container ) {
 

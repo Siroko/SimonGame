@@ -7,7 +7,7 @@ var OBJLoader = require('./../utils/OBJLoader');
 var MTLLoader = require('./../utils/MTLLoader');
 var CharacterBase = require('./character/CharacterBase');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
-
+var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 
 var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
@@ -41,9 +41,9 @@ WorldManager.prototype.setup = function(){
 
     this.floor.position.set( 0 , 0.1, 0 );
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
-    this.scene.add( this.floor );
+    // this.scene.add( this.floor );
 
-    var geom = new THREE.IcosahedronGeometry( 0.1, 1 );
+    var geom = new THREE.IcosahedronGeometry( 0.5, 1 );
     var m = new THREE.MeshPhongMaterial({
         color: 0xFF00FF
     });
@@ -54,6 +54,21 @@ WorldManager.prototype.setup = function(){
     this.cosica.position.z = -0.25;
     this.scene.add( this.cosica );
 
+    //*****
+    this.gpuGeometrySimulation = new GPUGeometrySimulation( {
+        geom : geom,
+        sizeSimulation: 64,
+        renderer: this.renderer
+    } );
+
+    this.scene.add( this.gpuGeometrySimulation.bufferMesh );
+
+    this.scene.add( this.gpuGeometrySimulation.debugPlaneGeom );
+    this.scene.add( this.gpuGeometrySimulation.debugPlaneSimulator );
+
+    this.gpuGeometrySimulation.debugPlaneGeom.lookAt( this.dummyCamera.position );
+    this.gpuGeometrySimulation.debugPlaneSimulator.lookAt( this.dummyCamera.position );
+    //******
 
     var instrument = 'xylophone';
     MIDI.loadPlugin({
@@ -194,7 +209,7 @@ WorldManager.prototype.onLoadCharModel = function( e ){
 };
 
 WorldManager.prototype.addEvents = function() {
-    window.addEventListener( 'keydown', this.onKeydown.bind( this ) );
+    // window.addEventListener( 'keydown', this.onKeydown.bind( this ) );
 };
 
 WorldManager.prototype.onKeydown = function( e ) {
@@ -230,6 +245,8 @@ WorldManager.prototype.onLoadCharAddModel = function( e ) {
 };
 
 WorldManager.prototype.update = function( timestamp, gamePads ) {
+
+    this.gpuGeometrySimulation.update();
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];

@@ -1,0 +1,111 @@
+/**
+ * Created by siroko on 7/8/15.
+ */
+
+var THREE = require('three');
+
+var BaseGLPass = require('./BaseGLPass');
+
+var vs_simpleQuad       = require('../glsl/vs-simple-quad.glsl');
+var fs_updatePositions  = require('../glsl/fs-update-positions.glsl');
+
+var SimulationTexture = function( params ) {
+
+    BaseGLPass.call( this, params );
+
+    this.sizeW      = params.sizeW;
+    this.sizeH      = params.sizeH;
+
+    this.pointSize  = params.pointSize || 0;
+    this.initialBuffer = params.initialBuffer;
+
+    this.boundary   = params.boundary || {
+            position : new THREE.Vector3( 0, 0, 0 ),
+            size : new THREE.Vector3( 10, 10, 10 )
+        };
+
+    this.directionFlow = params.directionFlow;
+    this.locked = params.locked || 0;
+
+    this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
+
+    this.noiseTimeScale = params.noiseTimeScale || 0.6;
+    this.noisePositionScale = params.noisePositionScale || 0.005;
+    this.noiseScale = params.noiseScale || 0.002;
+    this.lifeTime = params.lifeTime || 100;
+
+    this.setup();
+};
+
+SimulationTexture.prototype = Object.create( BaseGLPass.prototype );
+
+SimulationTexture.prototype.setup = function() {
+
+    this.pingpong           = 0;
+    this.finalPositionsRT   = this.getRenderTarget( this.sizeW, this.sizeH );
+
+    this.data = new Float32Array( this.sizeW * this.sizeH * 4 );
+
+    if( this.initialBuffer ) { // if initial buffer is defined just feed it to the data texture
+        this.data = this.initialBuffer;
+    } else { // else we just set them randomly
+
+        for( var i = 0; i < this.total; i ++ ) {
+
+            this.data[ i * 4 ]     = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x + this.boundary.position.x;
+            this.data[ i * 4 + 1 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y + this.boundary.position.y;
+            this.data[ i * 4 + 2 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z + this.boundary.position.z;
+            this.data[ i * 4 + 3 ] = 100; // frames life
+
+        }
+
+    }
+
+    this.geometryRT = new THREE.DataTexture( this.data, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType );
+    this.geometryRT.minFilter = THREE.NearestFilter;
+    this.geometryRT.magFilter = THREE.NearestFilter;
+    this.geometryRT.needsUpdate = true;
+
+    this.updatePositionsMaterial = new THREE.RawShaderMaterial( {
+        uniforms: {
+            'uPrevPositionsMap'     : { type: "t", value: this.geometryRT },
+            'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
+            'uTime'                 : { type: "f", value: 0 },
+            'uLifeTime'             : { type: "f", value: this.lifeTime },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3() },
+            'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
+            'uLock'                 : { type: "i", value: this.locked },
+            'uCollision'            : { type: "v3", value: new THREE.Vector3() },
+            'uNoiseTimeScale'       : { type: "f", value: this.noiseTimeScale },
+            'uNoisePositionScale'   : { type: "f", value: this.noisePositionScale },
+            'uNoiseScale'           : { type: "f", value: this.noiseScale },
+            'uBoundary'             : { type: 'fv1', value : [
+                this.boundary.position.x,
+                this.boundary.position.y,
+                this.boundary.position.z,
+                this.boundary.size.x,
+                this.boundary.size.y,
+                this.boundary.size.z
+            ] }
+        },
+
+        vertexShader                : vs_simpleQuad,
+        fragmentShader              : fs_updatePositions
+    } );
+
+    this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
+    this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
+
+};
+
+SimulationTexture.prototype.update = function() {
+
+    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now()) * 0.001;
+    this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
+
+    this.pingpong = 1 - this.pingpong;
+    this.pass( this.updatePositionsMaterial, this.targets[ this.pingpong ] );
+
+};
+
+module.exports = SimulationTexture;
