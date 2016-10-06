@@ -114,58 +114,58 @@ WorldManager.prototype.setupShadows = function() {
 
 WorldManager.prototype.createCharacters = function(){
 
-    var charsSetup = [
+    this.charsSetup = [
         {
             color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/rainbow.jpg',
+            normalMap : 'assets/normal.jpg',
             matcap : 'assets/rainbow.jpg',
             letter: 'G'
         },
         {
             color: new THREE.Color(0x119977),
-            normalMap : 'assets/rainbow.jpg',
+            normalMap : 'assets/normal.jpg',
             matcap : 'assets/rainbow.jpg',
             letter: 'P'
         },
         {
             color: new THREE.Color(0xFFFFFF),
-            normalMap : 'assets/rainbow.jpg',
-            matcap : 'assets/rainbow.jpg',
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcap_2.jpg',
             letter: 'G'
         },
         {
             color: new THREE.Color(0x774432),
-            normalMap : 'assets/rainbow.jpg',
-            matcap : 'assets/rainbow.jpg',
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcap_2.jpg',
             letter: 'P'
         },
         {
             color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/rainbow.jpg',
-            matcap : 'assets/rainbow.jpg',
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcap_2.jpg',
             letter: 'U'
         }
 
     ];
 
-    this.totalChars = charsSetup.length;
+    this.totalChars = this.charsSetup.length;
     this.loadedModels = 0;
     var separation = 0.9;
 
     for ( var i = 0; i < this.totalChars; i++ ) {
 
         var character = new CharacterBase(
-            new THREE.Vector3( ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+            new THREE.Vector3( 0.2 + ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
             false,
             i,
             0.4,
             this.renderer,
             this.scene,
-            charsSetup[i].color,
-            charsSetup[i].normalMap,
-            charsSetup[i].matcap,
+            this.charsSetup[i].color,
+            this.charsSetup[i].normalMap,
+            this.charsSetup[i].matcap,
             window.pointLights,
-            charsSetup[i].letter
+            this.charsSetup[i].letter
         );
 
         character.addEventListener( 'onLoadModel', this.onLoadCharModel.bind( this ) );
@@ -194,6 +194,38 @@ WorldManager.prototype.onLoadCharModel = function( e ){
 };
 
 WorldManager.prototype.addEvents = function() {
+    window.addEventListener( 'keydown', this.onKeydown.bind( this ) );
+};
+
+WorldManager.prototype.onKeydown = function( e ) {
+
+    var separation = 0.9;
+    var character = new CharacterBase(
+        new THREE.Vector3( this.characters[this.characters.length - 2 ].mesh.position.x + separation , 1, -0.5 ),
+        false,
+        this.characters.length,
+        0.4,
+        this.renderer,
+        this.scene,
+        this.charsSetup[0].color,
+        this.charsSetup[0].normalMap,
+        this.charsSetup[0].matcap,
+        window.pointLights,
+        e.key.toUpperCase()
+    );
+
+    character.addEventListener( 'onLoadModel', this.onLoadCharAddModel.bind( this ) );
+    this.characters.push( character );
+};
+
+WorldManager.prototype.onLoadCharAddModel = function( e ) {
+
+    var char = e.target;
+    this.scene.add(char.mesh);
+    this.scene.add(char.calcPlane);
+
+    this.charactersMesh.push(char.mesh);
+    this.charactersCalcPlane.push(char.calcPlane);
 
 };
 

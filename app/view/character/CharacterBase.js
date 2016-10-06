@@ -12,7 +12,7 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, color, matcap, matcapNormal, lights, letter ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, color, matcapNormal, matcap, lights, letter ){
 
     THREE.EventDispatcher.call( this );
 
@@ -98,7 +98,6 @@ CharacterBase.prototype.setup = function(){
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
-    this.displacedGeometry.mesh.name = 'cosica';
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 
@@ -311,6 +310,7 @@ CharacterBase.prototype.update = function( t ){
     this.positionCharacter.z = base.z;
 
     this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
+    this.mesh.rotation.y = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed + Date.now() * speed) * (0.8 * this.scale)) * 2;
     this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
 
     this.calcPlane.position.copy( this.mesh.position );

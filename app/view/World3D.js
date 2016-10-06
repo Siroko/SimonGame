@@ -96,7 +96,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
     if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
 
         this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, this.effect );
-        this.dummyCamera.position.z = 0.6;
+        this.dummyCamera.position.z = 0.9;
         this.dummyCamera.position.y = - 0.3;
 
     } else {
@@ -104,8 +104,6 @@ World3D.prototype.onInitializeManager = function( n, o ) {
         this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
 
     }
-
-    this.dummyCamera.position.z = 0.9;
 
     this.setup();
 
