@@ -33,8 +33,9 @@ GPUGeometrySimulation.prototype.init = function(){
         renderer: this.renderer
     } );
 
-    this.totalVertices = this.gpuGeometry.total * this.sizeSimulation;
     this.totalSimulation = this.sizeSimulation * this.sizeSimulation;
+    this.totalVertices = this.gpuGeometry.total * this.totalSimulation;
+
 
 };
 
@@ -50,6 +51,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
     var uvSim  = new THREE.Vector2( 0, 0 );
     var uvGeom = new THREE.Vector2( 0, 0 );
+    var counter = 0;
 
     for ( var r = 0; r < this.totalSimulation; r++ ) {
 
@@ -61,8 +63,10 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
             uvGeom.x = ( i % geomSize ) / geomSize;
             if (i % geomSize == 0 && i != 0) uvGeom.y += divGeom;
 
-            this.index2D.setXYZW( r, uvSim.x, uvSim.y, uvGeom.x, uvGeom.y );
-            this.positions.setXYZ( r, Math.random() * 10, Math.random() * 10, Math.random() * 10 );
+            this.index2D.setXYZW( counter, uvSim.x, uvSim.y, uvGeom.x, uvGeom.y );
+            this.positions.setXYZ( counter, Math.random() * 10, Math.random() * 10, Math.random() * 10 );
+
+            counter++;
         }
 
         uvGeom.y = 0;
@@ -77,6 +81,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
             'uGeometryTexture': { type: 't', value: this.gpuGeometry.geometryRT },
             'uSimulationTexture': { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] }
         },
+        side: THREE.DoubleSide,
         vertexShader: vs_buffer,
         fragmentShader: fs_buffer
 
@@ -85,12 +90,14 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
 
     this.debugPlaneGeom = new THREE.Mesh( new THREE.PlaneBufferGeometry(1, 1, 1, 1), new THREE.MeshBasicMaterial({
-        map: this.bufferMaterial.uniforms['uGeometryTexture'].value
+        map: this.bufferMaterial.uniforms['uGeometryTexture'].value,
+        transparent: true
     }));
     this.debugPlaneGeom.position.set(-2, 1, -0.5 );
 
     this.debugPlaneSimulator = new THREE.Mesh( new THREE.PlaneBufferGeometry(1, 1, 1, 1), new THREE.MeshBasicMaterial({
-        map:  this.bufferMaterial.uniforms['uSimulationTexture'].value
+        map:  this.bufferMaterial.uniforms['uSimulationTexture'].value,
+        transparent: true
     }));
     this.debugPlaneSimulator.position.set(-1, 1, -1 );
 
@@ -99,7 +106,8 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 GPUGeometrySimulation.prototype.update = function(){
 
     this.simulator.update();
-
+    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
+    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
 };
 
 module.exports = GPUGeometrySimulation;

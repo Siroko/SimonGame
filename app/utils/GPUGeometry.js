@@ -11,7 +11,6 @@ var GPUGeometry = function( params ) {
     BaseGLPass.call( this, params );
 
     this.geom = params.geom;
-    this.pingpong = 0;
 
     if( this.geom.faces ) {
 
@@ -22,8 +21,6 @@ var GPUGeometry = function( params ) {
         var totalGeomVertices = this.geom.attributes.position.array.length / 3;
 
     }
-
-    this.lights             = params.lights;
     
     var sqrtTotalGeom       = Math.sqrt( totalGeomVertices );
     // Aproximatino to the nearest upper power of two number
@@ -33,9 +30,6 @@ var GPUGeometry = function( params ) {
     this.sizeH = totalPOT;
 
     this.total              = this.sizeW * this.sizeH;
-
-    this.finalPositionsRT   = this.getRenderTarget( this.sizeW, this.sizeH );
-    this.springRT           = this.getRenderTarget( this.sizeW, this.sizeH );
 
     this.data = new Float32Array( this.total * 4 );
 
@@ -78,7 +72,6 @@ var GPUGeometry = function( params ) {
                 this.data[ it ]     = 1;
             }
             it ++;
-
         }
     }
 

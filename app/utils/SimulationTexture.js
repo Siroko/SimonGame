@@ -16,6 +16,8 @@ var SimulationTexture = function( params ) {
     this.sizeW      = params.sizeW;
     this.sizeH      = params.sizeH;
 
+    this.total      = this.sizeW * this.sizeH;
+
     this.pointSize  = params.pointSize || 0;
     this.initialBuffer = params.initialBuffer;
 

@@ -43,7 +43,7 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     // this.scene.add( this.floor );
 
-    var geom = new THREE.IcosahedronGeometry( 0.5, 1 );
+    var geom = new THREE.IcosahedronGeometry( 0.1, 1 );
     var m = new THREE.MeshPhongMaterial({
         color: 0xFF00FF
     });
