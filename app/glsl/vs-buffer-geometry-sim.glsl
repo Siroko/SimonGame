@@ -14,6 +14,12 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
 varying vec4 vGeomPosition;
+varying vec4 vPos;
+varying mat3 vNormalMatrix;
+varying vec4 vOPosition;
+varying vec2 vUv;
+varying vec3 vU;
+varying vec4 vWorldPosition;
 
 void main(){
 
@@ -21,7 +27,14 @@ void main(){
     vec4 offset = texture2D( uSimulationTexture, index2D.xy );
     vec3 p = offset.rgb + pos.rgb;
 
-   vGeomPosition = pos;
+    vGeomPosition = pos;
+    vPos = vec4(p, 1.0);
+    vOPosition = modelViewMatrix * vPos;
+    vU = normalize( vec3( modelViewMatrix * vPos ) );
+    vUv = index2D.zw;
+    vNormalMatrix = normalMatrix;
+
+    vWorldPosition = modelMatrix * vec4(pos.xyz, 1.0);
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 

@@ -57,7 +57,7 @@ WorldManager.prototype.setup = function(){
     //*****
     this.gpuGeometrySimulation = new GPUGeometrySimulation( {
         geom : geom,
-        sizeSimulation: 2,
+        sizeSimulation: 128,
         renderer: this.renderer
     } );
 
