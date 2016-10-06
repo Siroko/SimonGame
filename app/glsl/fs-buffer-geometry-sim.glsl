@@ -13,10 +13,6 @@ varying vec4 vWorldPosition;
 
 void main(){
 
-    if( vGeomPosition.a < 0.9 ) {
-        discard;
-    }
-
     vec3 fdx = dFdx( vPos.xyz );
     vec3 fdy = dFdy( vPos.xyz );
     vec3 n = normalize(cross(fdx, fdy));

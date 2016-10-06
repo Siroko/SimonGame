@@ -70,6 +70,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
         }
 
         uvGeom.y = 0;
+        counter --;
     }
 
     this.bufferGeometry = new THREE.BufferGeometry();
@@ -100,6 +101,8 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
         transparent: true
     }));
     this.debugPlaneSimulator.position.set(-1, 1, -1 );
+
+    this.simulator.update();
 
 };
 
