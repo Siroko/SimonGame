@@ -1,19 +1,12 @@
 precision highp float;
 precision highp sampler2D;
 
-attribute vec3 position;
 attribute vec4 index2D;
 
 uniform sampler2D uGeometryTexture;
 uniform sampler2D uGeometryNormals;
 uniform sampler2D uSimulationTexture;
 uniform sampler2D uSimulationPrevTexture;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
 
 varying vec4 vNormal;
 varying vec4 vSimColor;

@@ -31,9 +31,9 @@ var SimulationTexture = function( params ) {
 
     this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
 
-    this.noiseTimeScale = params.noiseTimeScale || 0.6;
-    this.noisePositionScale = params.noisePositionScale || 0.005;
-    this.noiseScale = params.noiseScale || 0.002;
+    this.noiseTimeScale = params.noiseTimeScale || .7;
+    this.noisePositionScale = params.noisePositionScale || 0.7;
+    this.noiseScale = params.noiseScale || 0.01;
     this.lifeTime = params.lifeTime || 100;
 
     this.setup();
@@ -74,7 +74,7 @@ SimulationTexture.prototype.setup = function() {
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
             'uLifeTime'             : { type: "f", value: this.lifeTime },
-            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3() },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.01, 0) },
             'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
             'uLock'                 : { type: "i", value: this.locked },
             'uCollision'            : { type: "v3", value: new THREE.Vector3() },

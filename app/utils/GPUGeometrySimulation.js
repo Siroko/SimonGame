@@ -8,6 +8,7 @@ var SimulationTexture = require('./SimulationTexture');
 
 var vs_buffer = require('./../glsl/vs-buffer-geometry-sim.glsl');
 var fs_buffer = require('./../glsl/fs-buffer-geometry-sim.glsl');
+var vs_depth_buffer = require('./../glsl/vs-buffer-geometry-sim-depth.glsl');
 
 var GPUGeometrySimulation = function( params ) {
 
@@ -48,7 +49,6 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     var divSim = 1 / this.sizeSimulation;
     var divGeom = 1 / geomSize;
 
-
     var uvSim  = new THREE.Vector2( 0, 0 );
     var uvGeom = new THREE.Vector2( 0, 0 );
     var counter = 0;
@@ -67,6 +67,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
             this.positions.setXYZ( counter, Math.random() * 10, Math.random() * 10, Math.random() * 10 );
 
             counter++;
+
         }
 
         uvGeom.y = 0;
@@ -81,9 +82,9 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
         'uniforms': {
             'uGeometryTexture': { type: 't', value: this.gpuGeometry.geometryRT },
             'uGeometryNormals': { type: 't', value: this.gpuGeometry.normalsRT },
-            'uSimulationTexture': { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] }
+            'uSimulationTexture': { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] },
+            'uSimulationPrevTexture': { type: 't', value: this.simulator.targets[ this.simulator.pingpong ] }
         },
-        side: THREE.DoubleSide,
         vertexShader: vs_buffer,
         fragmentShader: fs_buffer
 
@@ -91,19 +92,20 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
 
-    this.debugPlaneGeom = new THREE.Mesh( new THREE.PlaneBufferGeometry(1, 1, 1, 1), new THREE.MeshBasicMaterial({
-        map: this.bufferMaterial.uniforms['uGeometryTexture'].value,
-        transparent: true
-    }));
-    this.debugPlaneGeom.position.set(-2, 1, -0.5 );
+    // magic here
+    this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
 
-    this.debugPlaneSimulator = new THREE.Mesh( new THREE.PlaneBufferGeometry(1, 1, 1, 1), new THREE.MeshBasicMaterial({
-        map:  this.bufferMaterial.uniforms['uSimulationTexture'].value,
-        transparent: true
-    }));
-    this.debugPlaneSimulator.position.set(-1, 1, -1 );
+        defines: {
+            'USE_SHADOWMAP': '',
+            'DEPTH_PACKING': '3201'
+        },
+        vertexShader: vs_depth_buffer,
+        fragmentShader: THREE.ShaderLib.depth.fragmentShader,
 
-    this.simulator.update();
+        uniforms: this.bufferMaterial.uniforms
+    } );
+
+    this.bufferMesh.castShadow = true;
 
 };
 
@@ -112,6 +114,8 @@ GPUGeometrySimulation.prototype.update = function(){
     this.simulator.update();
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
+    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
+    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].needsUpdate = true;
 };
 
 module.exports = GPUGeometrySimulation;

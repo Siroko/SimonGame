@@ -41,7 +41,7 @@ WorldManager.prototype.setup = function(){
 
     this.floor.position.set( 0 , 0.1, 0 );
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
-    // this.scene.add( this.floor );
+    this.scene.add( this.floor );
 
     var geom = new THREE.IcosahedronGeometry( 0.08, 1 );
     var m = new THREE.MeshPhongMaterial({
@@ -55,19 +55,13 @@ WorldManager.prototype.setup = function(){
     this.scene.add( this.cosica );
 
     //*****
-    this.gpuGeometrySimulation = new GPUGeometrySimulation( {
-        geom : geom,
-        sizeSimulation: 128,
-        renderer: this.renderer
-    } );
-
-    this.scene.add( this.gpuGeometrySimulation.bufferMesh );
-
-    // this.scene.add( this.gpuGeometrySimulation.debugPlaneGeom );
-    // this.scene.add( this.gpuGeometrySimulation.debugPlaneSimulator );
+    // this.gpuGeometrySimulation = new GPUGeometrySimulation( {
+    //     geom : geom,
+    //     sizeSimulation: 128,
+    //     renderer: this.renderer
+    // } );
     //
-    // this.gpuGeometrySimulation.debugPlaneGeom.lookAt( this.dummyCamera.position );
-    // this.gpuGeometrySimulation.debugPlaneSimulator.lookAt( this.dummyCamera.position );
+    // this.scene.add( this.gpuGeometrySimulation.bufferMesh );
     //******
 
     var instrument = 'xylophone';
@@ -98,7 +92,7 @@ WorldManager.prototype.setupShadows = function() {
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 130, 1, 0.5, 5 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 140, 1, 0.5, 5 ) );
     this.light.shadow.bias = 0.01;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
@@ -203,6 +197,16 @@ WorldManager.prototype.onLoadCharModel = function( e ){
 
             this.charactersMesh.push(char.mesh);
             this.charactersCalcPlane.push(char.calcPlane);
+
+            if( i === 1 ){
+                this.gpuGeometrySimulation = new GPUGeometrySimulation( {
+                    geom : char.geom,
+                    sizeSimulation: 4,
+                    renderer: this.renderer
+                } );
+
+                this.scene.add( this.gpuGeometrySimulation.bufferMesh );
+            }
 
         }
     }

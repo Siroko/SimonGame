@@ -126,28 +126,8 @@ var GPUDisplacedGeometry = function( params ) {
 
     if( this.lights ) {
 
-        this.bufferMaterial = new THREE.RawShaderMaterial( {
-            'uniforms': {
-                "opacity": { value: 1.0 },
-                "uLights": { type: 'f', value: 1 },
-                "uPositionsTexture": { type: 't', value: this.geometryRT },
-                "normalMap": params.uniforms.normalMap,
-                "textureMap": params.uniforms.textureMap,
-                "pointLightPosition": { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] },
-                "pointLightColor": { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]},
-                "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
-            },
-            defines: {
-                'USE_SHADOWMAP': '',
-                'DEPTH_PACKING': '3201'
-            },
-            vertexShader: vs_bufferGeometry,
-            fragmentShader: fs_bufferGeometry
-
-        } );
-
-        this.bufferMaterial.lights = true;
         this.bufferMaterial = new THREE.ShadowMaterial();
+        this.bufferMaterial.lights = true;
         this.bufferMaterial.extensions.derivatives = true;
         this.bufferMaterial.uniforms["opacity"] =  { value: 1.0 };
         this.bufferMaterial.uniforms["uLights"] = { type: 'f', value: 1 };

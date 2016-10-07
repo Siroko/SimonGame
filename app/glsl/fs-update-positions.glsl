@@ -131,7 +131,7 @@ vec4 simplexNoiseDerivatives (vec4 v) {
 
 vec3 getCurlVelocity( vec4 position ) {
 
-    position.x += 3.0;
+//    position.x += 3.0;
     float NOISE_TIME_SCALE = uNoiseTimeScale;
     float NOISE_SCALE = uNoiseScale;
     float NOISE_POSITION_SCALE = uNoisePositionScale;
@@ -145,7 +145,7 @@ vec3 getCurlVelocity( vec4 position ) {
     vec4 yNoisePotentialDerivatives = vec4(0.0);
     vec4 zNoisePotentialDerivatives = vec4(0.0);
 
-    float persistence = 0.56;
+    float persistence = 0.1;
 
     for (int i = 0; i < OCTAVES; ++i) {
         float scale = (1.0 / 2.0) * pow(2.0, float(i));
@@ -202,7 +202,7 @@ void main () {
     }
 
     if( uLock == 0 ){
-        pLife = pLife - 0.01;
+        pLife = pLife - 0.001;
     }
 
     gl_FragColor = vec4( newPosition, pLife );
