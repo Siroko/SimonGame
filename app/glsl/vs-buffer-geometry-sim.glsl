@@ -5,6 +5,7 @@ attribute vec3 position;
 attribute vec4 index2D;
 
 uniform sampler2D uGeometryTexture;
+uniform sampler2D uGeometryNormals;
 uniform sampler2D uSimulationTexture;
 
 uniform mat4 modelViewMatrix;
@@ -21,6 +22,8 @@ varying vec2 vUv;
 varying vec3 vU;
 varying vec4 vWorldPosition;
 
+varying vec4 vNormal;
+
 void main(){
 
     vec4 pos = texture2D( uGeometryTexture, index2D.zw );
@@ -35,6 +38,8 @@ void main(){
     vNormalMatrix = normalMatrix;
 
     vWorldPosition = modelMatrix * vec4(pos.xyz, 1.0);
+
+    vNormal = texture2D( uGeometryNormals, index2D.zw );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 

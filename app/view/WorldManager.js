@@ -43,7 +43,7 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     // this.scene.add( this.floor );
 
-    var geom = new THREE.IcosahedronGeometry( 0.05, 1 );
+    var geom = new THREE.IcosahedronGeometry( 0.08, 1 );
     var m = new THREE.MeshPhongMaterial({
         color: 0xFF00FF
     });
@@ -63,11 +63,11 @@ WorldManager.prototype.setup = function(){
 
     this.scene.add( this.gpuGeometrySimulation.bufferMesh );
 
-    this.scene.add( this.gpuGeometrySimulation.debugPlaneGeom );
-    this.scene.add( this.gpuGeometrySimulation.debugPlaneSimulator );
-
-    this.gpuGeometrySimulation.debugPlaneGeom.lookAt( this.dummyCamera.position );
-    this.gpuGeometrySimulation.debugPlaneSimulator.lookAt( this.dummyCamera.position );
+    // this.scene.add( this.gpuGeometrySimulation.debugPlaneGeom );
+    // this.scene.add( this.gpuGeometrySimulation.debugPlaneSimulator );
+    //
+    // this.gpuGeometrySimulation.debugPlaneGeom.lookAt( this.dummyCamera.position );
+    // this.gpuGeometrySimulation.debugPlaneSimulator.lookAt( this.dummyCamera.position );
     //******
 
     var instrument = 'xylophone';
@@ -246,7 +246,7 @@ WorldManager.prototype.onLoadCharAddModel = function( e ) {
 
 WorldManager.prototype.update = function( timestamp, gamePads ) {
 
-    this.gpuGeometrySimulation.update();
+    if( this.gpuGeometrySimulation ) this.gpuGeometrySimulation.update();
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
