@@ -43,11 +43,11 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    var geom = new THREE.IcosahedronGeometry( 0.08, 1 );
+    this.geom = new THREE.IcosahedronGeometry( 0.08, 1 );
     var m = new THREE.MeshPhongMaterial({
         color: 0xFF00FF
     });
-    this.cosica = new THREE.Mesh( geom, m );
+    this.cosica = new THREE.Mesh( this.geom, m );
     this.cosica.castShadow = true;
     this.cosica.receiveShadow = true;
     this.cosica.position.y = 1.3;
@@ -63,6 +63,39 @@ WorldManager.prototype.setup = function(){
     //
     // this.scene.add( this.gpuGeometrySimulation.bufferMesh );
     //******
+
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function ( item, loaded, total ) {
+
+        console.log( item, loaded, total );
+
+    };
+
+    var onProgress = function ( xhr ) {
+        if ( xhr.lengthComputable ) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+        }
+    };
+
+    var onError = function ( xhr ) {
+    };
+
+    // model
+
+    var loader = new OBJLoader( manager );
+    loader.load( 'assets/models/tie.obj', (function ( object ) {
+
+        this.gpuGeometrySimulation = new GPUGeometrySimulation( {
+            geom : object.children[0].geometry,
+            matcap: THREE.ImageUtils.loadTexture('assets/matcap_2.jpg'),
+            sizeSimulation: 64,
+            renderer: this.renderer
+        } );
+
+        this.scene.add( this.gpuGeometrySimulation.bufferMesh );
+
+    } ).bind( this ), onProgress, onError );
 
     var instrument = 'xylophone';
     MIDI.loadPlugin({
@@ -198,14 +231,8 @@ WorldManager.prototype.onLoadCharModel = function( e ){
             this.charactersMesh.push(char.mesh);
             this.charactersCalcPlane.push(char.calcPlane);
 
-            if( i === 1 ){
-                this.gpuGeometrySimulation = new GPUGeometrySimulation( {
-                    geom : char.geom,
-                    sizeSimulation: 4,
-                    renderer: this.renderer
-                } );
+            if( i === 2 ){
 
-                this.scene.add( this.gpuGeometrySimulation.bufferMesh );
             }
 
         }

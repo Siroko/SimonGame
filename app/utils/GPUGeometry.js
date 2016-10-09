@@ -86,9 +86,13 @@ var GPUGeometry = function( params ) {
             var position = this.geom.attributes.position.array[ i ];
             this.data[ it ] = position;
 
+            var normal = this.geom.attributes.normal.array[ i ];
+            this.normalsData[ it ] = normal;
+
             if( ( i + 1 ) % 3 == 0 && i != 0 ) {
                 it++;
                 this.data[ it ]     = 1;
+                this.normalsData[ it ] = 1;
             }
             it ++;
         }

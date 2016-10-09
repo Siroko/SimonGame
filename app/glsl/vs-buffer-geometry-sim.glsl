@@ -15,7 +15,13 @@ uniform mat3 normalMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
-varying vec4 vNormal;
+varying vec4 vPos;
+varying mat3 vNormalMatrix;
+varying vec4 vOPosition;
+varying vec3 vU;
+varying vec2 vUv;
+
+varying vec3 n;
 varying vec4 vSimColor;
 
 mat4 rotationMatrix(vec3 axis, float angle){
@@ -46,10 +52,19 @@ void main(){
     mat4 rMatrix = rx * ry * rz;
 
     vec4 rotatedPosition = geomVertexPosition * rMatrix;
+    rotatedPosition *= (simPosition.a / 200.) * 0.05;
+    simPosition *= 0.1;
+    simPosition.y += 2.;
+    simPosition.z -= 1.;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
-    vNormal = geomVertexNormal;
+    n = geomVertexNormal.rgb;
     vSimColor = simPosition;
+
+    vPos = vec4(p, 1.0);
+    vOPosition = modelViewMatrix * vPos;
+    vU = normalize( vec3( modelViewMatrix * vPos ) );
+    vNormalMatrix = normalMatrix;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 

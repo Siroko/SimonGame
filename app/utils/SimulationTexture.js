@@ -9,6 +9,8 @@ var BaseGLPass = require('./BaseGLPass');
 var vs_simpleQuad       = require('../glsl/vs-simple-quad.glsl');
 var fs_updatePositions  = require('../glsl/fs-update-positions.glsl');
 
+var dat = require('dat-gui');
+
 var SimulationTexture = function( params ) {
 
     BaseGLPass.call( this, params );
@@ -31,9 +33,9 @@ var SimulationTexture = function( params ) {
 
     this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
 
-    this.noiseTimeScale = params.noiseTimeScale || .7;
-    this.noisePositionScale = params.noisePositionScale || 0.7;
-    this.noiseScale = params.noiseScale || 0.01;
+    this.noiseTimeScale = params.noiseTimeScale || 3;
+    this.noisePositionScale = params.noisePositionScale || 0.11;
+    this.noiseScale = params.noiseScale || 0.065;
     this.lifeTime = params.lifeTime || 100;
 
     this.setup();
@@ -98,6 +100,16 @@ SimulationTexture.prototype.setup = function() {
     this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
     this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
 
+    this.uniforms = {
+        uNoiseTimeScale: this.noiseTimeScale,
+        uNoisePositionScale: this.noisePositionScale,
+        uNoiseScale: this.noiseScale
+    };
+    this.gui = new dat.GUI();
+    this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 3);
+    this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 2);
+    this.gui.add(this.uniforms, 'uNoiseScale', 0, 2);
+
 };
 
 SimulationTexture.prototype.update = function() {
@@ -108,6 +120,9 @@ SimulationTexture.prototype.update = function() {
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updatePositionsMaterial, this.targets[ this.pingpong ] );
 
+    for( var p in this.uniforms ){
+        this.updatePositionsMaterial.uniforms[ p ].value = this.uniforms[ p ];
+    }
 };
 
 module.exports = SimulationTexture;

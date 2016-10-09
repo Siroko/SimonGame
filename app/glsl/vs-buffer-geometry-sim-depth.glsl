@@ -39,6 +39,10 @@ void main(){
     mat4 rMatrix = rx * ry * rz;
 
     vec4 rotatedPosition = geomVertexPosition * rMatrix;
+    rotatedPosition *= (simPosition.a / 200.) * 0.05;
+    simPosition *= 0.1;
+    simPosition.y += 2.;
+    simPosition.z -= 1.;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
     vNormal = geomVertexNormal;
