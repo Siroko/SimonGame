@@ -59,6 +59,7 @@ void main(){
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
     n = geomVertexNormal.rgb;
+    n = (vec4(n, 1.0) * rMatrix).rgb;
     vSimColor = simPosition;
 
     vPos = vec4(p, 1.0);
