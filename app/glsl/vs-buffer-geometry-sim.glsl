@@ -19,7 +19,6 @@ varying vec4 vPos;
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
-varying vec2 vUv;
 
 varying vec3 n;
 varying vec4 vSimColor;
@@ -59,7 +58,7 @@ void main(){
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
     n = geomVertexNormal.rgb;
-    n = (vec4(n, 1.0) * rMatrix).rgb;
+    n = normalize((vec4(n, 1.0) * rMatrix)).rgb;
     vSimColor = simPosition;
 
     vPos = vec4(p, 1.0);

@@ -43,16 +43,16 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    this.geom = new THREE.IcosahedronGeometry( 0.08, 1 );
-    var m = new THREE.MeshPhongMaterial({
-        color: 0xFF00FF
-    });
-    this.cosica = new THREE.Mesh( this.geom, m );
-    this.cosica.castShadow = true;
-    this.cosica.receiveShadow = true;
-    this.cosica.position.y = 1.3;
-    this.cosica.position.z = -0.25;
-    this.scene.add( this.cosica );
+    // this.geom = new THREE.IcosahedronGeometry( 0.08, 1 );
+    // var m = new THREE.MeshPhongMaterial({
+    //     color: 0xFF00FF
+    // });
+    // this.cosica = new THREE.Mesh( this.geom, m );
+    // this.cosica.castShadow = true;
+    // this.cosica.receiveShadow = true;
+    // this.cosica.position.y = 1.3;
+    // this.cosica.position.z = -0.25;
+    // this.scene.add( this.cosica );
 
     //*****
     // this.gpuGeometrySimulation = new GPUGeometrySimulation( {
@@ -88,8 +88,8 @@ WorldManager.prototype.setup = function(){
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
-            matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue.jpg'),
-            sizeSimulation: 54,
+            matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue_skin.jpg'),
+            sizeSimulation: mobilecheck() ? 32 : 54,
             renderer: this.renderer
         } );
 
@@ -97,16 +97,7 @@ WorldManager.prototype.setup = function(){
 
     } ).bind( this ), onProgress, onError );
 
-    var instrument = 'xylophone';
-    MIDI.loadPlugin({
-        soundfontUrl: "assets/sound/midi/MusyngKite/",
-        instrument: instrument,
-        onsuccess: (function() {
-            MIDI.programChange(0, MIDI.GM.byName[instrument].number);
-            this.createCharacters();
-
-        }).bind( this )
-    });
+    this.createCharacters();
 
 };
 
@@ -295,7 +286,7 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
 
     }
 
-    this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;
+    // this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;
 
 };
 

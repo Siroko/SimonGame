@@ -38,7 +38,6 @@ GPUGeometrySimulation.prototype.init = function(){
     this.totalSimulation = this.sizeSimulation * this.sizeSimulation;
     this.totalVertices = this.gpuGeometry.total * this.totalSimulation;
 
-
 };
 
 GPUGeometrySimulation.prototype.setupMesh = function(){

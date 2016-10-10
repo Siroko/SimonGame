@@ -6,6 +6,8 @@ var THREE = require('three');
 
 var BaseGLPass = require('./BaseGLPass');
 
+var vs_bufferGeometryMobile   = require('../glsl/vs-buffer-geometry-mobile.glsl');
+var fs_bufferGeometryMobile   = require('../glsl/fs-buffer-geometry-mobile.glsl');
 var vs_bufferGeometry   = require('../glsl/vs-buffer-geometry.glsl');
 var vs_depthBufferGeometry = require('../glsl/vs-depth-buffer-geometry.glsl');
 var fs_bufferGeometry   = require('../glsl/fs-buffer-geometry.glsl');
@@ -31,6 +33,8 @@ var GPUDisplacedGeometry = function( params ) {
     }
 
     this.lights             = params.lights;
+
+    this.isMobile           = params.isMobile;
     
     var sqrtTotalGeom       = Math.sqrt( totalGeomVertices );
     // Aproximatino to the nearest upper power of two number
@@ -126,19 +130,51 @@ var GPUDisplacedGeometry = function( params ) {
 
     if( this.lights ) {
 
-        this.bufferMaterial = new THREE.ShadowMaterial();
-        this.bufferMaterial.lights = true;
-        this.bufferMaterial.extensions.derivatives = true;
-        this.bufferMaterial.uniforms["opacity"] =  { value: 1.0 };
-        this.bufferMaterial.uniforms["uLights"] = { type: 'f', value: 1 };
-        this.bufferMaterial.uniforms["uPositionsTexture"] = { type: 't', value: this.geometryRT };
-        this.bufferMaterial.uniforms["normalMap"] = params.uniforms.normalMap;
-        this.bufferMaterial.uniforms["textureMap"] = params.uniforms.textureMap;
-        this.bufferMaterial.uniforms["pointLightPosition"] = { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] };
-        this.bufferMaterial.uniforms["pointLightColor"] = { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]};
-        this.bufferMaterial.uniforms["pointLightIntensity"] = { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] };
-        this.bufferMaterial.vertexShader = vs_bufferGeometry;
-        this.bufferMaterial.fragmentShader = fs_bufferGeometry;
+        if( !this.isMobile ) {
+            this.bufferMaterial = new THREE.ShadowMaterial();
+            this.bufferMaterial.lights = true;
+            this.bufferMaterial.extensions.derivatives = true;
+            this.bufferMaterial.uniforms["opacity"] = {value: 1.0};
+            this.bufferMaterial.uniforms["uLights"] = {type: 'f', value: 1};
+            this.bufferMaterial.uniforms["uPositionsTexture"] = {type: 't', value: this.geometryRT};
+            this.bufferMaterial.uniforms["normalMap"] = params.uniforms.normalMap;
+            this.bufferMaterial.uniforms["textureMap"] = params.uniforms.textureMap;
+            this.bufferMaterial.uniforms["pointLightPosition"] = {
+                type: 'v3v',
+                value: [this.lights[0].position, this.lights[1].position]
+            };
+            this.bufferMaterial.uniforms["pointLightColor"] = {
+                type: 'v3v',
+                value: [this.lights[0].color, this.lights[1].color]
+            };
+            this.bufferMaterial.uniforms["pointLightIntensity"] = {
+                type: 'fv',
+                value: [this.lights[0].intensity, this.lights[1].intensity]
+            };
+            this.bufferMaterial.vertexShader = vs_bufferGeometry;
+            this.bufferMaterial.fragmentShader = fs_bufferGeometry;
+        } else {
+            this.bufferMaterial = new THREE.RawShaderMaterial();
+            this.bufferMaterial.uniforms["opacity"] = {value: 1.0};
+            this.bufferMaterial.uniforms["uLights"] = {type: 'f', value: 1};
+            this.bufferMaterial.uniforms["uPositionsTexture"] = {type: 't', value: this.geometryRT};
+            this.bufferMaterial.uniforms["normalMap"] = params.uniforms.normalMap;
+            this.bufferMaterial.uniforms["textureMap"] = params.uniforms.textureMap;
+            this.bufferMaterial.uniforms["pointLightPosition"] = {
+                type: 'v3v',
+                value: [this.lights[0].position, this.lights[1].position]
+            };
+            this.bufferMaterial.uniforms["pointLightColor"] = {
+                type: 'v3v',
+                value: [this.lights[0].color, this.lights[1].color]
+            };
+            this.bufferMaterial.uniforms["pointLightIntensity"] = {
+                type: 'fv',
+                value: [this.lights[0].intensity, this.lights[1].intensity]
+            };
+            this.bufferMaterial.vertexShader = vs_bufferGeometryMobile;
+            this.bufferMaterial.fragmentShader = fs_bufferGeometryMobile;
+        }
 
     } else {
 

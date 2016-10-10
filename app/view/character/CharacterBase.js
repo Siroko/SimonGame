@@ -35,8 +35,8 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
     this.seed = Math.random();
 
-    this.regularTexture = THREE.ImageUtils.loadTexture('assets/faceCreature.png');
-    this.happyTexture = THREE.ImageUtils.loadTexture('assets/faceCreatureHappy.png');
+    // this.regularTexture = THREE.ImageUtils.loadTexture('assets/faceCreature.png');
+    // this.happyTexture = THREE.ImageUtils.loadTexture('assets/faceCreatureHappy.png');
 
     this.returnFaceTimer = 0;
     this.returnParticlesTimer = 0;
@@ -82,6 +82,7 @@ CharacterBase.prototype.setup = function(){
     // this.geom = new THREE.IcosahedronGeometry( 0.5, 3 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
+        'isMobile'          : mobilecheck(),
         'renderer'          : this.renderer,
         'geom'              : this.geom,
         'lights'            : this.lights,

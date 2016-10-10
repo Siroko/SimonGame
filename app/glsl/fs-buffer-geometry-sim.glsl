@@ -1,5 +1,3 @@
-//#extension GL_OES_standard_derivatives : enable
-
 precision highp float;
 precision highp sampler2D;
 
@@ -10,7 +8,6 @@ varying vec4 vPos;
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
-varying vec2 vUv;
 
 varying vec3 n;
 varying vec4 vSimColor;
