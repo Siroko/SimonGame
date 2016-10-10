@@ -80,10 +80,6 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
     this.bufferMaterial = new THREE.RawShaderMaterial();
-    // this.bufferMaterial.lights = true;
-    // this.bufferMaterial.uniforms["opacity"] =  { value: 1.0 };
-    // this.bufferMaterial.uniforms["uLights"] = { type: 'f', value: 1 };
-
     this.bufferMaterial.uniforms['uGeometryTexture'] = { type: 't', value: this.gpuGeometry.geometryRT };
     this.bufferMaterial.uniforms['uGeometryNormals'] = { type: 't', value: this.gpuGeometry.normalsRT };
     this.bufferMaterial.uniforms['uSimulationTexture'] = { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] };
@@ -100,7 +96,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
         defines: {
             'USE_SHADOWMAP': '',
-            'DEPTH_PACKING': '3200'
+            'DEPTH_PACKING': '3201'
         },
         vertexShader: vs_depth_buffer,
         fragmentShader: THREE.ShaderLib.depth.fragmentShader,

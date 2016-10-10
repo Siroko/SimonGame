@@ -36,6 +36,11 @@ var Simulator = function( params ) {
     this.noiseScale = params.noiseScale || 0.002;
     this.lifeTime = params.lifeTime || 100;
 
+    this.persistence = params.persistence || 0.56;
+    this.offset = params.offset || new THREE.Vector3(3, 0, 0);
+
+    this.speedDie = params.speedDie || 0.01;
+
     this.temVect = new THREE.Vector3();
 
     this.setup();
@@ -120,6 +125,9 @@ Simulator.prototype.setup = function() {
             'uNoiseTimeScale'       : { type: "f", value: this.noiseTimeScale },
             'uNoisePositionScale'   : { type: "f", value: this.noisePositionScale },
             'uNoiseScale'           : { type: "f", value: this.noiseScale },
+            'uOffset'               : { type: "v3", value: this.offset },
+            'uPersistence'          : { type: "f", value: this.persistence },
+            'uSpeedDie'             : { type: "f", value: this.speedDie },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
                 this.boundary.position.y,

@@ -61,6 +61,9 @@ GamePads.prototype.loadAssets = function(){
             if( obj.name.indexOf('bola') >= 0 ){
                 this.h1Handler =  obj;
             }
+
+            obj.castShadow = true;
+            obj.receiveShadow = true;
         }
         this.h1.add(object);
 
@@ -74,6 +77,9 @@ GamePads.prototype.loadAssets = function(){
             if( obj.name.indexOf('bola') >= 0 ){
                 this.h2Handler =  obj;
             }
+
+            obj.castShadow = true;
+            obj.receiveShadow = true;
         }
         this.h2.add(object);
 

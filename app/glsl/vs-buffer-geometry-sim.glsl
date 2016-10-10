@@ -46,15 +46,15 @@ void main(){
 
     vec3 rotationVec = normalize( simPrevPosition.rgb - simPosition.rgb );
 
-    mat4 rx = rotationMatrix( vec3( 1.0, 0.0, 0.0 ), rotationVec.x );
-    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y );
-    mat4 rz = rotationMatrix( vec3( 0.0, 0.0, 1.0 ), rotationVec.z );
+    mat4 rx = rotationMatrix( vec3( 1.0, 0.0, 0.0 ), rotationVec.x + simPosition.x );
+    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y + simPosition.y );
+    mat4 rz = rotationMatrix( vec3( 0.0, 0.0, 1.0 ), rotationVec.z + simPosition.z );
     mat4 rMatrix = rx * ry * rz;
 
     vec4 rotatedPosition = geomVertexPosition * rMatrix;
-    rotatedPosition *= (simPosition.a / 200.) * 0.05;
+    rotatedPosition *= (simPosition.a / 100.) * 0.05;
     simPosition *= 0.1;
-    simPosition.y += 2.;
+    simPosition.y -= 0.5;
     simPosition.z -= 1.;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 

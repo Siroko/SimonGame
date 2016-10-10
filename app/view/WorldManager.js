@@ -84,11 +84,11 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/tie.obj', (function ( object ) {
+    loader.load( 'assets/models/leaf.obj', (function ( object ) {
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
-            matcap: THREE.ImageUtils.loadTexture('assets/matcap_2.jpg'),
+            matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue.jpg'),
             sizeSimulation: 64,
             renderer: this.renderer
         } );

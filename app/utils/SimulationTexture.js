@@ -35,8 +35,12 @@ var SimulationTexture = function( params ) {
 
     this.noiseTimeScale = params.noiseTimeScale || 3;
     this.noisePositionScale = params.noisePositionScale || 0.11;
-    this.noiseScale = params.noiseScale || 0.065;
+    this.noiseScale = params.noiseScale || 0.039;
     this.lifeTime = params.lifeTime || 100;
+    this.persistence = params.persistence || 0.01;
+    this.speedDie = params.speedDie || 0.001;
+
+    this.offset = params.offset || new THREE.Vector3(0, 0, 0);
 
     this.setup();
 };
@@ -76,13 +80,16 @@ SimulationTexture.prototype.setup = function() {
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
             'uLifeTime'             : { type: "f", value: this.lifeTime },
-            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.01, 0) },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.05, 0) },
             'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
             'uLock'                 : { type: "i", value: this.locked },
             'uCollision'            : { type: "v3", value: new THREE.Vector3() },
             'uNoiseTimeScale'       : { type: "f", value: this.noiseTimeScale },
             'uNoisePositionScale'   : { type: "f", value: this.noisePositionScale },
             'uNoiseScale'           : { type: "f", value: this.noiseScale },
+            'uOffset'               : { type: "v3", value: this.offset },
+            'uPersistence'          : { type: "f", value: this.persistence },
+            'uSpeedDie'             : { type: "f", value: this.speedDie },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
                 this.boundary.position.y,
@@ -107,8 +114,8 @@ SimulationTexture.prototype.setup = function() {
     };
     this.gui = new dat.GUI();
     this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 3);
-    this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 2);
-    this.gui.add(this.uniforms, 'uNoiseScale', 0, 2);
+    this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.2);
+    this.gui.add(this.uniforms, 'uNoiseScale', 0, 0.1);
 
 };
 
