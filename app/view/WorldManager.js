@@ -89,7 +89,7 @@ WorldManager.prototype.setup = function(){
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
             matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue.jpg'),
-            sizeSimulation: 64,
+            sizeSimulation: 54,
             renderer: this.renderer
         } );
 
