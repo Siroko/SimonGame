@@ -24,8 +24,8 @@ var SimulationTexture = function( params ) {
     this.initialBuffer = params.initialBuffer;
 
     this.boundary   = params.boundary || {
-            position : new THREE.Vector3( 0, 0, 0 ),
-            size : new THREE.Vector3( 3, 3, 3 )
+            position : new THREE.Vector3( 0, 10, 0 ),
+            size : new THREE.Vector3( 4, 4, 4 )
         };
 
     this.directionFlow = params.directionFlow;
@@ -33,12 +33,12 @@ var SimulationTexture = function( params ) {
 
     this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
 
-    this.noiseTimeScale = params.noiseTimeScale || 0.9;
+    this.noiseTimeScale = params.noiseTimeScale || 0.46;
     this.noisePositionScale = params.noisePositionScale || 0.18;
-    this.noiseScale = params.noiseScale || 0.01;
+    this.noiseScale = params.noiseScale || 0.0206;
     this.lifeTime = params.lifeTime || 100;
     this.persistence = params.persistence || 0.03;
-    this.speedDie = params.speedDie || 0.0001;
+    this.speedDie = params.speedDie || 0.001;
 
     this.offset = params.offset || new THREE.Vector3(0, 0, 0);
 
@@ -80,7 +80,7 @@ SimulationTexture.prototype.setup = function() {
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
             'uLifeTime'             : { type: "f", value: this.lifeTime },
-            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.005, 0) },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.01, 0) },
             'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
             'uLock'                 : { type: "i", value: this.locked },
             'uCollision'            : { type: "v3", value: new THREE.Vector3() },

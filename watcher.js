@@ -36,7 +36,7 @@ function bundle( e ) {
         .pipe(source('bundle.js'))
         // optional, remove if you don't need to buffer file contents
         .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: false})) // loads map from browserify file
+        .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
         // Add transformation tasks to the pipeline here.
         .pipe(uglify({
            compress: {

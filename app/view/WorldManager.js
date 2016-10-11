@@ -34,16 +34,16 @@ WorldManager.prototype = Object.create( THREE.EventDispatcher.prototype );
 WorldManager.prototype.setup = function(){
 
     this.floor = new THREE.Mesh( new THREE.PlaneBufferGeometry( 60, 60, 1, 1 ), new THREE.MeshPhongMaterial( {
-        color: 0xFFFFFF,
-        ambient: 0xFFFFFF
-
+        color: 0xDDDDDD,
+        shininess: 0,
+        specular: 0x111111
     } ) );
 
     this.floor.position.set( 0 , 0.1, 0 );
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    // this.geom = new THREE.IcosahedronGeometry( 0.08, 1 );
+    // this.geom = new THREE.IcosahedronGeometry( 3, 1 );
     // var m = new THREE.MeshPhongMaterial({
     //     color: 0xFF00FF
     // });
@@ -89,7 +89,7 @@ WorldManager.prototype.setup = function(){
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
             matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
-            sizeSimulation: mobilecheck() ? 32 : 54,
+            sizeSimulation: mobilecheck() ? 128 : 128,
             renderer: this.renderer
         } );
 
@@ -106,18 +106,18 @@ WorldManager.prototype.setupShadows = function() {
     var SHADOW_MAP_WIDTH = 1024;
     var SHADOW_MAP_HEIGHT = 1024;
 
-    this.light = new THREE.SpotLight( 0xffffff, 0.1 );
-    this.light.distance = 10;
+    this.light = new THREE.SpotLight( 0xffffff, 0.4 );
+    this.light.distance = 5;
     this.light.penumbra = 0.1;
-    this.light.decay = 0;
-    this.light.angle = Math.PI * 0.4;
-    this.light.position.set( 0, 1.8, 1 );
+    this.light.decay = 1;
+    this.light.angle = Math.PI * .8;
+    this.light.position.set( 0, 4.4, 0 );
     this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 140, 1, 0.5, 5 ) );
-    this.light.shadow.bias = 0.01;
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 50, 1, 2, 7 ) );
+    this.light.shadow.bias = 0.0001;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     this.light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
@@ -187,30 +187,30 @@ WorldManager.prototype.createCharacters = function(){
 
     ];
 
-    this.totalChars = this.charsSetup.length;
-    this.loadedModels = 0;
-    var separation = 1.3;
-
-    for ( var i = 0; i < this.totalChars; i++ ) {
-
-        var character = new CharacterBase(
-            new THREE.Vector3( 0.2 + ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
-            false,
-            i,
-            0.4,
-            this.renderer,
-            this.scene,
-            this.charsSetup[i].color,
-            this.charsSetup[i].normalMap,
-            this.charsSetup[i].matcap,
-            window.pointLights,
-            this.charsSetup[i].letter
-        );
-
-        character.addEventListener( 'onLoadModel', this.onLoadCharModel.bind( this ) );
-        this.characters.push( character );
-
-    }
+    // this.totalChars = this.charsSetup.length;
+    // this.loadedModels = 0;
+    // var separation = 1.3;
+    //
+    // for ( var i = 0; i < this.totalChars; i++ ) {
+    //
+    //     var character = new CharacterBase(
+    //         new THREE.Vector3( 0.2 + ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+    //         false,
+    //         i,
+    //         0.4,
+    //         this.renderer,
+    //         this.scene,
+    //         this.charsSetup[i].color,
+    //         this.charsSetup[i].normalMap,
+    //         this.charsSetup[i].matcap,
+    //         window.pointLights,
+    //         this.charsSetup[i].letter
+    //     );
+    //
+    //     character.addEventListener( 'onLoadModel', this.onLoadCharModel.bind( this ) );
+    //     this.characters.push( character );
+    //
+    // }
 };
 
 WorldManager.prototype.onLoadCharModel = function( e ){
@@ -276,21 +276,21 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
 
     if( this.gpuGeometrySimulation ) this.gpuGeometrySimulation.update();
 
-    for (var i = 0; i < this.characters.length; i++) {
-        var char = this.characters[i];
-        if( char.mesh ) {
-            if (this.dummyCamera.position.z != 0) {
-                char.mesh.lookAt(this.dummyCamera.position);
-            } else {
-                char.mesh.lookAt(this.camera.position);
-            }
-
-            char.update(timestamp);
-            char.positionTouch1.copy(gamePads.intersectPoint);
-            char.positionTouch2.copy(gamePads.intersectPoint2);
-        }
-
-    }
+    // for (var i = 0; i < this.characters.length; i++) {
+    //     var char = this.characters[i];
+    //     if( char.mesh ) {
+    //         if (this.dummyCamera.position.z != 0) {
+    //             char.mesh.lookAt(this.dummyCamera.position);
+    //         } else {
+    //             char.mesh.lookAt(this.camera.position);
+    //         }
+    //
+    //         char.update(timestamp);
+    //         char.positionTouch1.copy(gamePads.intersectPoint);
+    //         char.positionTouch2.copy(gamePads.intersectPoint2);
+    //     }
+    //
+    // }
 
 
     // this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;

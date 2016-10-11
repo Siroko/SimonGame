@@ -3,18 +3,29 @@ precision highp sampler2D;
 
 uniform sampler2D uMatcap;
 uniform sampler2D uNormalMap;
+uniform float opacity;
 
 varying vec4 vPos;
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
-
-varying vec3 n;
+varying vec4 vWorldPosition;
 varying vec4 vSimColor;
+
+#include <common>
+#include <packing>
+#include <bsdfs>
+#include <lights_pars>
+#include <shadowmap_pars_fragment>
+#include <shadowmask_pars_fragment>
 
 float random(vec3 scale,float seed){return fract(sin(dot(gl_FragCoord.xyz+seed,scale))*43758.5453+seed);}
 
 void main(){
+
+    vec3 fdx = dFdx( vPos.xyz );
+    vec3 fdy = dFdy( vPos.xyz );
+    vec3 n = normalize(cross(fdx, fdy));
 
     vec3 vNormal = vNormalMatrix * n;
     vec3 vONormal = n;
@@ -75,5 +86,8 @@ void main(){
     float nn = .05 * random( vec3( 1. ), length( gl_FragCoord ) );
     base += vec3( nn );
 
-    gl_FragColor = vec4( base.rgb, 1.0 );
+    float shadowMask = (getShadowMask() + 0.8 );
+    shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
+
+    gl_FragColor = vec4( base.rgb * shadowMask,  1.0);
 }

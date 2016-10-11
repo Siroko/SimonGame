@@ -13,7 +13,7 @@ var Simulator = require('./../utils/Simulator');
 var World3D = function( container ) {
 
     this.container      = container;
-    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
+    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
@@ -126,7 +126,7 @@ World3D.prototype.render = function( timestamp ) {
 
     // this.simulator.update();
     // Render the scene through the manager.
-    this.renderer.setClearColor( 0x958D83 );
+    this.renderer.setClearColor( 0x807B73 );
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);

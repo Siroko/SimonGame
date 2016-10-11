@@ -6,8 +6,8 @@ var THREE = require('three');
 
 var BaseGLPass = require('./BaseGLPass');
 
-var vs_bufferGeometry   = require('../glsl/vs-buffer-geometry.glsl');
-var fs_bufferGeometry   = require('../glsl/fs-buffer-geometry.glsl');
+var vs_bufferGeometryMobile   = require('../glsl/vs-buffer-geometry-mobile.glsl');
+var fs_bufferGeometryMobile   = require('../glsl/fs-buffer-geometry-mobile.glsl');
 var vs_bufferGeometry   = require('../glsl/vs-buffer-geometry.glsl');
 var vs_depthBufferGeometry = require('../glsl/vs-depth-buffer-geometry.glsl');
 var fs_bufferGeometry   = require('../glsl/fs-buffer-geometry.glsl');
@@ -47,8 +47,6 @@ var GPUDisplacedGeometry = function( params ) {
 
     this.finalPositionsRT   = this.getRenderTarget( this.sizeW, this.sizeH );
     this.springRT           = this.getRenderTarget( this.sizeW, this.sizeH );
-
-    var volume = 10;
 
     this.data = new Float32Array( this.total * 4 );
     this.normalsData = new Float32Array( this.total * 4 );

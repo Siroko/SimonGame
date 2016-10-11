@@ -37,7 +37,7 @@ void main(){
 
     vec3 fdx = dFdx( vPos.xyz );
 	vec3 fdy = dFdy( vPos.xyz );
-	vec3 n = vN.rgb;
+	vec3 n = normalize(cross(fdx, fdy));
 
     vec3 vNormal = vNormalMatrix * n;
     vec3 vONormal = n;
@@ -103,18 +103,17 @@ void main(){
     // Pretty basic lambertian lighting...
     vec4 addedLights = vec4( 0.5, 0.5, 0.5, 1.0 );
 
-    if( uLights == 1.0 ){
+    if( uLights == 1.0 ) {
         for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
             vec3 lightDirection = normalize( vOPosition.rgb - pointLightPosition[ l ] );
             addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
         }
     } else {
-
         addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
     }
 
     float shadowMask = (getShadowMask() + .8);
     shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
-    gl_FragColor = vec4(vec3(base.rgb * addedLights.rgb * shadowMask ),  1.0);
+    gl_FragColor = vec4( vec3( base.rgb * addedLights.rgb * shadowMask ),  1.0 );
 
 }
