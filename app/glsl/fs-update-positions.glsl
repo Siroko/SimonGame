@@ -17,6 +17,8 @@ uniform vec3 uOffset;
 uniform float uPersistence;
 uniform float uSpeedDie;
 
+uniform vec3 uOriginEmiter;
+
 varying vec2 vUv;
 
 const int OCTAVES = 8;
@@ -196,7 +198,7 @@ void main () {
 
     if( pLife < 0.0 ){
         pLife = uLifeTime;
-        newPosition = geomPositions.rgb + uOffsetPosition;
+        newPosition = geomPositions.xyz + uOffsetPosition;
     }
 
     if( uLock != 0 && pLife == uLifeTime ){

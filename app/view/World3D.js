@@ -30,7 +30,7 @@ var World3D = function( container ) {
     this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x664411, 0.2 );
+    this.pointLight2 = new THREE.PointLight( 0x446688, 0.2 );
     this.pointLight2.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight2 );
 
@@ -51,15 +51,6 @@ var World3D = function( container ) {
 
     this.manager = new WebVRManager( this.renderer, this.effect, params );
     this.addEvents();
-
-    this.simulator = new Simulator( {
-        sizeW: 8,
-        sizeH: 8,
-        pointSize: 2,
-        renderer: this.renderer
-    } );
-
-    this.scene.add( this.simulator.bufferMesh );
 
 };
 
@@ -121,11 +112,19 @@ World3D.prototype.render = function( timestamp ) {
     //this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
 
+    if( this.worldManager.gpuGeometrySimulation ){
+        this.worldManager.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms['uOriginEmiter'].value = new THREE.Vector3(
+            this.gamePads.intersectPoint.x + Math.random()*0.1,
+            this.gamePads.intersectPoint.y + Math.random()*0.1,
+            this.gamePads.intersectPoint.z + Math.random()*0.1
+        );
+    }
+
     this.worldManager.update( timestamp, this.gamePads );
     // Update VR headset position and apply to camera.
     this.controls.update();
 
-    this.simulator.update();
+    // this.simulator.update();
     // Render the scene through the manager.
     this.renderer.setClearColor( 0x958D83 );
     this.renderer.setRenderTarget( null ); // add this line

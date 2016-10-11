@@ -20,6 +20,8 @@ varying vec2 vUv;
 
 varying vec4 vWorldPosition;
 
+varying vec4 vN;
+
 uniform float opacity;
 
 #include <common>
@@ -35,7 +37,7 @@ void main(){
 
     vec3 fdx = dFdx( vPos.xyz );
 	vec3 fdy = dFdy( vPos.xyz );
-	vec3 n = normalize(cross(fdx, fdy));
+	vec3 n = vN.rgb;
 
     vec3 vNormal = vNormalMatrix * n;
     vec3 vONormal = n;

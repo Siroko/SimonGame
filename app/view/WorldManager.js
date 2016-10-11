@@ -84,11 +84,11 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/leaf.obj', (function ( object ) {
+    loader.load( 'assets/models/asteroid.obj', (function ( object ) {
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
-            matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue_skin.jpg'),
+            matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
             sizeSimulation: mobilecheck() ? 32 : 54,
             renderer: this.renderer
         } );
@@ -111,7 +111,7 @@ WorldManager.prototype.setupShadows = function() {
     this.light.penumbra = 0.1;
     this.light.decay = 0;
     this.light.angle = Math.PI * 0.4;
-    this.light.position.set( 0, 1.9, 0 );
+    this.light.position.set( 0, 1.8, 1 );
     this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
@@ -151,39 +151,45 @@ WorldManager.prototype.createCharacters = function(){
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/rainbow.jpg',
-            letter: 'G'
+            matcap : 'assets/matcap_twilight.jpg',
+            letter: 'S'
         },
         {
             color: new THREE.Color(0x119977),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/rainbow.jpg',
+            matcap : 'assets/matcap_twilight.jpg',
             letter: 'P'
         },
         {
             color: new THREE.Color(0xFFFFFF),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'G'
+            matcap : 'assets/matcap_twilight.jpg',
+            letter: 'R'
         },
         {
             color: new THREE.Color(0x774432),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'P'
+            matcap : 'assets/matcap_twilight.jpg',
+            letter: 'I'
         },
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'U'
+            matcap : 'assets/matcap_twilight.jpg',
+            letter: 'N'
+        },
+        {
+            color: new THREE.Color(0xFF3377),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcap_twilight.jpg',
+            letter: 'G'
         }
 
     ];
 
     this.totalChars = this.charsSetup.length;
     this.loadedModels = 0;
-    var separation = 0.9;
+    var separation = 1.3;
 
     for ( var i = 0; i < this.totalChars; i++ ) {
 
@@ -285,6 +291,7 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
         }
 
     }
+
 
     // this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;
 
