@@ -43,16 +43,15 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    // this.geom = new THREE.IcosahedronGeometry( 3, 1 );
-    // var m = new THREE.MeshPhongMaterial({
-    //     color: 0xFF00FF
-    // });
-    // this.cosica = new THREE.Mesh( this.geom, m );
-    // this.cosica.castShadow = true;
-    // this.cosica.receiveShadow = true;
-    // this.cosica.position.y = 1.3;
-    // this.cosica.position.z = -0.25;
-    // this.scene.add( this.cosica );
+    this.geom = new THREE.IcosahedronGeometry( 20, 2 );
+    var m = new THREE.MeshBasicMaterial({
+        color: 0xCC7832
+    });
+    this.cosica = new THREE.Mesh( this.geom, m );
+    this.cosica.position.x = 30;
+    this.cosica.position.y = 2;
+    this.cosica.position.z = -80;
+    this.scene.add( this.cosica );
 
     //*****
     // this.gpuGeometrySimulation = new GPUGeometrySimulation( {
@@ -103,8 +102,8 @@ WorldManager.prototype.setup = function(){
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 1024;
-    var SHADOW_MAP_HEIGHT = 1024;
+    var SHADOW_MAP_WIDTH = 4096;
+    var SHADOW_MAP_HEIGHT = 4096;
 
     this.light = new THREE.SpotLight( 0xffffff, 0.4 );
     this.light.distance = 5;
