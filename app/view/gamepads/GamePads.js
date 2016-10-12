@@ -31,8 +31,8 @@ var GamePads = function( scene, camera, worldManager, effect ){
 
     this.tmpVect = new THREE.Vector3();
 
-    this.scene.add( this.h1 );
-    this.scene.add( this.h2 );
+    // this.scene.add( this.h1 );
+    // this.scene.add( this.h2 );
 
     this.loadAssets();
 

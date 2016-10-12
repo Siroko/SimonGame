@@ -1,3 +1,8 @@
+#extension GL_OES_standard_derivatives : enable
+precision highp float;
+precision highp sampler2D;
+
+attribute vec3 position;
 attribute vec4 index2D;
 
 uniform sampler2D uGeometryTexture;
@@ -5,12 +10,21 @@ uniform sampler2D uGeometryNormals;
 uniform sampler2D uSimulationTexture;
 uniform sampler2D uSimulationPrevTexture;
 
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat3 normalMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+
 varying vec4 vPos;
 varying mat3 vNormalMatrix;
+varying vec4 vWorldPosition;
 varying vec4 vOPosition;
-varying vec4 vU;
+varying vec3 vU;
 
-#include <shadowmap_pars_vertex>
+varying vec3 n;
+varying vec4 vSimColor;
+varying float vSpecial;
 
 mat4 rotationMatrix(vec3 axis, float angle){
 
@@ -47,15 +61,17 @@ void main(){
 //    simPosition.z -= 1.;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
+    n = geomVertexNormal.rgb;
+    n = normalize((vec4(n, 1.0) * rMatrix)).rgb;
+    vSimColor = simPosition;
+
     vPos = vec4(p, 1.0);
     vOPosition = modelViewMatrix * vPos;
-    vU = vec4(normalize( vec3( modelViewMatrix * vPos ) ), index2D.x/index2D.y);
+    vU = normalize( vec3( modelViewMatrix * vPos ) );
     vNormalMatrix = normalMatrix;
+    vWorldPosition = modelMatrix * vec4(p.xyz, 1.0);
 
-    vec3 transformed = vec3( p );
-    #include <project_vertex>
-    #include <worldpos_vertex>
-    #include <shadowmap_vertex>
+    vSpecial = index2D.x/index2D.y;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 

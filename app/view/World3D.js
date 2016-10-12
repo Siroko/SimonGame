@@ -37,7 +37,7 @@ var World3D = function( container ) {
     this.amb = new THREE.AmbientLight( 0x8C857C, 1 );
     this.scene.add( this.amb );
 
-    window.pointLights = [ this.pointLight, this.pointLight2 ];
+    // window.pointLights = [ this.pointLight, this.pointLight2 ];
 
     this.dummyCamera = new THREE.Object3D();
     this.dummyCamera.add( this.camera);

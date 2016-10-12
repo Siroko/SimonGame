@@ -1,3 +1,4 @@
+#extension GL_OES_standard_derivatives : enable
 precision highp float;
 precision highp sampler2D;
 
@@ -10,14 +11,10 @@ uniform float opacity;
 varying vec4 vPos;
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
-varying vec4 vU;
-
-#include <common>
-#include <packing>
-#include <bsdfs>
-#include <lights_pars>
-#include <shadowmap_pars_fragment>
-#include <shadowmask_pars_fragment>
+varying vec3 vU;
+varying vec4 vWorldPosition;
+varying vec4 vSimColor;
+varying float vSpecial;
 
 float random(vec3 scale,float seed){return fract(sin(dot(gl_FragCoord.xyz+seed,scale))*43758.5453+seed);}
 
@@ -69,14 +66,14 @@ void main(){
     mat3 tsb = mat3( normalize( blended_tangent ), normalize( cross( vNormal, blended_tangent ) ), normalize( vNormal ) );
     vec3 finalNormal = tsb * normalTex;
 
-    vec3 r = reflect( normalize( vU.rgb ), normalize( finalNormal ) );
+    vec3 r = reflect( normalize( vU ), normalize( finalNormal ) );
     float m = 2.0 * sqrt( r.x * r.x + r.y * r.y + ( r.z + 1.0 ) * ( r.z + 1.0 ) );
     vec2 calculatedNormal = vec2( r.x / m + 0.5,  r.y / m + 0.5 );
 
     vec3 base = texture2D( uMatcap, calculatedNormal ).rgb;
-    if( vU.w < 0.2 ){
+    if( vSpecial < 0.2 ){
         base = texture2D( uSpecialMatcap, calculatedNormal ).rgb;
-        if( vU.w < 0.1 ){
+        if( vSpecial < 0.1 ){
             base = texture2D( uSpecial2Matcap, calculatedNormal ).rgb;
         }
     }
@@ -92,8 +89,5 @@ void main(){
     float nn = .05 * random( vec3( 1. ), length( gl_FragCoord ) );
     base += vec3( nn );
 
-    float shadowMask = (getShadowMask() + 0.7 );
-    shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
-
-    gl_FragColor = vec4( base.rgb * shadowMask,  1.0);
+    gl_FragColor = vec4( base.rgb,  1.0);
 }

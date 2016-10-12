@@ -43,15 +43,15 @@ WorldManager.prototype.setup = function(){
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
     this.scene.add( this.floor );
 
-    this.geom = new THREE.IcosahedronGeometry( 20, 2 );
-    var m = new THREE.MeshBasicMaterial({
-        color: 0xCC7832
-    });
-    this.cosica = new THREE.Mesh( this.geom, m );
-    this.cosica.position.x = 30;
-    this.cosica.position.y = 2;
-    this.cosica.position.z = -80;
-    this.scene.add( this.cosica );
+    // this.geom = new THREE.IcosahedronGeometry( 20, 4 );
+    // var m = new THREE.MeshBasicMaterial({
+    //     color: 0x9b9188
+    // });
+    // this.cosica = new THREE.Mesh( this.geom, m );
+    // this.cosica.position.x = 30;
+    // this.cosica.position.y = 2;
+    // this.cosica.position.z = -80;
+    // this.scene.add( this.cosica );
 
     //*****
     // this.gpuGeometrySimulation = new GPUGeometrySimulation( {
@@ -88,7 +88,10 @@ WorldManager.prototype.setup = function(){
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
             matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
-            sizeSimulation: mobilecheck() ? 128 : 128,
+            specialMatcap: THREE.ImageUtils.loadTexture('assets/emerald.jpg'),
+            special2Matcap: THREE.ImageUtils.loadTexture('assets/matcap_purple.jpg'),
+            sizeSimulation: mobilecheck() ? 64 : 128,
+            isMobile: mobilecheck(),
             renderer: this.renderer
         } );
 
@@ -102,8 +105,8 @@ WorldManager.prototype.setup = function(){
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 4096;
-    var SHADOW_MAP_HEIGHT = 4096;
+    var SHADOW_MAP_WIDTH = 1024;
+    var SHADOW_MAP_HEIGHT = 1024;
 
     this.light = new THREE.SpotLight( 0xffffff, 0.4 );
     this.light.distance = 5;
@@ -251,6 +254,7 @@ WorldManager.prototype.onKeydown = function( e ) {
         this.scene,
         this.charsSetup[0].color,
         this.charsSetup[0].normalMap,
+        this.charsSetup[0].matcap,
         this.charsSetup[0].matcap,
         window.pointLights,
         e.key.toUpperCase()

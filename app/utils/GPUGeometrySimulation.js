@@ -10,12 +10,19 @@ var vs_buffer = require('./../glsl/vs-buffer-geometry-sim.glsl');
 var fs_buffer = require('./../glsl/fs-buffer-geometry-sim.glsl');
 var vs_depth_buffer = require('./../glsl/vs-buffer-geometry-sim-depth.glsl');
 
+var vs_buffer_mobile = require('./../glsl/vs-buffer-geometry-sim-mobile.glsl');
+var fs_buffer_mobile = require('./../glsl/fs-buffer-geometry-sim-mobile.glsl');
+
 var GPUGeometrySimulation = function( params ) {
 
     this.renderer = params.renderer;
     this.geom = params.geom;
     this.sizeSimulation = params.sizeSimulation;
     this.matcap = params.matcap;
+    this.specialMatcap = params.specialMatcap;
+    this.special2Matcap = params.special2Matcap;
+
+    this.isMobile = params.isMobile;
 
     this.init();
     this.setupMesh();
@@ -78,17 +85,27 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'position', this.positions );
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
-    this.bufferMaterial = new THREE.ShadowMaterial();
-    this.bufferMaterial.extensions.derivatives = true;
-    this.bufferMaterial.lights = true;
+    if( this.isMobile ){
+        this.bufferMaterial = new THREE.RawShaderMaterial();
+        this.bufferMaterial.vertexShader =  vs_buffer_mobile;
+        this.bufferMaterial.fragmentShader = fs_buffer_mobile;
+    } else {
+        this.bufferMaterial = new THREE.ShadowMaterial();
+        this.bufferMaterial.extensions.derivatives = true;
+        this.bufferMaterial.lights = true;
+        this.bufferMaterial.vertexShader =  vs_buffer;
+        this.bufferMaterial.fragmentShader = fs_buffer;
+    }
+
     this.bufferMaterial.uniforms['uGeometryTexture'] = { type: 't', value: this.gpuGeometry.geometryRT };
     this.bufferMaterial.uniforms['uGeometryNormals'] = { type: 't', value: this.gpuGeometry.normalsRT };
     this.bufferMaterial.uniforms['uSimulationTexture'] = { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] };
     this.bufferMaterial.uniforms['uSimulationPrevTexture'] = { type: 't', value: this.simulator.targets[ this.simulator.pingpong ] };
     this.bufferMaterial.uniforms['uMatcap'] = { type: 't', value: this.matcap };
+    this.bufferMaterial.uniforms['uSpecialMatcap'] = { type: 't', value: this.specialMatcap };
+    this.bufferMaterial.uniforms['uSpecial2Matcap'] = { type: 't', value: this.special2Matcap };
     this.bufferMaterial.uniforms['uNormalMap'] = { type: 't', value: this.matcap};
-    this.bufferMaterial.vertexShader =  vs_buffer;
-    this.bufferMaterial.fragmentShader = fs_buffer;
+
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
     this.bufferMesh.castShadow = true;
     this.bufferMesh.receiveShadow = true;
