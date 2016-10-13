@@ -15,16 +15,16 @@ var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
     this.renderer = renderer;
 
-    this.dummyCamera = dummyCamera;
+    // this.dummyCamera = dummyCamera;
     this.camera = camera;
     this.scene = scene;
 
-    this.characters = [];
-    this.charactersMesh = [];
-    this.charactersCalcPlane = [];
+    // this.characters = [];
+    // this.charactersMesh = [];
+    // this.charactersCalcPlane = [];
 
     this.setup();
-    this.setupShadows();
+    // this.setupShadows();
     this.addEvents();
 
 };
@@ -33,15 +33,15 @@ WorldManager.prototype = Object.create( THREE.EventDispatcher.prototype );
 
 WorldManager.prototype.setup = function(){
 
-    this.floor = new THREE.Mesh( new THREE.PlaneBufferGeometry( 60, 60, 1, 1 ), new THREE.MeshPhongMaterial( {
-        color: 0xDDDDDD,
-        shininess: 0,
-        specular: 0x111111
-    } ) );
-
-    this.floor.position.set( 0 , 0.1, 0 );
-    this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
-    this.scene.add( this.floor );
+    // this.floor = new THREE.Mesh( new THREE.PlaneBufferGeometry( 60, 60, 1, 1 ), new THREE.MeshPhongMaterial( {
+    //     color: 0xDDDDDD,
+    //     shininess: 0,
+    //     specular: 0x111111
+    // } ) );
+    //
+    // this.floor.position.set( 0 , 0.1, 0 );
+    // this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
+    // this.scene.add( this.floor );
 
     // this.geom = new THREE.IcosahedronGeometry( 20, 4 );
     // var m = new THREE.MeshBasicMaterial({
@@ -83,14 +83,26 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/Trump_lowPoly.obj', (function ( object ) {
+    loader.load( 'assets/models/halfCubeSmall.obj', (function ( object ) {
+
+        var s = 256;
+        var square = s * s;
+        var initialBuffer = new Float32Array( square * 4, 4 );
+        var div = 1 / s;
+        for (var i = 0; i < square ; i++) {
+            initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * 0.5;
+            initialBuffer[ i * 4 + 1 ] = -10;
+            initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * 0.5;
+            initialBuffer[ i * 4 + 3 ] = 1;
+
+        }
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
-            matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
-            specialMatcap: THREE.ImageUtils.loadTexture('assets/emerald.jpg'),
-            special2Matcap: THREE.ImageUtils.loadTexture('assets/matcap_purple.jpg'),
-            sizeSimulation: mobilecheck() ? 64 : 20,
+            initialBuffer: initialBuffer,
+            heightMap: THREE.ImageUtils.loadTexture('assets/textures/height_USA.png'),
+            colorMap: THREE.ImageUtils.loadTexture('assets/textures/color_USA.png'),
+            sizeSimulation: mobilecheck() ? s * 0.5 : s,
             isMobile: mobilecheck(),
             renderer: this.renderer
         } );
@@ -99,7 +111,7 @@ WorldManager.prototype.setup = function(){
 
     } ).bind( this ), onProgress, onError );
 
-    this.createCharacters();
+    // this.createCharacters();
 
 };
 
@@ -113,12 +125,12 @@ WorldManager.prototype.setupShadows = function() {
     this.light.penumbra = 0.1;
     this.light.decay = 1;
     this.light.angle = Math.PI * .8;
-    this.light.position.set( 0, 4.4, 0 );
+    this.light.position.set( -50, 25, 0 );
     this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 50, 1, 2, 7 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 50, 1, 2, 100 ) );
     this.light.shadow.bias = 0.0001;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
@@ -134,7 +146,7 @@ WorldManager.prototype.setupShadows = function() {
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
+    this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
 
     // this.lightShadowMapViewer = new ShadowMapViewer( this.light );
     // this.lightShadowMapViewer.position.x = 0;
@@ -149,45 +161,45 @@ WorldManager.prototype.setupShadows = function() {
 
 WorldManager.prototype.createCharacters = function(){
 
-    this.charsSetup = [
-        {
-            color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'S'
-        },
-        {
-            color: new THREE.Color(0x119977),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'P'
-        },
-        {
-            color: new THREE.Color(0xFFFFFF),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'R'
-        },
-        {
-            color: new THREE.Color(0x774432),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'I'
-        },
-        {
-            color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'N'
-        },
-        {
-            color: new THREE.Color(0xFF3377),
-            normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_twilight.jpg',
-            letter: 'G'
-        }
-
-    ];
+    // this.charsSetup = [
+    //     {
+    //         color: new THREE.Color(0xFF3377),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'S'
+    //     },
+    //     {
+    //         color: new THREE.Color(0x119977),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'P'
+    //     },
+    //     {
+    //         color: new THREE.Color(0xFFFFFF),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'R'
+    //     },
+    //     {
+    //         color: new THREE.Color(0x774432),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'I'
+    //     },
+    //     {
+    //         color: new THREE.Color(0xFF3377),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'N'
+    //     },
+    //     {
+    //         color: new THREE.Color(0xFF3377),
+    //         normalMap : 'assets/normal.jpg',
+    //         matcap : 'assets/matcap_twilight.jpg',
+    //         letter: 'G'
+    //     }
+    //
+    // ];
 
     // this.totalChars = this.charsSetup.length;
     // this.loadedModels = 0;
@@ -296,7 +308,7 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
     // }
 
 
-    // this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;
+    // this.light.position.y = ( Math.sin( timestamp * 0.001) ) * 100.7;
 
 };
 

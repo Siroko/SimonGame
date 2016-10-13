@@ -17,7 +17,7 @@ window.mobilecheck = function() {
     }
 };
 
-var DEBUG = false;
+var DEBUG = true;
 if(!DEBUG){
     if(!window.console) window.console = {};
     var methods = ["log", "debug", "warn", "info"];

@@ -16,11 +16,11 @@ var fs_buffer_mobile = require('./../glsl/fs-buffer-geometry-sim-mobile.glsl');
 var GPUGeometrySimulation = function( params ) {
 
     this.renderer = params.renderer;
+    this.heightMap = params.heightMap;
+    this.colorMap = params.colorMap;
     this.geom = params.geom;
     this.sizeSimulation = params.sizeSimulation;
-    this.matcap = params.matcap;
-    this.specialMatcap = params.specialMatcap;
-    this.special2Matcap = params.special2Matcap;
+    this.initialBuffer = params.initialBuffer;
 
     this.isMobile = params.isMobile;
 
@@ -39,6 +39,7 @@ GPUGeometrySimulation.prototype.init = function(){
     this.simulator = new SimulationTexture( {
         sizeW: this.sizeSimulation,
         sizeH: this.sizeSimulation,
+        initialBuffer: this.initialBuffer,
         renderer: this.renderer
     } );
 
@@ -92,7 +93,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     } else {
         this.bufferMaterial = new THREE.ShadowMaterial();
         this.bufferMaterial.extensions.derivatives = true;
-        this.bufferMaterial.lights = true;
+        // this.bufferMaterial.lights = true;
         this.bufferMaterial.vertexShader =  vs_buffer;
         this.bufferMaterial.fragmentShader = fs_buffer;
     }
@@ -101,14 +102,12 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferMaterial.uniforms['uGeometryNormals'] = { type: 't', value: this.gpuGeometry.normalsRT };
     this.bufferMaterial.uniforms['uSimulationTexture'] = { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] };
     this.bufferMaterial.uniforms['uSimulationPrevTexture'] = { type: 't', value: this.simulator.targets[ this.simulator.pingpong ] };
-    this.bufferMaterial.uniforms['uMatcap'] = { type: 't', value: this.matcap };
-    this.bufferMaterial.uniforms['uSpecialMatcap'] = { type: 't', value: this.specialMatcap };
-    this.bufferMaterial.uniforms['uSpecial2Matcap'] = { type: 't', value: this.special2Matcap };
-    this.bufferMaterial.uniforms['uNormalMap'] = { type: 't', value: this.matcap};
+    this.bufferMaterial.uniforms['uColorMap'] = { type: 't', value: this.colorMap };
+    this.bufferMaterial.uniforms['uHeightMap'] = { type: 't', value: this.heightMap};
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
-    this.bufferMesh.castShadow = true;
-    this.bufferMesh.receiveShadow = true;
+    // this.bufferMesh.castShadow = true;
+    // this.bufferMesh.receiveShadow = true;
 
     // magic here
     this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
@@ -122,11 +121,12 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
         uniforms: this.bufferMaterial.uniforms
     } );
 
+    this.simulator.update();
 };
 
 GPUGeometrySimulation.prototype.update = function(){
 
-    this.simulator.update();
+    // this.simulator.update();
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
     this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
