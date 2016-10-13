@@ -282,7 +282,7 @@ GPUDisplacedGeometry.prototype.update = function() {
     this.updatePositionsMaterial.uniforms.uPrevPositions.value = this.finalPositionsTargets[ this.pingpong ];
 
     this.bufferMaterial.uniforms.uPositionsTexture.value = this.finalPositionsTargets[ this.pingpong ];
-    this.bufferMaterial.needsUpdate = true;;
+    this.bufferMaterial.needsUpdate = true;
 
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );

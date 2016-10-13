@@ -61,7 +61,9 @@ Simulator.prototype.setup = function() {
     var div = 1 / this.sizeW;
     for (var i = 0; i < this.total; i++) {
 
-        this.index2D.setXY( i, ( ( 2. * div * ( ( i % this.sizeW ) + 0.5 ) - 1 ) + 1 ) / 2,  ( ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) + 1 ) / 2 );
+        this.index2D.setXY( i,
+            ( ( 2. * div * ( ( i % this.sizeW ) + 0.5 ) - 1 ) + 1 ) / 2,
+            ( ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) + 1 ) / 2 );
         this.positions.setXYZ( i, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y, ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z );
     }
 

@@ -83,14 +83,14 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/asteroid.obj', (function ( object ) {
+    loader.load( 'assets/models/Trump_lowPoly.obj', (function ( object ) {
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
             matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
             specialMatcap: THREE.ImageUtils.loadTexture('assets/emerald.jpg'),
             special2Matcap: THREE.ImageUtils.loadTexture('assets/matcap_purple.jpg'),
-            sizeSimulation: mobilecheck() ? 64 : 128,
+            sizeSimulation: mobilecheck() ? 64 : 20,
             isMobile: mobilecheck(),
             renderer: this.renderer
         } );
