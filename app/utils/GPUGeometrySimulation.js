@@ -22,6 +22,12 @@ var GPUGeometrySimulation = function( params ) {
     this.sizeSimulation = params.sizeSimulation;
     this.initialBuffer = params.initialBuffer;
 
+    this.fog = params.fog || {
+            fogColor: new THREE.Color(0xFFFFFF),
+            fogNear: 1,
+            fogFar: 20
+        };
+
     this.isMobile = params.isMobile;
 
     this.init();
@@ -86,51 +92,59 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'position', this.positions );
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
+    this.bufferMaterial = new THREE.RawShaderMaterial();
     if( this.isMobile ){
-        this.bufferMaterial = new THREE.RawShaderMaterial();
         this.bufferMaterial.vertexShader =  vs_buffer_mobile;
         this.bufferMaterial.fragmentShader = fs_buffer_mobile;
     } else {
-        this.bufferMaterial = new THREE.ShadowMaterial();
-        this.bufferMaterial.extensions.derivatives = true;
-        // this.bufferMaterial.lights = true;
         this.bufferMaterial.vertexShader =  vs_buffer;
         this.bufferMaterial.fragmentShader = fs_buffer;
     }
 
+    this.colorMap.wrapS = THREE.RepeatWrapping;
+    this.colorMap.wrapT = THREE.RepeatWrapping;
+    this.colorMap.repeat = new THREE.Vector2(1000, 1000);
+    this.heightMap.wrapS = THREE.RepeatWrapping;
+    this.heightMap.wrapT = THREE.RepeatWrapping;
+    this.heightMap.repeat = new THREE.Vector2(1000, 1000);
     this.bufferMaterial.uniforms['uGeometryTexture'] = { type: 't', value: this.gpuGeometry.geometryRT };
     this.bufferMaterial.uniforms['uGeometryNormals'] = { type: 't', value: this.gpuGeometry.normalsRT };
     this.bufferMaterial.uniforms['uSimulationTexture'] = { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] };
     this.bufferMaterial.uniforms['uSimulationPrevTexture'] = { type: 't', value: this.simulator.targets[ this.simulator.pingpong ] };
     this.bufferMaterial.uniforms['uColorMap'] = { type: 't', value: this.colorMap };
     this.bufferMaterial.uniforms['uHeightMap'] = { type: 't', value: this.heightMap};
+    this.bufferMaterial.uniforms['fogColor'] = { type: "c", value: this.fog.fogColor };
+    this.bufferMaterial.uniforms['fogNear'] =  { type: "f", value: this.fog.near };
+    this.bufferMaterial.uniforms['fogFar'] =  { type: "f", value: this.fog.far };
+    this.bufferMaterial.uniforms['uTime'] =  { type: "f", value: 0 };
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
     // this.bufferMesh.castShadow = true;
     // this.bufferMesh.receiveShadow = true;
 
     // magic here
-    this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
-        defines: {
-            'USE_SHADOWMAP': '',
-            'DEPTH_PACKING': '3201'
-        },
-        vertexShader: vs_depth_buffer,
-        fragmentShader: THREE.ShaderLib.depth.fragmentShader,
-
-        uniforms: this.bufferMaterial.uniforms
-    } );
+    // this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
+    //     defines: {
+    //         'USE_SHADOWMAP': '',
+    //         'DEPTH_PACKING': '3201'
+    //     },
+    //     vertexShader: vs_depth_buffer,
+    //     fragmentShader: THREE.ShaderLib.depth.fragmentShader,
+    //
+    //     uniforms: this.bufferMaterial.uniforms
+    // } );
 
     this.simulator.update();
 };
 
-GPUGeometrySimulation.prototype.update = function(){
+GPUGeometrySimulation.prototype.update = function( timestamp ){
 
+    this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.0001;
     // this.simulator.update();
-    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
-    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
-    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
-    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].needsUpdate = true;
+    // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
+    // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
+    // this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
+    // this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].needsUpdate = true;
 };
 
 module.exports = GPUGeometrySimulation;

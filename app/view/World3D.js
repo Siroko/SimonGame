@@ -2,14 +2,25 @@
  * Created by siroko on 7/8/15.
  */
 var THREE = require('three');
-var VRControls = require('../utils/VRControls');
-var VREffect = require('../utils/VREffect');
+var WAGNER = require('@superguigui/wagner');
+var BloomPass = require('@superguigui/wagner/src/passes/bloom/MultiPassBloomPass');
+var NoisePass = require('@superguigui/wagner/src/passes/noise/noise');
+var AOPass = require('@superguigui/wagner/src/passes/ssao/ssaopass');
+var FXAAPass = require('@superguigui/wagner/src/passes/fxaa/FXAAPass');
+var TiltShiftPass = require('@superguigui/wagner/src/passes/tiltshift/tiltshiftPass');
+var VignettePass = require('@superguigui/wagner/src/passes/vignette/VignettePass');
+var RGBPass = require('@superguigui/wagner/src/passes/rgbsplit/rgbsplit');
+var depth_vs = require('./../glsl/vs-packed-depth.glsl');
+var depth_fs = require('./../glsl/fs-packed-depth.glsl');
+
 var WorldManager = require('./WorldManager');
 var GamePads = require('./gamepads/GamePads');
 var MousePad = require('./gamepads/MousePad');
 
 var CameraControl = require('./../utils/CameraControl');
 var Simulator = require('./../utils/Simulator');
+
+var dat = require('dat-gui');
 
 var World3D = function( container ) {
 
@@ -19,6 +30,8 @@ var World3D = function( container ) {
 
     this.scene          = new THREE.Scene();
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
+
+    this.postprocessing = {};
 
     // Apply VR headset positional data to camera.
     // this.controls       = new VRControls( this.camera );
@@ -45,14 +58,14 @@ var World3D = function( container ) {
     // this.scene.add( this.dummyCamera );
 
     // Create a VR manager helper to enter and exit VR mode.
-    var params = {
-        hideButton: false, // Default: false.
-        isUndistorted: false // Default: false.
-    };
+    // var params = {
+    //     hideButton: false, // Default: false.
+    //     isUndistorted: false // Default: false.
+    // };
 
     // this.manager = new WebVRManager( this.renderer, this.effect, params );
 
-    this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, -10, 0) );
+    this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, -5, 0) );
     this.addEvents();
 
 };
@@ -97,8 +110,8 @@ World3D.prototype.onInitializeManager = function( n, o ) {
     //
     // }
 
+    this.initPostprocessing();
     this.setup();
-
 };
 
 World3D.prototype.onModeChange = function( n, o ) {
@@ -109,36 +122,83 @@ World3D.prototype.onModeChange = function( n, o ) {
     }
 };
 
+World3D.prototype.initPostprocessing = function() {
+
+    this.composer = new WAGNER.Composer( this.renderer, { useRGBA: false } );
+
+    this.depthMaterial = new THREE.ShaderMaterial( {
+        uniforms: {
+            mNear: { type: 'f', value: this.camera.near },
+            mFar: { type: 'f', value: this.camera.far }
+        },
+        vertexShader: depth_vs,
+        fragmentShader: depth_fs,
+        shading: THREE.SmoothShading
+    } );
+
+    this.bloomPass = new BloomPass({
+        blurAmount: 3,
+        applyZoomBlur: true
+    });
+
+    this.aoPass = new AOPass();
+    this.aoPass.params.isPacked = false;
+    this.aoPass.params.onlyOcclusion = false;
+    this.fxaaPass = new FXAAPass();
+    this.noisePass = new NoisePass();
+    this.noisePass.params.amount = 0.05;
+
+    this.vignettePass = new VignettePass({
+        boost: 1,
+        reduction: 1
+
+    });
+
+    this.rgbPass = new RGBPass({
+        delta: new THREE.Vector2( 100, 80 )
+    });
+
+    this.tiltShiftPass = new TiltShiftPass();
+    this.tiltShiftPass.params.center = 1;
+    this.tiltShiftPass.params.bluramount = 12;
+    this.tiltShiftPass.params.stepSize = 0.0003;
+
+    this.onResize( window.innerWidth, window.innerHeight );
+};
+
 World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    //this.groundMirror.render();
-    // this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
-
-    // if( this.worldManager.gpuGeometrySimulation ){
-    //     this.worldManager.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms['uOriginEmiter'].value = new THREE.Vector3(
-    //         this.gamePads.intersectPoint.x + Math.random()*0.1,
-    //         this.gamePads.intersectPoint.y + Math.random()*0.1,
-    //         this.gamePads.intersectPoint.z + Math.random()*0.1
-    //     );
-    // }
-
     this.worldManager.update( timestamp, this.gamePads );
-    // Update VR headset position and apply to camera.
-    // this.controls.update();
-
     this.cameraControl.update();
-    // this.simulator.update();
-    // Render the scene through the manager.
-    this.renderer.setClearColor( 0x01030C );
-    this.renderer.setRenderTarget( null ); // add this line
-    this.renderer.clear();
-    this.renderer.render( this.scene, this.camera );
 
-    // if( this.worldManager.light.shadow.map ){
-    //     this.worldManager.lightShadowMapViewer.render( this.renderer );
-    // }
+    // Render the scene through the manager.
+    this.renderer.setClearColor( 0xFFFFFF );
+
+    // this.renderer.setRenderTarget( null ); // add this line
+    // this.renderer.clear();
+    //
+    // // this.renderer.render( this.scene, this.camera );
+    //
+    // this.renderer.autoClearColor = true;
+
+    this.composer.reset();
+    // this.scene.overrideMaterial = this.depthMaterial;
+    // this.composer.render( this.scene, this.camera, null, this.depthTexture );
+    // this.aoPass.params.tDepth = this.depthTexture.texture;
+    // this.scene.overrideMaterial = null;
+    this.composer.render( this.scene, this.camera );
+
+
+    // this.composer.pass( this.aoPass );
+    // this.composer.pass( this.bloomPass );
+    this.composer.pass( this.tiltShiftPass );
+    this.composer.pass( this.noisePass );
+    this.composer.pass( this.vignettePass );
+    this.composer.pass( this.rgbPass );
+    // this.composer.pass( this.bloomPass );
+    this.composer.toScreen();
 
 };
 
@@ -146,6 +206,12 @@ World3D.prototype.onResize = function( w, h ) {
 
     this.renderer.setPixelRatio( 1 );
     this.renderer.setSize( w, h );
+    this.composer.setSize( w * 2, h * 2 );
+    this.depthTexture = new THREE.WebGLRenderTarget(w, h, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBFormat
+    });
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
 
