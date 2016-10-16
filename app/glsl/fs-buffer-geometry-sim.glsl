@@ -17,10 +17,13 @@ void main(){
 
     vec3 occlusion = vec3( vVertexAO );
     // Pretty basic lambertian lighting...
-    vec3 lightPosition = vec3( -40.0, 4.0, 0.0 );
+    vec3 lightPosition = vec3( -400.0, 4.0, 0.0 );
+    vec3 lightPosition2 = vec3( 400.0, 4.0, 10.0 );
     vec4 addedLights = vec4( 0.5, 0.5, 0.5, 1.0 );
     vec3 lightDirection = normalize( vPos.rgb - lightPosition );
+    vec3 lightDirection2 = normalize( vPos.rgb - lightPosition2 );
     addedLights.rgb += ( clamp( dot( - lightDirection, n ), 0.0, 1.0 ) );
+    addedLights.rgb += ( clamp( dot( - lightDirection2, n ), 0.0, 1.0 ) );
 
     vec4 c = vec4( vec3(vColor.rgb * addedLights.rgb * occlusion), 1.0 );
 

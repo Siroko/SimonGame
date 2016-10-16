@@ -83,9 +83,9 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/halfCubeSmall.obj', (function ( object ) {
+    loader.load( 'assets/models/asteroid.obj', (function ( object ) {
 
-        var s = 512;
+        var s = 256;
         var square = s * s;
         var initialBuffer = new Float32Array( square * 4, 4 );
         var div = 1 / s;

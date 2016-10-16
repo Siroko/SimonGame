@@ -93,13 +93,13 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
     this.bufferMaterial = new THREE.RawShaderMaterial();
-    if( this.isMobile ){
-        this.bufferMaterial.vertexShader =  vs_buffer_mobile;
-        this.bufferMaterial.fragmentShader = fs_buffer_mobile;
-    } else {
+    // if( this.isMobile ){
+    //     this.bufferMaterial.vertexShader =  vs_buffer_mobile;
+    //     this.bufferMaterial.fragmentShader = fs_buffer_mobile;
+    // } else {
         this.bufferMaterial.vertexShader =  vs_buffer;
         this.bufferMaterial.fragmentShader = fs_buffer;
-    }
+    // }
 
     this.colorMap.wrapS = THREE.RepeatWrapping;
     this.colorMap.wrapT = THREE.RepeatWrapping;
@@ -139,7 +139,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
 GPUGeometrySimulation.prototype.update = function( timestamp ){
 
-    this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.0001;
+    this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.001;
     // this.simulator.update();
     // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
     // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;

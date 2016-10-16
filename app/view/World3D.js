@@ -65,7 +65,7 @@ var World3D = function( container ) {
 
     // this.manager = new WebVRManager( this.renderer, this.effect, params );
 
-    this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, -5, 0) );
+    this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, 10, 0) );
     this.addEvents();
 
 };
@@ -155,13 +155,13 @@ World3D.prototype.initPostprocessing = function() {
     });
 
     this.rgbPass = new RGBPass({
-        delta: new THREE.Vector2( 100, 80 )
+        delta: new THREE.Vector2( 3, 2 )
     });
 
     this.tiltShiftPass = new TiltShiftPass();
-    this.tiltShiftPass.params.center = 1;
-    this.tiltShiftPass.params.bluramount = 12;
-    this.tiltShiftPass.params.stepSize = 0.0003;
+    this.tiltShiftPass.params.center = 1.1;
+    this.tiltShiftPass.params.bluramount = 1;
+    this.tiltShiftPass.params.stepSize = 0.003;
 
     this.onResize( window.innerWidth, window.innerHeight );
 };
@@ -206,7 +206,7 @@ World3D.prototype.onResize = function( w, h ) {
 
     this.renderer.setPixelRatio( 1 );
     this.renderer.setSize( w, h );
-    this.composer.setSize( w * 2, h * 2 );
+    this.composer.setSize( w , h );
     this.depthTexture = new THREE.WebGLRenderTarget(w, h, {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
