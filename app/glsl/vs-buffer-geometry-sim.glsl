@@ -173,7 +173,7 @@ void main(){
     geomVertexPosition.y *= heightValue.r * 10.; // scale Y
 
     vec3 p = simPosition.rgb + geomVertexPosition.rgb;
-    float n = snoise( vec4(p, uTime) );
+    float n = snoise( vec4(p, 1.0) );
     p.x += n * 0.3;
     p.y += n*2.;
     p.z += n * 0.3;
