@@ -156,17 +156,21 @@ float snoise(vec4 v)
 
       vec3 displacement = vec3(0.0);
 
-      for( int i = 0; i < 2; i++ ) {
+      vec3 direction = uWorldPosition - uTouch[0];
+      normalize( direction );
 
-          vec3 direction = uWorldPosition - uTouch[i];
-          normalize( direction );
+      float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[0] ), 0.0, 1.0 );
 
-          float d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[i] ), 0.0, 1.0 );
+      displacement += direction * d;
+      normalize( displacement );
 
-          displacement += direction * d;
-          normalize( displacement );
+      direction = uWorldPosition - uTouch[1];
+      normalize( direction );
 
-      }
+      d = clamp( 0.3 - distance( vertexWorldPosition, uTouch[1] ), 0.0, 1.0 );
+
+      displacement += direction * d;
+      normalize( displacement );
 
       displacement *= 3.0;
       normalize(displacement);

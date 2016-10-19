@@ -91,7 +91,7 @@ WorldManager.prototype.setup = function(){
             specialMatcap: THREE.ImageUtils.loadTexture('assets/emerald.jpg'),
             special2Matcap: THREE.ImageUtils.loadTexture('assets/matcap_purple.jpg'),
             sizeSimulation: mobilecheck() ? 64 : 128,
-            isMobile: mobilecheck(),
+            isMobile: true,
             renderer: this.renderer
         } );
 

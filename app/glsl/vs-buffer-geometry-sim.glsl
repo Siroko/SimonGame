@@ -13,7 +13,6 @@ varying vec4 vU;
 #include <shadowmap_pars_vertex>
 
 mat4 rotationMatrix(vec3 axis, float angle){
-
     axis = normalize(axis);
     float s = sin(angle);
     float c = cos(angle);
