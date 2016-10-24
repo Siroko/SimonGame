@@ -120,7 +120,7 @@ CharacterBase.prototype.setup = function(){
     this.facePlane.rotation.x = Math.PI * 2;
     this.facePlane.position.z = 0;
 
-    this.mesh.add( this.facePlane );
+    // this.mesh.add( this.facePlane );
     this.mesh.scale.set( this.scale, this.scale, this.scale );
 
     var particlesQuantity = 4;
@@ -261,10 +261,10 @@ CharacterBase.prototype.update = function( t ){
                 prePositive = true;
 
                 // dispatchEvent play sound
-                this.dispatchEvent({
-                    type: 'onPlaySound',
-                    idCharacter: this.name
-                });
+                // this.dispatchEvent({
+                //     type: 'onPlaySound',
+                //     idCharacter: this.name
+                // });
 
             }
 

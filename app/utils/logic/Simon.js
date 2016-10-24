@@ -27,8 +27,8 @@ Simon.prototype.startGame = function() {
 
     console.log('starting GAME_________________');
 
-    this._addNote();
-    this._playPattern();
+    // this._addNote();
+    // this._playPattern();
 
     this.isPlaying = true;
     this.isGameRunning = true;

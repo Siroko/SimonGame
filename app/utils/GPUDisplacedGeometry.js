@@ -46,32 +46,69 @@ var GPUDisplacedGeometry = function( params ) {
     var volume = 10;
 
     this.data = new Float32Array( this.total * 4 );
+    this.normal = new Float32Array( this.total * 4 );
+    this.uv = new Float32Array( this.total * 4 );
 
     if( this.geom.faces ) {
 
         var v;
+        var n;
+        var uv;
         var vertices = this.geom.vertices;
+
         for (var i = 0; i < this.geom.faces.length; i++) {
 
             var face = this.geom.faces[i];
 
+            n = face.vertexNormals;
+            this.normal[i * 12]      = n[0].x;
+            this.normal[i * 12 + 1]  = n[0].y;
+            this.normal[i * 12 + 2]  = n[0].z;
+            this.normal[i * 12 + 3]  = 1;
+
             v = vertices[face.a];
-            this.data[i * 12]       = v.x;
-            this.data[i * 12 + 1]   = v.y;
-            this.data[i * 12 + 2]   = v.z;
-            this.data[i * 12 + 3]   = 1;
+            this.data[i * 12]             = v.x;
+            this.data[i * 12 + 1]         = v.y;
+            this.data[i * 12 + 2]         = v.z;
+            this.data[i * 12 + 3]         = 1;
+
+            this.uv[i * 12]             = v.uv.y;
+            this.uv[i * 12 + 1]         = v.uv.x;
+            this.uv[i * 12 + 2]         = 1;
+            this.uv[i * 12 + 3]         = 1;
+
+            this.normal[i * 12 + 4]  = n[1].x;
+            this.normal[i * 12 + 5]  = n[1].y;
+            this.normal[i * 12 + 6]  = n[1].z;
+            this.normal[i * 12 + 7]  = 1;
 
             v = vertices[face.b];
-            this.data[i * 12 + 4]   = v.x;
-            this.data[i * 12 + 5]   = v.y;
-            this.data[i * 12 + 6]   = v.z;
-            this.data[i * 12 + 7]   = 1;
+            this.data[i * 12 + 4]         = v.x;
+            this.data[i * 12 + 5]         = v.y;
+            this.data[i * 12 + 6]         = v.z;
+            this.data[i * 12 + 7]         = 1;
+
+            this.uv[i * 12 + 4]         = v.uv.y;
+            this.uv[i * 12 + 5]         = v.uv.x;
+            this.uv[i * 12 + 6]         = 1;
+            this.uv[i * 12 + 7]         = 1;
+
+            this.normal[i * 12 + 8]  = n[2].x;
+            this.normal[i * 12 + 9]  = n[2].y;
+            this.normal[i * 12 + 10] = n[2].z;
+            this.normal[i * 12 + 11] = 1;
 
             v = vertices[face.c];
-            this.data[i * 12 + 8]   = v.x;
-            this.data[i * 12 + 9]   = v.y;
-            this.data[i * 12 + 10]  = v.z;
-            this.data[i * 12 + 11]  = 1;
+            this.data[i * 12 + 8]         = v.x;
+            this.data[i * 12 + 9]         = v.y;
+            this.data[i * 12 + 10]        = v.z;
+            this.data[i * 12 + 11]        = 1;
+
+            this.uv[i * 12 + 8]          = v.uv.y;
+            this.uv[i * 12 + 9]          = v.uv.x;
+            this.uv[i * 12 + 10]         = 1;
+            this.uv[i * 12 + 11]         = 1;
+
         }
 
     } else {
@@ -79,14 +116,31 @@ var GPUDisplacedGeometry = function( params ) {
         for (var i = 0; i < this.geom.attributes.position.array.length; i++) {
 
             var position = this.geom.attributes.position.array[ i ];
+            var normal = this.geom.attributes.normal.array[ i ];
+
             this.data[ it ] = position;
+            this.normal[ it ] = normal;
 
             if( ( i + 1 ) % 3 == 0 && i != 0 ) {
                 it++;
-                this.data[ it ]     = 1;
+                this.data[ it ] = 1;
+                this.normal[ it ] = 1;
             }
             it ++;
 
+        }
+
+        var it2 = 0;
+        for (var r = 0; r < this.geom.uv.position.array.length; r++) {
+            var uv = this.geom.attributes.uv.array[ i ];
+            this.uv[ it ] = uv;
+            if( ( i + 1 ) % 2 == 0 && r != 0 ) {
+                it2++;
+                this.uv[ it2 ] = 1;
+                it2++;
+                this.uv[ it2 ] = 1;
+            }
+            it2 ++;
         }
     }
 
@@ -95,6 +149,15 @@ var GPUDisplacedGeometry = function( params ) {
     this.geometryRT.magFilter = THREE.NearestFilter;
     this.geometryRT.needsUpdate = true;
 
+    this.normalRT = new THREE.DataTexture( this.normal, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType);
+    this.normalRT.minFilter = THREE.NearestFilter;
+    this.normalRT.magFilter = THREE.NearestFilter;
+    this.normalRT.needsUpdate = true;
+
+    this.uvRT = new THREE.DataTexture( this.uv, this.sizeW, this.sizeH, THREE.RGBAFormat, THREE.FloatType);
+    this.uvRT.minFilter = THREE.NearestFilter;
+    this.uvRT.magFilter = THREE.NearestFilter;
+    this.uvRT.needsUpdate = true;
 
     this.index2D            = new THREE.BufferAttribute( new Float32Array( this.total * 2 ), 2 );
     this.positions          = new THREE.BufferAttribute( new Float32Array( this.total * 3 ), 3 );
@@ -128,6 +191,8 @@ var GPUDisplacedGeometry = function( params ) {
             'uniforms': {
                 "uLights": { type: 'f', value: 1 },
                 "uPositionsTexture": { type: 't', value: this.geometryRT },
+                "uNormalTexture": { type: 't', value: this.normalRT },
+                "uUvTexture": { type: 't', value: this.uvRT },
                 "normalMap": params.uniforms.normalMap,
                 "textureMap": params.uniforms.textureMap,
                 "pointLightPosition": { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] },

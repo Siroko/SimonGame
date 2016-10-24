@@ -19,6 +19,9 @@ varying vec4 vOPosition;
 varying vec3 vU;
 varying vec2 vUv;
 
+varying vec3 vNormalValue;
+varying vec2 vUvValue;
+
 float random(vec3 scale,float seed){return fract(sin(dot(gl_FragCoord.xyz+seed,scale))*43758.5453+seed);}
 
 void main(){
