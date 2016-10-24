@@ -185,7 +185,7 @@ WorldManager.prototype.setup = function(){
         this.scene.add( object );
     }).bind( this ) );
 
-    var instrument = 'xylophone';
+    var instrument = 'fx_8_scifi';
     MIDI.loadPlugin({
         soundfontUrl: "assets/sound/midi/MusyngKite/",
         instrument: instrument,

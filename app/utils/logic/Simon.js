@@ -14,7 +14,7 @@ var Simon = function(){
     this.padding = 600; // time in miliseconds between notes
     this.machinePattern = []; // current pattern machine generated
     this.userPattern = []; // current pattern user generated
-    this.notes = [70, 74, 75, 77]; // current notes
+    this.notes = [100, 74, 75, 77]; // current notes
     this.isPlaying = false; // flag for testing if its playing right now
 
     this.isGameRunning = false;

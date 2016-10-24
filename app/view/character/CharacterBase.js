@@ -42,7 +42,7 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.returnFaceTimer = 0;
     this.returnParticlesTimer = 0;
 
-    this.notes = [70, 74, 75, 77];
+    this.notes = [40, 41, 42, 43];
 
     this.halo = new THREE.Mesh( new THREE.IcosahedronGeometry( 0.55, 1 ), new THREE.MeshBasicMaterial({
         color: this.color,
