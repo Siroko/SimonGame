@@ -12,9 +12,10 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, matcap, matcapNormal, lights ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, occlusionMap, lightMap, diffuse, lights ){
 
     THREE.EventDispatcher.call( this );
+    this.container = new THREE.Object3D();
 
     this.lights = lights;
     this.scene = scene;
@@ -26,8 +27,9 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.life = 100;
 
     this.color = color;
-    this.matcap = matcap;
-    this.matcapNormal = matcapNormal;
+    this.occlusionMap = occlusionMap;
+    this.lightMap = lightMap;
+    this.diffuse = diffuse;
 
     this.scale = scale;
 
@@ -54,11 +56,23 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
     //this.halo.z = 0.3;
 
+    this.geom = new THREE.JSONLoader();
+    this.geom.load('assets/models/pumpkin.json', this.onLoadGeom.bind( this ) );
 
-    this.setup();
+    this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
+    this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
+
+    // this.setup();
 };
 
 CharacterBase.prototype = Object.create( THREE.EventDispatcher.prototype );
+
+CharacterBase.prototype.onLoadGeom = function( geom, mats ) {
+
+    this.geom = geom;
+
+    this.setup();
+};
 
 CharacterBase.prototype.getNode = function() {
 
@@ -75,7 +89,6 @@ CharacterBase.prototype.setup = function(){
 
     this.worldPosition = new THREE.Vector3();
 
-    this.geom = new THREE.IcosahedronGeometry( 0.5, 1 );
 
     this.displacedGeometry = new GPUDisplacedGeometry({
         'renderer'          : this.renderer,
@@ -86,8 +99,9 @@ CharacterBase.prototype.setup = function(){
             'uTouch'        : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
             'uWorldPosition': { type: 'v3', value: this.worldPosition },
 
-            'normalMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcapNormal ) },
-            'textureMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.matcap) }
+            'occlusionMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.occlusionMap ) },
+            'lightMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.lightMap) },
+            'diffuseMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.diffuse) }
         }
     });
 6
@@ -95,6 +109,7 @@ CharacterBase.prototype.setup = function(){
     //this.scene.add( this.displacedGeometry.planeDebug );
 
     this.mesh = this.displacedGeometry.mesh;
+    this.container.add( this.mesh );
 
     this.mesh.castShadow = true;
     this.mesh.position.copy( this.positionCharacter );
@@ -102,8 +117,7 @@ CharacterBase.prototype.setup = function(){
 
     this.mesh.add( this.halo );
 
-    this.calcPlane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 30, 10, 2, 2), new THREE.MeshNormalMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false}) );
-    this.calcPlane.position.set( this.positionCharacter.x, this.positionCharacter.y, this.positionCharacter.z);
+
 
     //this.mesh.position.x = 1;
     //this.mesh.position.y = 1;
@@ -225,12 +239,12 @@ CharacterBase.prototype.update = function( t ){
         var obj = this.positionsTouch[ i ];
         var d = obj.distanceTo( this.mesh.position );
 
-        if ( d < ( 0.5 * this.scale ) ) {
+        if ( d < ( 0.6 * (this.scale * 15) ) ) {
 
             var direction = new THREE.Vector3();
             direction.subVectors(this.mesh.position, obj);
             direction.normalize();
-            direction.multiplyScalar((0.5 * this.scale) - d);
+            direction.multiplyScalar((0.6 * this.scale * 15) - d);
 
             this.mesh.position.add(direction);
             this.cuddleness += 0.5;
@@ -301,12 +315,12 @@ CharacterBase.prototype.update = function( t ){
 
     var speed = 0.0005;
 
-    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.5 * this.scale));
-    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * (0.5 * this.scale));
+    this.positionCharacter.x = base.x + (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.5 * this.scale * 7));
+    this.positionCharacter.y = base.y + (ImprovedNoise().noise(Date.now() * speed, this.seed + Date.now() * speed, Date.now() * speed) * (0.5 * this.scale*7));
     this.positionCharacter.z = base.z;
 
-    this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale));
-    this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale));
+    this.mesh.rotation.x = (ImprovedNoise().noise(Date.now() * speed, this.seed, Date.now() * speed) * (0.8 * this.scale * 7));
+    this.mesh.rotation.z = (ImprovedNoise().noise( this.seed, Date.now() * speed, Date.now() * speed) * (0.8 * this.scale * 7));
 
     this.calcPlane.position.copy( this.mesh.position );
 

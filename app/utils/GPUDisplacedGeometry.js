@@ -16,7 +16,9 @@ var GPUDisplacedGeometry = function( params ) {
 
     BaseGLPass.call( this, params );
 
-    this.geom = params.geom;
+    this.geom = new THREE.BufferGeometry().fromGeometry( params.geom );
+
+
     this.pingpong = 0;
 
     if( this.geom.faces ) {
@@ -55,6 +57,7 @@ var GPUDisplacedGeometry = function( params ) {
         var n;
         var uv;
         var vertices = this.geom.vertices;
+        var uvs = this.geom.faceVertexUvs;
 
         for (var i = 0; i < this.geom.faces.length; i++) {
 
@@ -72,8 +75,9 @@ var GPUDisplacedGeometry = function( params ) {
             this.data[i * 12 + 2]         = v.z;
             this.data[i * 12 + 3]         = 1;
 
-            this.uv[i * 12]             = v.uv.y;
-            this.uv[i * 12 + 1]         = v.uv.x;
+            uv = uvs[0][face.a];
+            this.uv[i * 12]             = uv.y;
+            this.uv[i * 12 + 1]         = uv.x;
             this.uv[i * 12 + 2]         = 1;
             this.uv[i * 12 + 3]         = 1;
 
@@ -88,8 +92,9 @@ var GPUDisplacedGeometry = function( params ) {
             this.data[i * 12 + 6]         = v.z;
             this.data[i * 12 + 7]         = 1;
 
-            this.uv[i * 12 + 4]         = v.uv.y;
-            this.uv[i * 12 + 5]         = v.uv.x;
+            uv = uvs[0][face.b];
+            this.uv[i * 12 + 4]         = uv.y;
+            this.uv[i * 12 + 5]         = uv.x;
             this.uv[i * 12 + 6]         = 1;
             this.uv[i * 12 + 7]         = 1;
 
@@ -104,8 +109,9 @@ var GPUDisplacedGeometry = function( params ) {
             this.data[i * 12 + 10]        = v.z;
             this.data[i * 12 + 11]        = 1;
 
-            this.uv[i * 12 + 8]          = v.uv.y;
-            this.uv[i * 12 + 9]          = v.uv.x;
+            uv = uvs[0][face.c];
+            this.uv[i * 12 + 8]          = uv.y;
+            this.uv[i * 12 + 9]          = uv.x;
             this.uv[i * 12 + 10]         = 1;
             this.uv[i * 12 + 11]         = 1;
 
@@ -131,10 +137,10 @@ var GPUDisplacedGeometry = function( params ) {
         }
 
         var it2 = 0;
-        for (var r = 0; r < this.geom.uv.position.array.length; r++) {
-            var uv = this.geom.attributes.uv.array[ i ];
-            this.uv[ it ] = uv;
-            if( ( i + 1 ) % 2 == 0 && r != 0 ) {
+        for (var r = 0; r < this.geom.attributes.uv.array.length; r++) {
+            var uv = this.geom.attributes.uv.array[ r ];
+            this.uv[ it2 ] = uv;
+            if( ( r + 1 ) % 2 == 0 && r != 0 ) {
                 it2++;
                 this.uv[ it2 ] = 1;
                 it2++;
@@ -195,6 +201,9 @@ var GPUDisplacedGeometry = function( params ) {
                 "uUvTexture": { type: 't', value: this.uvRT },
                 "normalMap": params.uniforms.normalMap,
                 "textureMap": params.uniforms.textureMap,
+                "diffuseMap": params.uniforms.diffuseMap,
+                "occlusionMap": params.uniforms.occlusionMap,
+                "lightMap": params.uniforms.lightMap,
                 "pointLightPosition": { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] },
                 "pointLightColor": { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]},
                 "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
@@ -273,7 +282,7 @@ GPUDisplacedGeometry.prototype.update = function() {
     this.updatePositionsMaterial.uniforms.uPrevPositions.value = this.finalPositionsTargets[ this.pingpong ];
 
     this.bufferMaterial.uniforms.uPositionsTexture.value = this.finalPositionsTargets[ this.pingpong ];
-    this.bufferMaterial.needsUpdate = true;;
+    this.bufferMaterial.needsUpdate = true;
 
     this.pingpong = 1 - this.pingpong;
     this.pass( this.updateSpringMaterial, this.springPositionsTargets[ this.pingpong ] );

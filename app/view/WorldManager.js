@@ -24,8 +24,6 @@ var WorldManager = function( scene, camera, dummyCamera, renderer ) {
     this.characters = [];
     this.charactersMesh = [];
     this.charactersCalcPlane = [];
-    this.mountainTorus = [];
-    this.bubbles = [];
 
     this.simon = new Simon();
 
@@ -50,13 +48,18 @@ WorldManager.prototype.setup = function(){
 
     var mtlLoader = new MTLLoader();
     mtlLoader.setPath( 'assets/' );
-    mtlLoader.load( 'sceneClouds.mtl', (function( materials ) {
+    mtlLoader.load( 'models/cementery_1.mtl', (function( materials ) {
         materials.preload();
 
         var objLoader = new OBJLoader();
-        objLoader.setMaterials( materials );
+        // objLoader.setMaterials( materials );
         objLoader.setPath( 'assets/' );
-        objLoader.load( 'graveyard.obj', (function ( object ) {
+        objLoader.load( 'models/cementery_3.obj', (function ( object ) {
+
+            for (var i = 0; i < object.children.length; i++) {
+                var obj = object.children[i];
+                obj.material.sides = THREE.DoubleSide;
+            }
 
             this.scene.add( object );
 
@@ -90,9 +93,6 @@ WorldManager.prototype.setup = function(){
         this.scene.add( object );
     }).bind( this ) );
 
-    objLoader.load( 'floor_ext.obj', (function ( object ) {
-        this.scene.add( object );
-    }).bind( this ) );
 
     var instrument = 'fx_8_scifi';
     MIDI.loadPlugin({
@@ -112,41 +112,54 @@ WorldManager.prototype.createCharacters = function(){
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/yellowmatcap.png',
-            matcap : 'assets/yellowmatcap.png'
+            matcap : 'assets/yellowmatcap.png',
+            diffuse: 'assets/models/pumpkin-done.png',
+            occlusion: 'assets/models/occlusion-done.png',
+            light: 'assets/models/lights-done.png'
         },
         {
             color: new THREE.Color(0x119977),
             normalMap : 'assets/brass.jpg',
-            matcap : 'assets/brass.jpg'
+            matcap : 'assets/brass.jpg',
+            diffuse: 'assets/models/pumpkin-done.png',
+            occlusion: 'assets/models/occlusion-done.png',
+            light: 'assets/models/lights-done.png'
         },
         {
             color: new THREE.Color(0xFFFFFF),
             normalMap : 'assets/matcap1.jpg',
-            matcap : 'assets/matcap1.jpg'
+            matcap : 'assets/matcap1.jpg',
+            diffuse: 'assets/models/pumpkin-done.png',
+            occlusion: 'assets/models/occlusion-done.png',
+            light: 'assets/models/lights-done.png'
         },
         {
             color: new THREE.Color(0x774432),
             normalMap : 'assets/lit-sphere-matball-example.jpg',
-            matcap : 'assets/lit-sphere-matball-example.jpg'
+            matcap : 'assets/lit-sphere-matball-example.jpg',
+            diffuse: 'assets/models/pumpkin-done.png',
+            occlusion: 'assets/models/occlusion-done.png',
+            light: 'assets/models/lights-done.png'
         }
 
     ];
 
     var totalChars = 4;
-    var separation = 0.9;
+    var separation = 1.1;
     for (var i = 0; i < totalChars; i++) {
 
         var character = new CharacterBase(
-            new THREE.Vector3( ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+            new THREE.Vector3( 0.3 + ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
             false,
             i,
-            0.4,
+            0.025,
             this.renderer,
             this.scene,
             this.sm,
             charsSetup[i].color,
-            charsSetup[i].normalMap,
-            charsSetup[i].matcap,
+            charsSetup[i].occlusion,
+            charsSetup[i].light,
+            charsSetup[i].diffuse,
             window.pointLights
         );
         character.addEventListener('onPlaySound', this.onCharacterPlaySound.bind( this ) );
@@ -157,10 +170,10 @@ WorldManager.prototype.createCharacters = function(){
     for (var i = 0; i < this.characters.length; i++) {
 
         var char = this.characters[i];
-        this.scene.add( char.mesh );
+        this.scene.add( char.container );
         this.scene.add( char.calcPlane );
 
-        this.charactersMesh.push( char.mesh );
+        this.charactersMesh.push( char.container );
         this.charactersCalcPlane.push( char.calcPlane );
 
     }
@@ -176,6 +189,10 @@ WorldManager.prototype.createCharacters = function(){
     //this.planeInfo.position.y = 1.5;
     //this.planeInfo.position.z = -0.65;
     //this.scene.add( this.planeInfo );
+
+};
+
+WorldManager.prototype.onCharacterLoad = function( e ) {
 
 };
 
@@ -253,32 +270,18 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
 
     for (var i = 0; i < this.characters.length; i++) {
         var char = this.characters[i];
-        if( this.dummyCamera.position.z != 0 ) {
-            char.mesh.lookAt( this.dummyCamera.position );
-        } else {
-            char.mesh.lookAt(this.camera.position);
+        if( char.mesh ) {
+            if (this.dummyCamera.position.z != 0) {
+                char.mesh.lookAt(this.dummyCamera.position);
+            } else {
+                char.mesh.lookAt(this.camera.position);
+            }
+
+            char.update(timestamp);
+            char.positionTouch1.copy(gamePads.intersectPoint);
+            char.positionTouch2.copy(gamePads.intersectPoint2);
         }
-
-        char.update( timestamp );
-        char.positionTouch1.copy( gamePads.intersectPoint );
-        char.positionTouch2.copy( gamePads.intersectPoint2 );
     }
-
-    if( this.sun ){
-        this.sun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
-       if( this.faceSun) this.faceSun.rotation.z = Math.sin( timestamp * 0.001 ) * 0.1;
-    }
-
-    for (var r = 0; r < this.bubbles.length; r++) {
-        var rand = (Math.random() + 0.1) * 3;
-        var mesh = this.bubbles[ r ];
-        mesh.scale.set( rand, rand, rand );
-        mesh.position.set( -9.749, -1.863, 146.747 );
-        mesh.position.x += (Math.random() * 2 - 1 ) * 8;
-        mesh.position.y += Math.random() * 2 - 1;
-    }
-
-    //this.ultraStarManager.update();
 
 
 };
