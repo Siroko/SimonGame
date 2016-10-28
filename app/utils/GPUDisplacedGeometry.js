@@ -208,7 +208,8 @@ var GPUDisplacedGeometry = function( params ) {
                 "lightMap": params.uniforms.lightMap,
                 "pointLightPosition": { type: 'v3v', value: [this.lights[0].position, this.lights[1].position] },
                 "pointLightColor": { type: 'v3v', value: [this.lights[0].color, this.lights[1].color]},
-                "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] }
+                "pointLightIntensity": { type: 'fv', value: [this.lights[0].intensity, this.lights[1].intensity] },
+                "uTint": params.uniforms.uTint
             },
 
             vertexShader: vs_bufferGeometry,

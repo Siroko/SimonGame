@@ -165,15 +165,25 @@ WorldManager.prototype.setup = function(){
 
 };
 
-WorldManager.prototype.createCharacters = function(){
+WorldManager.prototype.createCharacters = function() {
+    this.tints = [
+        [142, 190, 147], // green
+        [198, 124, 129], // red
+        [146, 133, 201], // blue
+        [199, 160, 139] // yellow
+    ].map(c => {
+        return [c[0] / 255, c[1] / 255, c[2] / 255];
+    });
+
     var charsSetup = [
         {
-            color: new THREE.Color(0xFF3377),
+            color: new THREE.Color('red'),
             normalMap : 'assets/yellowmatcap.png',
             matcap : 'assets/yellowmatcap.png',
             diffuse: 'assets/models/pumpkin-done.png',
             occlusion: 'assets/models/occlusion-done.png',
-            light: 'assets/models/lights-done.png'
+            light: 'assets/models/lights-done.png',
+            tint: new THREE.Vector3(0, 0, 0)
         },
         {
             color: new THREE.Color(0x119977),
@@ -181,7 +191,8 @@ WorldManager.prototype.createCharacters = function(){
             matcap : 'assets/brass.jpg',
             diffuse: 'assets/models/pumpkin-done.png',
             occlusion: 'assets/models/occlusion-done.png',
-            light: 'assets/models/lights-done.png'
+            light: 'assets/models/lights-done.png',
+            tint: new THREE.Vector3(0, 0, 0)
         },
         {
             color: new THREE.Color(0xFFFFFF),
@@ -189,7 +200,8 @@ WorldManager.prototype.createCharacters = function(){
             matcap : 'assets/matcap1.jpg',
             diffuse: 'assets/models/pumpkin-done.png',
             occlusion: 'assets/models/occlusion-done.png',
-            light: 'assets/models/lights-done.png'
+            light: 'assets/models/lights-done.png',
+            tint: new THREE.Vector3(0, 0, 0)
         },
         {
             color: new THREE.Color(0x774432),
@@ -197,7 +209,8 @@ WorldManager.prototype.createCharacters = function(){
             matcap : 'assets/lit-sphere-matball-example.jpg',
             diffuse: 'assets/models/pumpkin-done.png',
             occlusion: 'assets/models/occlusion-done.png',
-            light: 'assets/models/lights-done.png'
+            light: 'assets/models/lights-done.png',
+            tint: new THREE.Vector3(0, 0, 0)
         }
 
     ];
@@ -219,6 +232,7 @@ WorldManager.prototype.createCharacters = function(){
             charsSetup[i].occlusion,
             charsSetup[i].light,
             charsSetup[i].diffuse,
+            charsSetup[i].tint,
             window.pointLights
         );
         character.addEventListener('onPlaySound', this.onCharacterPlaySound.bind( this ) );
@@ -353,6 +367,30 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
     }
 
     if( this.characters[0] && this.characters[1] && this.characters[2] && this.characters[3] ) {
+        // compute tint color, based on shadows factors
+        var r = (this.tints[0][0] * this.characters[0].factor)
+            + (this.tints[1][0] * this.characters[1].factor)
+            + (this.tints[2][0] * this.characters[2].factor)
+            + (this.tints[3][0] * this.characters[3].factor);
+
+        var g = (this.tints[0][1] * this.characters[0].factor)
+            + (this.tints[1][1] * this.characters[1].factor)
+            + (this.tints[2][1] * this.characters[2].factor)
+            + (this.tints[3][1] * this.characters[3].factor);
+
+        var b = (this.tints[0][2] * this.characters[0].factor)
+            + (this.tints[1][2] * this.characters[1].factor)
+            + (this.tints[2][2] * this.characters[2].factor)
+            + (this.tints[3][2] * this.characters[3].factor);
+
+        r = Math.min(r, 1);
+        g = Math.min(g, 1);
+        b = Math.min(b, 1);
+
+        for(var i = 0; i < this.characters.length; ++i) {
+            this.characters[i].tint.set(r, g, b);
+        }
+
         // console.log(this.characters[0].factor );
         if (this.elements) {
             this.elements.material.uniforms.uShadowFactor1.value = this.characters[0].factor;
