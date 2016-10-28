@@ -12,7 +12,7 @@ var ImprovedNoise = require('./../../utils/ImprovedNoise');
 var Simulator = require('./../../utils/Simulator');
 var GPUDisplacedGeometry = require('./../../utils/GPUDisplacedGeometry');
 
-var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, occlusionMap, lightMap, diffuse, lights ){
+var CharacterBase = function( initPosition, correct, name, scale, renderer, scene, soundmanager, color, occlusionMap, lightMap, diffuse, tint, lights ){
 
     THREE.EventDispatcher.call( this );
 
@@ -34,6 +34,7 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
     this.occlusionMap = occlusionMap;
     this.lightMap = lightMap;
     this.diffuse = diffuse;
+    this.tint = tint;
 
     this.scale = scale;
 
@@ -96,7 +97,8 @@ CharacterBase.prototype.setup = function(){
 
             'occlusionMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.occlusionMap ) },
             'lightMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.lightMap) },
-            'diffuseMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.diffuse) }
+            'diffuseMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.diffuse) },
+            'uTint': { type: 'v3', value: this.tint }
         }
     });
 
