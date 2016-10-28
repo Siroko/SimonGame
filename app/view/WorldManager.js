@@ -81,7 +81,7 @@ WorldManager.prototype.setup = function(){
     objLoader.load( 'graveyard.obj', (function ( object ) {
         var sm = new THREE.ShaderMaterial({
             uniforms: {
-                uShadowMap: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights.png') },
+                uShadowMap: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights.jpg') },
                 uShadow1Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-01.jpg') },
                 uShadow2Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-02.jpg') },
                 uShadow3Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-03.jpg') },
