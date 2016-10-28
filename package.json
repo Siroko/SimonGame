@@ -1,9 +1,9 @@
 {
-  "name": "GPGPUGeometrySimulation",
+  "name": "SimonVRGame",
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "start": "npm run watcher",
+    "start": "npm run watcher & npm run server",
     "watcher": "node watcher.js -loglevel silent",
     "server": "./node_modules/node-static/bin/cli.js -a 0.0.0.0 -p 9000 public/"
   },
@@ -22,7 +22,7 @@
     "es6-promise": "^3.2.1",
     "fs.extra": "^1.2.1",
     "glob": "^4.0.6",
-    "gsap": "^1.16.1",
+    "gsap": "^1.19.0",
     "gulp": "^3.8.8",
     "gulp-browserify": "^0.5.1",
     "gulp-sourcemaps": "^1.5.0",
@@ -34,10 +34,9 @@
     "lodash.assign": "^3.2.0",
     "node-static": "^0.7.6",
     "stringify": "^3.1.0",
-    "three": ">=0.66.85",
+    "three": ">=0.76.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^3.2.2",
-    "webvr-boilerplate": "^0.4.3"
+    "watchify": "^3.2.2"
   }
 }

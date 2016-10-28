@@ -4,6 +4,15 @@ precision highp sampler2D;
 uniform sampler2D uPrevPositionsMap;
 uniform sampler2D uGeomPositionsMap;
 uniform float uTime;
+uniform int uLock;
+uniform float uBoundary[ 6 ];
+uniform vec3 uDirectionFlow;
+uniform vec3 uOffsetPosition;
+uniform vec3 uCollision;
+uniform float uLifeTime;
+uniform float uNoiseTimeScale;
+uniform float uNoisePositionScale;
+uniform float uNoiseScale;
 
 varying vec2 vUv;
 
@@ -122,9 +131,10 @@ vec4 simplexNoiseDerivatives (vec4 v) {
 
 vec3 getCurlVelocity( vec4 position ) {
 
-    float NOISE_TIME_SCALE = 0.1;
-    float NOISE_SCALE = 0.02;
-    float NOISE_POSITION_SCALE = 0.0025;
+    position.x += 3.0;
+    float NOISE_TIME_SCALE = uNoiseTimeScale;
+    float NOISE_SCALE = uNoiseScale;
+    float NOISE_POSITION_SCALE = uNoisePositionScale;
 
     vec3 oldPosition = position.rgb;
     vec3 noisePosition = oldPosition *  NOISE_POSITION_SCALE;
@@ -135,7 +145,7 @@ vec3 getCurlVelocity( vec4 position ) {
     vec4 yNoisePotentialDerivatives = vec4(0.0);
     vec4 zNoisePotentialDerivatives = vec4(0.0);
 
-    float persistence = 0.54;
+    float persistence = 0.56;
 
     for (int i = 0; i < OCTAVES; ++i) {
         float scale = (1.0 / 2.0) * pow(2.0, float(i));
@@ -156,20 +166,45 @@ vec3 getCurlVelocity( vec4 position ) {
     return noiseVelocity;
 }
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 void main () {
 
     vec2 uv = vUv;
 
-    vec4 geomPositions = texture2D(uGeomPositionsMap, uv);
+    vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
     vec4 data = texture2D(uPrevPositionsMap, uv);
 
     vec3 noiseVelocity = getCurlVelocity( data );
 
     vec3 vel = noiseVelocity;
-    vec3 dir = vec3( uTime * 0.1, 0.10, 0.0 );
+    vec3 dir = uDirectionFlow;
+
+    float pLife = data.a;
+
+    if( pLife < uLifeTime ){
+     // restamos vida
+        pLife = pLife -  vel.x - ( rand( vUv ) * 0.2 + 0.1 );
+    }
+
     vec3 newPosition = ( data.rgb + vel + dir );
 
-    if( newPosition.y < -30.5 || newPosition.y > 30.0 || newPosition.x < -50.0 || newPosition.x > 50.0 || newPosition.z < -150.0 || newPosition.z > 150.0) newPosition = geomPositions.rgb;
+    if( pLife < 0.0 ){
+        pLife = uLifeTime;
+        newPosition = geomPositions.rgb + uOffsetPosition;
+    }
 
-    gl_FragColor = vec4(newPosition, 1.0);
+    if( uLock != 0 && pLife == uLifeTime ){
+
+        newPosition = geomPositions.xyz + uOffsetPosition ;
+    }
+
+    if( uLock == 0 ){
+        pLife = pLife - 0.01;
+    }
+
+    gl_FragColor = vec4( newPosition, pLife );
+
 }

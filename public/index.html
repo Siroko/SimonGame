@@ -2,18 +2,35 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
     <title>Cardboard VR Prototype</title>
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
     <div id="container"></div>
 
-    <script type="text/javascript" src="js/vendor/iphone-inline-video.browser.js"></script>
+    <script>
+        window.WebVRConfig = {
+
+            // Scales the recommended buffer size reported by WebVR, which can improve
+            // performance.
+            BUFFER_SCALE: 1.0 // Default: 1.0.
+
+        }
+    </script>
+
     <script type="text/javascript" src="js/bundle.js"></script>
+    <script type="text/javascript" src="js/vendor/Base64binary.js"></script>
+    <script type="text/javascript" src="js/vendor/MIDI.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-polyfill.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-manager.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.core.min.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.spatial.min.js"></script>
     <script>
+        var sound = new Howl({
+            src: ['assets/sound/HALLOWEEN.mp3', 'assets/sound/HALLOWEEN.wav']
+        });
+
         app.init();
     </script>
 </body>

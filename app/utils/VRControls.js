@@ -18,7 +18,7 @@ var VRControls = function ( object, onError ) {
 		for ( var i = 0; i < devices.length; i ++ ) {
 
 			if ( ( 'VRDisplay' in window && devices[ i ] instanceof VRDisplay ) ||
-				 ( 'PositionSensorVRDevice' in window && devices[ i ] instanceof PositionSensorVRDevice ) ) {
+				( 'PositionSensorVRDevice' in window && devices[ i ] instanceof PositionSensorVRDevice ) ) {
 
 				vrInput = devices[ i ];
 				break;  // We keep the first we encounter
