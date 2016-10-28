@@ -167,10 +167,10 @@ WorldManager.prototype.setup = function(){
 
 WorldManager.prototype.createCharacters = function() {
     this.tints = [
-        [255, 0, 0], // green
-        [0, 255, 0], // red
-        [0, 0, 255], // blue
-        [255, 0, 255] // yellow
+        [142, 190, 147], // green
+        [198, 124, 129], // red
+        [146, 133, 201], // blue
+        [199, 160, 139] // yellow
     ].map(c => {
         return [c[0] / 255, c[1] / 255, c[2] / 255];
     });
