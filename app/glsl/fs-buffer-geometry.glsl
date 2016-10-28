@@ -68,6 +68,6 @@ void main(){
         addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
     }
 
-    gl_FragColor = base * vec4(blendLighten(light.rgb, uTint * 0.5), 1.0) * occlusion * intensity;
+    gl_FragColor = base * vec4(blendLighten(light.rgb, uTint * 0.7), 1.0) * occlusion * intensity;
 
 }
