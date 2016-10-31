@@ -76,16 +76,17 @@ WorldManager.prototype.setup = function(){
         this.scene.add( object );
     }).bind( this ) );
 
+    var folder = window.mobilecheck() ? 'graveyard1k' : 'graveyard8k';
     objLoader = new OBJLoader();
-    objLoader.setPath( 'assets/models/graveyard8k/' );
+    objLoader.setPath( 'assets/models/graveyard8k/');
     objLoader.load( 'graveyard.obj', (function ( object ) {
         var sm = new THREE.ShaderMaterial({
             uniforms: {
-                uShadowMap: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights.jpg') },
-                uShadow1Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-01.jpg') },
-                uShadow2Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-02.jpg') },
-                uShadow3Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-03.jpg') },
-                uShadow4Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/graveyard8k/graveyard-lights-04.jpg') },
+                uShadowMap: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/'+folder+'/graveyard-lights.jpg') },
+                uShadow1Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/'+folder+'/graveyard-lights-01.jpg') },
+                uShadow2Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/'+folder+'/graveyard-lights-02.jpg') },
+                uShadow3Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/'+folder+'/graveyard-lights-03.jpg') },
+                uShadow4Map: { type:'t', value : THREE.ImageUtils.loadTexture('assets/models/'+folder+'/graveyard-lights-04.jpg') },
                 uShadowFactor1: { type: 'f', value: 0 },
                 uShadowFactor2: { type: 'f', value: 0 },
                 uShadowFactor3: { type: 'f', value: 0 },
@@ -171,7 +172,7 @@ WorldManager.prototype.createCharacters = function() {
         [198, 124, 129], // red
         [146, 133, 201], // blue
         [199, 160, 139] // yellow
-    ].map(c => {
+    ].map( function( c ){
         return [c[0] / 255, c[1] / 255, c[2] / 255];
     });
 
@@ -217,6 +218,18 @@ WorldManager.prototype.createCharacters = function() {
 
     var totalChars = 4;
     var separation = 1.1;
+
+    var occlusionMap = null;
+    var lightMap = null;
+
+    var diffuse;
+    if( window.mobilecheck() ){
+        diffuse = THREE.ImageUtils.loadTexture( 'assets/models/pumpkin-done_unify_1k.jpg' );
+    } else {
+        diffuse = THREE.ImageUtils.loadTexture( 'assets/models/pumpkin-done_unify.jpg' );
+    }
+
+
     for (var i = 0; i < totalChars; i++) {
 
         var pos = new THREE.Vector3( 0.3 + ( (i / totalChars) * 2 - 1 ) * separation , 1, -0.5 );
@@ -229,9 +242,9 @@ WorldManager.prototype.createCharacters = function() {
             this.scene,
             this.sm,
             charsSetup[i].color,
-            charsSetup[i].occlusion,
-            charsSetup[i].light,
-            charsSetup[i].diffuse,
+            occlusionMap,
+            lightMap,
+            diffuse,
             charsSetup[i].tint,
             window.pointLights
         );
@@ -258,18 +271,6 @@ WorldManager.prototype.createCharacters = function() {
 
 
     }
-
-    //this.planeInfo = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.5, 1.5, 1, 1), new THREE.MeshBasicMaterial({
-    //    map : THREE.ImageUtils.loadTexture('assets/start.png'),
-    //    transparent: true,
-    //    depthTest: false,
-    //    depthWrite: false
-    //}));
-    //
-    ////this.planeInfo.rotation.y = Math.PI * 0.5;
-    //this.planeInfo.position.y = 1.5;
-    //this.planeInfo.position.z = -0.65;
-    //this.scene.add( this.planeInfo );
 
 };
 
@@ -398,20 +399,6 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
             this.elements.material.uniforms.uShadowFactor3.value = this.characters[2].factor;
             this.elements.material.uniforms.uShadowFactor4.value = this.characters[3].factor;
         }
-        //
-        // if (this.ground) {
-        //     this.ground.material.uniforms.uShadowFactor1.value = this.characters[0].factor;
-        //     this.ground.material.uniforms.uShadowFactor2.value = this.characters[1].factor;
-        //     this.ground.material.uniforms.uShadowFactor3.value = this.characters[2].factor;
-        //     this.ground.material.uniforms.uShadowFactor4.value = this.characters[3].factor;
-        // }
-        //
-        // if (this.graves) {
-        //     this.graves.material.uniforms.uShadowFactor1.value = this.characters[0].factor;
-        //     this.graves.material.uniforms.uShadowFactor2.value = this.characters[1].factor;
-        //     this.graves.material.uniforms.uShadowFactor3.value = this.characters[2].factor;
-        //     this.graves.material.uniforms.uShadowFactor4.value = this.characters[3].factor;
-        // }
     }
 
 

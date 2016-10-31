@@ -45,29 +45,8 @@ vec3 blendLighten(vec3 base, vec3 blend, float opacity) {
 
 void main(){
 
-    vec3 n = vNormalValue;
-
-    vec3 vNormal = vNormalMatrix * n;
-    vec3 vONormal = n;
-
     vec4 base = texture2D( diffuseMap, vUvValue );
-    vec4 occlusion = texture2D( occlusionMap, vUvValue );
-    vec4 light = texture2D( lightMap, vUvValue );
 
-    // Pretty basic lambertian lighting...
-    vec4 addedLights = vec4( 0.0, 0.0, 0.0, 1.0 );
-
-    if( uLights == 1.0 ){
-        for( int l = 0; l < MAX_POINT_LIGHTS; l++ ) {
-
-            vec3 lightDirection = normalize( vOPosition.rgb - pointLightPosition[ l ] );
-            addedLights.rgb += ( clamp( dot( - lightDirection, vNormal ), 0.0, 1.0 ) * pointLightColor[ l ] ) * vec3(pointLightIntensity[ l ]);
-
-        }
-    } else {
-        addedLights = vec4( 1.0, 1.0, 1.0, 1.0 );
-    }
-
-    gl_FragColor = base * vec4(blendLighten(light.rgb, uTint * 0.7), 1.0) * occlusion * intensity;
+    gl_FragColor = vec4(vec4( vec4(blendLighten(base.rgb, uTint * 0.07), 1.0) * intensity ).rgb, 1.0);
 
 }

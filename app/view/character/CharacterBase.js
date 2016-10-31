@@ -16,6 +16,7 @@ var CharacterBase = function( initPosition, correct, name, scale, renderer, scen
 
     THREE.EventDispatcher.call( this );
 
+    this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     this.factor = 0;
     this._factor = 0;
 
@@ -94,11 +95,8 @@ CharacterBase.prototype.setup = function(){
             'uTime'         : { type: 'f', value: 0 },
             'uTouch'        : { type: 'v3v', value: [ this.positionTouch1, this.positionTouch2 ] },
             'uWorldPosition': { type: 'v3', value: this.worldPosition },
-
-            'occlusionMap'     : { type: 't', value: THREE.ImageUtils.loadTexture(this.occlusionMap ) },
-            'lightMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.lightMap) },
-            'diffuseMap'    : { type: 't', value: THREE.ImageUtils.loadTexture(this.diffuse) },
-            'uTint': { type: 'v3', value: this.tint }
+            'diffuseMap'    : { type: 't', value: this.diffuse },
+            'uTint'         : { type: 'v3', value: this.tint }
         }
     });
 
@@ -175,10 +173,11 @@ CharacterBase.prototype.update = function( t ){
                 var note = this.notes[ this.name ]; // the MIDI note
                 var velocity = 127; // how hard the note hits
 
-                MIDI.setVolume(0, 127);
-                MIDI.noteOn(0, note, velocity, delay);
-                MIDI.noteOff(0, note, delay + 0.75);
-
+                if( !this.iOS ) {
+                    MIDI.setVolume(0, 127);
+                    MIDI.noteOn(0, note, velocity, delay);
+                    MIDI.noteOff(0, note, delay + 0.75);
+                }
                 prePositive = true;
 
             }
