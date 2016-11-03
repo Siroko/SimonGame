@@ -4,6 +4,7 @@
  */
 
 var World3D = require('./view/World3D');
+var AssetsLoader = require('assets-loader');
 
 var Main = function(){
     this.world3D = null;
@@ -11,6 +12,43 @@ var Main = function(){
 
 Main.prototype.init = function() {
 
+    var assetsLoader = new AssetsLoader(
+        {
+            assets: [
+
+                { url: '/assets/models/pumpkin.json', type: 'json' },
+                { url: '/assets/models/pumpkin-done_unify.jpg', type: 'jpg' },
+                { url: '/assets/models/pumpkin-done_unify_1k.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights-01.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights-02.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights-03.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard1k/graveyard-lights-04.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard8k/graveyard.obj', type: 'text' },
+                { url: '/assets/models/graveyard8k/graveyard-lights.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard8k/graveyard-lights-01.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard8k/graveyard-lights-02.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard8k/graveyard-lights-03.jpg', type: 'jpg' },
+                { url: '/assets/models/graveyard8k/graveyard-lights-04.jpg', type: 'jpg' },
+                { url: '/assets/models/hand-zombie-left.obj', type: 'text' },
+                { url: '/assets/models/hand-zombie-right.obj', type: 'text' },
+                { url: 'assets/models/hand-zombie-diffuse.png', type: 'png' },
+                { url: 'assets/models/hand-zombie-right-occlusion.png', type: 'png' },
+                { url: 'assets/models/hand-zombie-left-occlusion.png', type: 'png' },
+                { url: 'assets/sound/HALLOWEEN.mp3', type: 'mp3' },
+                { url: 'assets/sound/midi/MusyngKite/fx_8_scifi-mp3.js', type: 'text' },
+                { url: 'assets/sound/midi/MusyngKite/fx_8_scifi-ogg.js', type: 'text' }
+
+            ]
+        }
+    ).on('complete', this.onLoadAssets.bind( this ) );
+
+    assetsLoader.start();
+
+};
+
+Main.prototype.onLoadAssets = function( e ){
     console.log('APP initializing');
 
     var container = document.getElementById( "container" );
@@ -36,7 +74,7 @@ Main.prototype.onResize = function( e ) {
 };
 
 module.exports = Main;
-},{"./view/World3D":27}],2:[function(require,module,exports){
+},{"./view/World3D":27,"assets-loader":36}],2:[function(require,module,exports){
 var Main = require('./Main.js');
 require('es6-promise').polyfill();
 
@@ -67,7 +105,7 @@ if(!DEBUG){
 
 
 window.app = new Main();
-},{"./Main.js":1,"es6-promise":34}],3:[function(require,module,exports){
+},{"./Main.js":1,"es6-promise":41}],3:[function(require,module,exports){
 module.exports = "uniform sampler2D uDiffuseMap;\nuniform sampler2D uShadowMap;\nuniform sampler2D uShadow1Map;\nuniform sampler2D uShadow2Map;\nuniform sampler2D uShadow3Map;\nuniform sampler2D uShadow4Map;\n\nuniform float uShadowFactor1;\nuniform float uShadowFactor2;\nuniform float uShadowFactor3;\nuniform float uShadowFactor4;\n\nvarying vec2 vUv;\n\nfloat blendOverlay(float base, float blend) {\n\treturn base<0.5?(2.0*base*blend):(1.0-2.0*(1.0-base)*(1.0-blend));\n}\n\nvec3 blendOverlay(vec3 base, vec3 blend) {\n\treturn vec3(blendOverlay(base.r,blend.r),blendOverlay(base.g,blend.g),blendOverlay(base.b,blend.b));\n}\n\nvoid main(){\n\n    vec3 baseColor = vec3( 0.8 );\n\n    vec4 shadow = texture2D( uShadowMap, vUv );\n    vec4 shadow1 = texture2D( uShadow1Map, vUv );\n    vec4 shadow2 = texture2D( uShadow2Map, vUv );\n    vec4 shadow3 = texture2D( uShadow3Map, vUv );\n    vec4 shadow4 = texture2D( uShadow4Map, vUv );\n\n    vec3 blended1 = shadow1.rgb;\n    vec3 blended2 = shadow2.rgb;\n    vec3 blended3 = shadow3.rgb;\n    vec3 blended4 = shadow4.rgb;\n\n    vec3 c = shadow.rgb * baseColor;\n    c +=  blended1 * uShadowFactor1;\n    c +=  blended2 * uShadowFactor2;\n    c +=  blended3 * uShadowFactor3;\n    c +=  blended4 * uShadowFactor4;\n\n    if( c.r > 1.0 ) c.r = 1.0;\n    if( c.g > 1.0 ) c.g = 1.0;\n    if( c.b > 1.0 ) c.b = 1.0;\n\n\n    gl_FragColor = vec4( c , 1.0 );\n\n}\n";
 
 },{}],4:[function(require,module,exports){
@@ -169,7 +207,7 @@ BaseGLPass.prototype.getRenderTarget = function( w, h ) {
 };
 
 module.exports = BaseGLPass;
-},{"three":36}],18:[function(require,module,exports){
+},{"three":43}],18:[function(require,module,exports){
 /**
  * Created by siroko on 7/11/16.
  */
@@ -474,7 +512,7 @@ GPUDisplacedGeometry.prototype.clamp = function( value, min, max ){
 
 module.exports = GPUDisplacedGeometry;
 
-},{"../glsl/fs-buffer-geometry.glsl":4,"../glsl/fs-update-positions-geometry.glsl":8,"../glsl/fs-update-positions-spring.glsl":9,"../glsl/vs-buffer-geometry.glsl":12,"../glsl/vs-simple-quad.glsl":16,"./BaseGLPass":17,"./ImprovedNoise":19,"three":36}],19:[function(require,module,exports){
+},{"../glsl/fs-buffer-geometry.glsl":4,"../glsl/fs-update-positions-geometry.glsl":8,"../glsl/fs-update-positions-spring.glsl":9,"../glsl/vs-buffer-geometry.glsl":12,"../glsl/vs-simple-quad.glsl":16,"./BaseGLPass":17,"./ImprovedNoise":19,"three":43}],19:[function(require,module,exports){
 /**
  * Created by felixmorenomartinez on 28/06/16.
  */
@@ -1032,7 +1070,7 @@ MTLLoader.MaterialCreator.prototype = {
 };
 
 module.exports = MTLLoader;
-},{"three":36}],21:[function(require,module,exports){
+},{"three":43}],21:[function(require,module,exports){
 /**
  * @author Slayvin / http://slayvin.net
  */
@@ -1294,7 +1332,7 @@ Mirror.prototype.renderTemp = function () {
 };
 
 module.exports = Mirror;
-},{"./../glsl/fs-mirror.glsl":7,"./../glsl/vs-mirror.glsl":15,"three":36}],22:[function(require,module,exports){
+},{"./../glsl/fs-mirror.glsl":7,"./../glsl/vs-mirror.glsl":15,"three":43}],22:[function(require,module,exports){
 /**
  * @author mrdoob / http://mrdoob.com/
  */
@@ -2017,7 +2055,7 @@ OBJLoader.prototype = {
 };
 
 module.exports = OBJLoader;
-},{"three":36}],23:[function(require,module,exports){
+},{"three":43}],23:[function(require,module,exports){
 /**
  * Created by siroko on 7/8/15.
  */
@@ -2173,7 +2211,7 @@ Simulator.prototype.update = function() {
 };
 
 module.exports = Simulator;
-},{"../glsl/fs-buffer-particles.glsl":5,"../glsl/fs-update-positions.glsl":10,"../glsl/vs-buffer-particles.glsl":13,"../glsl/vs-simple-quad.glsl":16,"./BaseGLPass":17,"three":36}],24:[function(require,module,exports){
+},{"../glsl/fs-buffer-particles.glsl":5,"../glsl/fs-update-positions.glsl":10,"../glsl/vs-buffer-particles.glsl":13,"../glsl/vs-simple-quad.glsl":16,"./BaseGLPass":17,"three":43}],24:[function(require,module,exports){
 /**
  * @author dmarcos / https://github.com/dmarcos
  * @author mrdoob / http://mrdoob.com
@@ -2353,7 +2391,7 @@ var VRControls = function ( object, onError ) {
 };
 
 module.exports = VRControls;
-},{"three":36}],25:[function(require,module,exports){
+},{"three":43}],25:[function(require,module,exports){
 /**
  * @author dmarcos / https://github.com/dmarcos
  * @author mrdoob / http://mrdoob.com
@@ -2761,7 +2799,7 @@ var VREffect = function ( renderer, onError, onReady, onRenderLeftEye, onRenderR
 };
 
 module.exports = VREffect;
-},{"three":36}],26:[function(require,module,exports){
+},{"three":43}],26:[function(require,module,exports){
 /**
  * Created by siroko on 7/15/16.
  */
@@ -2953,7 +2991,7 @@ Simon.prototype.setHumanNote = function( noteIndex ) {
 };
 
 module.exports = Simon;
-},{"three":36}],27:[function(require,module,exports){
+},{"three":43}],27:[function(require,module,exports){
 /**
  * Created by siroko on 7/8/15.
  */
@@ -3150,7 +3188,7 @@ World3D.prototype.onResize = function( w, h ) {
 
 module.exports = World3D;
 
-},{"../utils/VRControls":24,"../utils/VREffect":25,"./../utils/Mirror":21,"./../utils/Simulator":23,"./WorldManager":28,"./gamepads/GamePads":31,"./gamepads/MousePad":32,"gsap":35,"three":36}],28:[function(require,module,exports){
+},{"../utils/VRControls":24,"../utils/VREffect":25,"./../utils/Mirror":21,"./../utils/Simulator":23,"./WorldManager":28,"./gamepads/GamePads":31,"./gamepads/MousePad":32,"gsap":42,"three":43}],28:[function(require,module,exports){
 /**
  * Created by siroko on 5/30/16.
  */
@@ -3559,7 +3597,7 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
 
 module.exports = WorldManager;
 
-},{"./../glsl/fs-blended-maps.glsl":3,"./../glsl/vs-base-projection.glsl":11,"./../utils/MTLLoader":20,"./../utils/OBJLoader":22,"./../utils/logic/Simon":26,"./audio/SoundManager":29,"./character/CharacterBase":30,"three":36}],29:[function(require,module,exports){
+},{"./../glsl/fs-blended-maps.glsl":3,"./../glsl/vs-base-projection.glsl":11,"./../utils/MTLLoader":20,"./../utils/OBJLoader":22,"./../utils/logic/Simon":26,"./audio/SoundManager":29,"./character/CharacterBase":30,"three":43}],29:[function(require,module,exports){
 /**
  * Created by siroko on 7/1/16.
  */
@@ -3809,7 +3847,7 @@ CharacterBase.prototype.update = function( t ){
 
 module.exports = CharacterBase;
 
-},{"./../../glsl/fs-character.glsl":6,"./../../glsl/vs-character.glsl":14,"./../../utils/GPUDisplacedGeometry":18,"./../../utils/ImprovedNoise":19,"./../../utils/Simulator":23,"three":36}],31:[function(require,module,exports){
+},{"./../../glsl/fs-character.glsl":6,"./../../glsl/vs-character.glsl":14,"./../../utils/GPUDisplacedGeometry":18,"./../../utils/ImprovedNoise":19,"./../../utils/Simulator":23,"three":43}],31:[function(require,module,exports){
 /**
  * Created by siroko on 6/27/16.
  */
@@ -3975,7 +4013,7 @@ GamePads.prototype.update = function( t ){
 };
 
 module.exports = GamePads;
-},{"./../../utils/OBJLoader":22,"three":36}],32:[function(require,module,exports){
+},{"./../../utils/OBJLoader":22,"three":43}],32:[function(require,module,exports){
 /**
  * Created by siroko on 6/27/16.
  */
@@ -4098,7 +4136,954 @@ MousePad.prototype.update = function( t, objs ) {
 };
 
 module.exports = MousePad;
-},{"three":36}],33:[function(require,module,exports){
+},{"three":43}],33:[function(require,module,exports){
+'use strict';
+
+module.exports = (function() {
+    try {
+        return !!new Blob();
+    } catch (e) {
+        return false;
+    }
+}());
+
+},{}],34:[function(require,module,exports){
+'use strict';
+
+var EventEmitter = require('events').EventEmitter;
+
+function Emitter() {
+    EventEmitter.call(this);
+    this.setMaxListeners(20);
+}
+
+Emitter.prototype = Object.create(EventEmitter.prototype);
+Emitter.prototype.constructor = Emitter;
+
+Emitter.prototype.off = function(type, listener) {
+    if (listener) {
+        return this.removeListener(type, listener);
+    }
+    if (type) {
+        return this.removeAllListeners(type);
+    }
+    return this.removeAllListeners();
+};
+
+module.exports = Emitter;
+
+},{"events":39}],35:[function(require,module,exports){
+'use strict';
+
+var Emitter = require('./emitter.js');
+var createLoader = require('./loader');
+var autoId = 0;
+
+module.exports = function createGroup(config) {
+    var group;
+    var map = {};
+    var assets = [];
+    var queue = [];
+    var numLoaded = 0;
+    var numTotal = 0;
+    var loaders = {};
+
+    var add = function(options) {
+        // console.debug('add', options);
+        if (Array.isArray(options)) {
+            options.forEach(add);
+            return group;
+        }
+        var isGroup = !!options.assets && Array.isArray(options.assets);
+        // console.debug('isGroup', isGroup);
+        var loader;
+        if (isGroup) {
+            loader = createGroup(configure(options, config));
+        } else {
+            loader = createLoader(configure(options, config));
+        }
+        loader.once('destroy', destroyHandler);
+        queue.push(loader);
+        loaders[loader.id] = loader;
+        return group;
+    };
+
+    var get = function(id) {
+        if (!arguments.length) {
+            return assets;
+        }
+        return map[id];
+    };
+
+    var find = function(id) {
+        if (get(id)) {
+            return get(id);
+        }
+        var found = null;
+        // assets.filter(function(asset) {
+        //     return asset.type === 'group';
+        // }).map(function(asset) {
+        //     return loaders[asset.id];
+        // }).some(function(loader) {
+        //     found = loader.find(id);
+        //     return !!found;
+        // });
+        Object.keys(loaders).some(function(key) {
+            found = loaders[key].find && loaders[key].find(id);
+            return !!found;
+        });
+        return found;
+    };
+
+    var getExtension = function(url) {
+        return url && url.split('?')[0].split('.').pop().toLowerCase();
+    };
+
+    var configure = function(options, defaults) {
+        if (typeof options === 'string') {
+            var url = options;
+            options = {
+                url: url
+            };
+        }
+
+        if (options.isTouchLocked === undefined) {
+            options.isTouchLocked = defaults.isTouchLocked;
+        }
+
+        if (options.blob === undefined) {
+            options.blob = defaults.blob;
+        }
+
+        if (options.basePath === undefined) {
+            options.basePath = defaults.basePath;
+        }
+
+        options.id = options.id || options.url || String(++autoId);
+        options.type = options.type || getExtension(options.url);
+        options.crossOrigin = options.crossOrigin || defaults.crossOrigin;
+        options.webAudioContext = options.webAudioContext || defaults.webAudioContext;
+        options.log = defaults.log;
+
+        return options;
+    };
+
+    var start = function() {
+        numTotal = queue.length;
+
+        queue.forEach(function(loader) {
+            loader
+                .on('progress', progressHandler)
+                .once('complete', completeHandler)
+                .once('error', errorHandler)
+                .start();
+        });
+
+        queue = [];
+
+        return group;
+    };
+
+    var progressHandler = function(progress) {
+        var loaded = numLoaded + progress;
+        group.emit('progress', loaded / numTotal);
+    };
+
+    var completeHandler = function(asset, id, type) {
+        if (Array.isArray(asset)) {
+            asset = { id: id, file: asset, type: type };
+        }
+        numLoaded++;
+        group.emit('progress', numLoaded / numTotal);
+        map[asset.id] = asset.file;
+        assets.push(asset);
+        group.emit('childcomplete', asset);
+        checkComplete();
+    };
+
+    var errorHandler = function(err) {
+        numTotal--;
+        if (group.listeners('error').length) {
+            group.emit('error', err);
+        } else {
+            console.error(err);
+        }
+        checkComplete();
+    };
+
+    var destroyHandler = function(id) {
+        loaders[id] = null;
+        delete loaders[id];
+
+        map[id] = null;
+        delete map[id];
+
+        assets.some(function(asset, i) {
+            if (asset.id === id) {
+                assets.splice(i, 1);
+                return true;
+            }
+        });
+    };
+
+    var checkComplete = function() {
+        if (numLoaded >= numTotal) {
+            group.emit('complete', assets, config.id, 'group');
+        }
+    };
+
+    var destroy = function() {
+        while (queue.length) {
+            queue.pop().destroy();
+        }
+        group.off('error');
+        group.off('progress');
+        group.off('complete');
+        assets = [];
+        map = {};
+        config.webAudioContext = null;
+        numTotal = 0;
+        numLoaded = 0;
+
+        Object.keys(loaders).forEach(function(key) {
+            loaders[key].destroy();
+        });
+        loaders = {};
+
+        group.emit('destroy', group.id);
+
+        return group;
+    };
+
+    // emits: progress, error, complete, destroy
+
+    group = Object.create(Emitter.prototype, {
+        _events: {
+            value: {}
+        },
+        id: {
+            get: function() {
+                return config.id;
+            }
+        },
+        add: {
+            value: add
+        },
+        start: {
+            value: start
+        },
+        get: {
+            value: get
+        },
+        find: {
+            value: find
+        },
+        getLoader: {
+            value: function(id) {
+                return loaders[id];
+            }
+        },
+        loaded: {
+            get: function() {
+                return numLoaded >= numTotal;
+            }
+        },
+        file: {
+            get: function() {
+                return assets;
+            }
+        },
+        destroy: {
+            value: destroy
+        }
+    });
+
+    config = configure(config || {}, {
+        basePath: '',
+        blob: false,
+        touchLocked: false,
+        crossOrigin: null,
+        webAudioContext: null,
+        log: false
+    });
+
+    if (Array.isArray(config.assets)) {
+        add(config.assets);
+    }
+
+    return Object.freeze(group);
+};
+
+},{"./emitter.js":34,"./loader":37}],36:[function(require,module,exports){
+'use strict';
+
+var assetsLoader = require('./group');
+assetsLoader.stats = require('./stats');
+
+module.exports = assetsLoader;
+
+},{"./group":35,"./stats":38}],37:[function(require,module,exports){
+'use strict';
+
+var Emitter = require('./emitter.js');
+var browserHasBlob = require('./browser-has-blob.js');
+var stats = require('./stats');
+
+module.exports = function(options) {
+    var id = options.id;
+    var basePath = options.basePath || '';
+    var url = options.url;
+    var type = options.type;
+    var crossOrigin = options.crossOrigin;
+    var isTouchLocked = options.isTouchLocked;
+    var blob = options.blob && browserHasBlob;
+    var webAudioContext = options.webAudioContext;
+    var log = options.log;
+
+    var loader;
+    var loadHandler;
+    var request;
+    var startTime;
+    var timeout;
+    var file;
+
+    var start = function() {
+        startTime = Date.now();
+
+        switch (type) {
+            case 'json':
+                loadJSON();
+                break;
+            case 'jpg':
+            case 'png':
+            case 'gif':
+            case 'webp':
+                loadImage();
+                break;
+            case 'mp3':
+            case 'ogg':
+            case 'opus':
+            case 'wav':
+            case 'm4a':
+                loadAudio();
+                break;
+            case 'ogv':
+            case 'mp4':
+            case 'webm':
+            case 'hls':
+                loadVideo();
+                break;
+            case 'bin':
+            case 'binary':
+                loadXHR('arraybuffer');
+                break;
+            case 'txt':
+            case 'text':
+                loadXHR('text');
+                break;
+            default:
+                throw 'AssetsLoader ERROR: Unknown type for file with URL: ' + basePath + url + ' (' + type + ')';
+        }
+    };
+
+    var dispatchComplete = function(data) {
+        if (!data) {
+            return;
+        }
+        file = {id: id, file: data, type: type};
+        loader.emit('progress', 1);
+        loader.emit('complete', file, id, type);
+        removeListeners();
+    };
+
+    var loadXHR = function(responseType, customLoadHandler) {
+        loadHandler = customLoadHandler || completeHandler;
+
+        request = new XMLHttpRequest();
+        request.open('GET', basePath + url, true);
+        request.responseType = responseType;
+        request.addEventListener('progress', progressHandler);
+        request.addEventListener('load', loadHandler);
+        request.addEventListener('error', errorHandler);
+        request.send();
+    };
+
+    var progressHandler = function(event) {
+        if (event.lengthComputable) {
+            loader.emit('progress', event.loaded / event.total);
+        }
+    };
+
+    var completeHandler = function() {
+        if (success()) {
+            dispatchComplete(request.response);
+        }
+    };
+
+    var success = function() {
+        if (request && request.status < 400) {
+            stats.update(request, startTime, url, log);
+            return true;
+        }
+        errorHandler(request && request.statusText);
+        return false;
+    };
+
+    // json
+
+    var loadJSON = function() {
+        loadXHR('json', function() {
+            if (success()) {
+                var data = request.response;
+                if (typeof data === 'string') {
+                    data = JSON.parse(data);
+                }
+                dispatchComplete(data);
+            }
+        });
+    };
+
+    // image
+
+    var loadImage = function() {
+        if (blob) {
+            loadImageBlob();
+        } else {
+            loadImageElement();
+        }
+    };
+
+    var loadImageElement = function() {
+        request = new Image();
+        if (crossOrigin) {
+            request.crossOrigin = 'anonymous';
+        }
+        request.addEventListener('error', errorHandler, false);
+        request.addEventListener('load', elementLoadHandler, false);
+        request.src = basePath + url;
+    };
+
+    var elementLoadHandler = function() {
+        window.clearTimeout(timeout);
+        dispatchComplete(request);
+    };
+
+    var loadImageBlob = function() {
+        loadXHR('blob', function() {
+            if (success()) {
+                request = new Image();
+                request.addEventListener('error', errorHandler, false);
+                request.addEventListener('load', imageBlobHandler, false);
+                request.src = window.URL.createObjectURL(request.response);
+            }
+        });
+    };
+
+    var imageBlobHandler = function() {
+        window.URL.revokeObjectURL(request.src);
+        dispatchComplete(request);
+    };
+
+    // audio
+
+    var loadAudio = function() {
+        if (webAudioContext) {
+            loadAudioBuffer();
+        } else {
+            loadMediaElement('audio');
+        }
+    };
+
+    // video
+
+    var loadVideo = function() {
+        if (blob) {
+            loadXHR('blob');
+        } else {
+            loadMediaElement('video');
+        }
+    };
+
+    // audio buffer
+
+    var loadAudioBuffer = function() {
+        loadXHR('arraybuffer', function() {
+            if (success()) {
+                webAudioContext.decodeAudioData(
+                    request.response,
+                    function(buffer) {
+                        request = null;
+                        dispatchComplete(buffer);
+                    },
+                    function(e) {
+                        errorHandler(e);
+                    }
+                );
+            }
+        });
+    };
+
+    // media element
+
+    var loadMediaElement = function(tagName) {
+        request = document.createElement(tagName);
+
+        if (!isTouchLocked) {
+            // timeout because sometimes canplaythrough doesn't fire
+            window.clearTimeout(timeout);
+            timeout = window.setTimeout(elementLoadHandler, 2000);
+            request.addEventListener('canplaythrough', elementLoadHandler, false);
+        }
+
+        request.addEventListener('error', errorHandler, false);
+        request.preload = 'auto';
+        request.src = basePath + url;
+        request.load();
+
+        if (isTouchLocked) {
+            dispatchComplete(request);
+        }
+    };
+
+    // error
+
+    var errorHandler = function(err) {
+        window.clearTimeout(timeout);
+
+        var message = err;
+
+        if (request && request.tagName && request.error) {
+            var ERROR_STATE = ['', 'ABORTED', 'NETWORK', 'DECODE', 'SRC_NOT_SUPPORTED'];
+            message = 'MediaError: ' + ERROR_STATE[request.error.code] + ' ' + request.src;
+        } else if (request && request.statusText) {
+            message = request.statusText;
+        } else if (err && err.message) {
+            message = err.message;
+        } else if (err && err.type) {
+            message = err.type;
+        }
+
+        loader.emit('error', 'Error loading "' + basePath + url + '" ' + message);
+
+        destroy();
+    };
+
+    // clean up
+
+    var removeListeners = function() {
+        loader.off('error');
+        loader.off('progress');
+        loader.off('complete');
+
+        if (request) {
+            request.removeEventListener('progress', progressHandler);
+            request.removeEventListener('load', loadHandler);
+            request.removeEventListener('error', errorHandler);
+            request.removeEventListener('load', elementLoadHandler);
+            request.removeEventListener('canplaythrough', elementLoadHandler);
+            request.removeEventListener('load', imageBlobHandler);
+        }
+    };
+
+    var destroy = function() {
+        removeListeners();
+
+        if (request && request.abort && request.readyState < 4) {
+            request.abort();
+        }
+
+        request = null;
+        webAudioContext = null;
+        file = null;
+
+        window.clearTimeout(timeout);
+
+        loader.emit('destroy', id);
+    };
+
+    // emits: progress, error, complete
+
+    loader = Object.create(Emitter.prototype, {
+        _events: {
+            value: {}
+        },
+        id: {
+            value: options.id
+        },
+        start: {
+            value: start
+        },
+        loaded: {
+            get: function() {
+                return !!file;
+            }
+        },
+        file: {
+            get: function() {
+                return file;
+            }
+        },
+        destroy: {
+            value: destroy
+        }
+    });
+
+    return Object.freeze(loader);
+};
+
+},{"./browser-has-blob.js":33,"./emitter.js":34,"./stats":38}],38:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+    mbs: 0,
+    secs: 0,
+    update: function(request, startTime, url, log) {
+        var length;
+        var headers = request.getAllResponseHeaders();
+        if (headers) {
+            var match = headers.match(/content-length: (\d+)/i);
+            if (match && match.length) {
+                length = match[1];
+            }
+        }
+        // var length = request.getResponseHeader('Content-Length');
+        if (length) {
+            length = parseInt(length, 10);
+            var mbs = length / 1024 / 1024;
+            var secs = (Date.now() - startTime) / 1000;
+            this.secs += secs;
+            this.mbs += mbs;
+            if (log) {
+                this.log(url, mbs, secs);
+            }
+        } else if(log) {
+            console.warn.call(console, 'Can\'t get Content-Length:', url);
+        }
+    },
+    log: function(url, mbs, secs) {
+        if (url) {
+            var file = 'File loaded: ' +
+                url.substr(url.lastIndexOf('/') + 1) +
+                ' size:' + mbs.toFixed(2) + 'mb' +
+                ' time:' + secs.toFixed(2) + 's' +
+                ' speed:' + (mbs / secs).toFixed(2) + 'mbps';
+
+            console.log.call(console, file);
+        }
+        var total = 'Total loaded: ' + this.mbs.toFixed(2) + 'mb' +
+            ' time:' + this.secs.toFixed(2) + 's' +
+            ' speed:' + this.getMbps().toFixed(2) + 'mbps';
+        console.log.call(console, total);
+    },
+    getMbps: function() {
+        return this.mbs / this.secs;
+    }
+};
+
+},{}],39:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      }
+      throw TypeError('Uncaught, unspecified "error" event.');
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++)
+          args[i - 1] = arguments[i];
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++)
+      args[i - 1] = arguments[i];
+
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    var m;
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  var ret;
+  if (!emitter._events || !emitter._events[type])
+    ret = 0;
+  else if (isFunction(emitter._events[type]))
+    ret = 1;
+  else
+    ret = emitter._events[type].length;
+  return ret;
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],40:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -4280,7 +5265,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],34:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -5438,7 +6423,7 @@ return Promise;
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":33}],35:[function(require,module,exports){
+},{"_process":40}],42:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 1.19.0
@@ -13242,7 +14227,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],36:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
