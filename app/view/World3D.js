@@ -26,15 +26,24 @@ var World3D = function( container ) {
     // Apply VR stereo rendering to renderer.
     this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
 
-    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.4 );
+    // this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.4 );
+    // this.pointLight.position.set( 0, 3, 1 );
+    // this.scene.add( this.pointLight );
+    //
+    // this.pointLight2 = new THREE.PointLight( 0x664411, 0.2 );
+    // this.pointLight2.position.set( 0, 3, 1 );
+    // this.scene.add( this.pointLight2 );
+
+    this.pointLight = new THREE.PointLight( 0xFFFFFF, 0 );
     this.pointLight.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight );
 
-    this.pointLight2 = new THREE.PointLight( 0x664411, 0.2 );
+    this.pointLight2 = new THREE.PointLight( 0x664411, 0.3 );
     this.pointLight2.position.set( 0, 3, 1 );
     this.scene.add( this.pointLight2 );
 
-    this.amb = new THREE.AmbientLight( 0x8C857C, 1 );
+
+    this.amb = new THREE.AmbientLight( 0x8C857C, 0 );
     this.scene.add( this.amb );
 
     window.pointLights = [ this.pointLight, this.pointLight2 ];
@@ -53,8 +62,8 @@ var World3D = function( container ) {
     this.addEvents();
 
     this.simulator = new Simulator( {
-        sizeW: 8,
-        sizeH: 8,
+        sizeW: 4,
+        sizeH: 4,
         pointSize: 2,
         renderer: this.renderer
     } );
@@ -116,7 +125,7 @@ World3D.prototype.onModeChange = function( n, o ) {
 
 World3D.prototype.render = function( timestamp ) {
 
-    window.requestAnimationFrame( this.render.bind( this ) );
+    this.effect.getVRDisplay().requestAnimationFrame(this.render.bind( this ) );
 
     //this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );
@@ -127,14 +136,16 @@ World3D.prototype.render = function( timestamp ) {
 
     this.simulator.update();
     // Render the scene through the manager.
-    this.renderer.setClearColor( 0x958D83 );
+    this.renderer.setClearColor( 0x77716A );
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.manager.render( this.scene, this.camera, timestamp);
-    // if( this.worldManager.light.shadow.map ){
-    //     this.worldManager.lightShadowMapViewer.render( this.renderer );
-    // }
+    if( this.worldManager.light.shadow.map ){
+        // this.worldManager.lightShadowMapViewer.render( this.renderer );
+    }
 
+    // this.pointLight.intensity = ((Math.sin(timestamp * 0.0001) + 1) * 0.5);
+    // this.pointLight2.intensity = ((Math.cos(timestamp * 0.0001) + 1) * 0.5);
 };
 
 World3D.prototype.onResize = function( w, h ) {

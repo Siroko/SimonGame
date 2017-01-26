@@ -25,7 +25,7 @@ var SimulationTexture = function( params ) {
 
     this.boundary   = params.boundary || {
             position : new THREE.Vector3( 0, 0, 0 ),
-            size : new THREE.Vector3( 10, 10, 10 )
+            size : new THREE.Vector3( 30, 10, 30 )
         };
 
     this.directionFlow = params.directionFlow;
@@ -38,7 +38,7 @@ var SimulationTexture = function( params ) {
     this.noiseScale = params.noiseScale || 0.039;
     this.lifeTime = params.lifeTime || 100;
     this.persistence = params.persistence || 0.01;
-    this.speedDie = params.speedDie || 0.001;
+    this.speedDie = params.speedDie || 0.01;
 
     this.offset = params.offset || new THREE.Vector3(0, 0, 0);
 

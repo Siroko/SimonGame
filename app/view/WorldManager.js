@@ -22,6 +22,7 @@ var WorldManager = function( scene, camera, dummyCamera, renderer ) {
     this.characters = [];
     this.charactersMesh = [];
     this.charactersCalcPlane = [];
+    this.mountainTorus = [];
 
     this.setup();
     this.setupShadows();
@@ -34,14 +35,14 @@ WorldManager.prototype = Object.create( THREE.EventDispatcher.prototype );
 WorldManager.prototype.setup = function(){
 
     this.floor = new THREE.Mesh( new THREE.PlaneBufferGeometry( 60, 60, 1, 1 ), new THREE.MeshPhongMaterial( {
-        color: 0xFFFFFF,
-        ambient: 0xFFFFFF
+        color: 0xcccccc,
+        ambient: 0x9c9c9c
 
     } ) );
 
     this.floor.position.set( 0 , 0.1, 0 );
     this.floor.rotation.set( Math.PI * 1.5 , 0, 0 );
-    this.scene.add( this.floor );
+    // this.scene.add( this.floor );
 
     // this.geom = new THREE.IcosahedronGeometry( 0.08, 1 );
     // var m = new THREE.MeshPhongMaterial({
@@ -84,40 +85,172 @@ WorldManager.prototype.setup = function(){
     // model
 
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/leaf.obj', (function ( object ) {
+    loader.load( 'assets/models/snowflake_.obj', (function ( object ) {
 
         this.gpuGeometrySimulation = new GPUGeometrySimulation( {
             geom : object.children[0].geometry,
-            matcap: THREE.ImageUtils.loadTexture('assets/matcap_blue_skin.jpg'),
-            sizeSimulation: mobilecheck() ? 32 : 54,
+            matcap: THREE.ImageUtils.loadTexture('assets/matcap_twilight.jpg'),
+            sizeSimulation: mobilecheck() ? 8 : 8,
             renderer: this.renderer
         } );
-
+        this.gpuGeometrySimulation.bufferMesh.position.set(0, 0.2, -1);
         this.scene.add( this.gpuGeometrySimulation.bufferMesh );
 
     } ).bind( this ), onProgress, onError );
 
-    this.createCharacters();
+    loader.load( 'assets/sceneClouds.obj', (function ( object ) {
+
+        console.log( object );
+        for (var i = 0; i < object.children.length; i++) {
+            var obj = object.children[i];
+            if( obj.name.indexOf('sun') >= 0  ) {
+                obj.material.emissive = new THREE.Color().setRGB(20 / 255, 20 / 255, 0.2 / 255);
+                obj.material.specular = new THREE.Color('#555555');
+                obj.material.shininess = 0;
+
+                this.sun = obj;
+
+            }
+            if( obj.name.indexOf('mountainTorus') >= 0  ) {
+                //obj.material.emissive = new THREE.Color('#555555');
+                //obj.material.transparent = true;
+                //obj.material.opacity = 0.7;
+
+                // obj.castShadow = true;
+                // obj.receiveShadow = true;
+
+                this.mountainTorus.push( obj );
+
+            }
+
+            if( obj.name.indexOf('CloudGeom') >= 0  ) {
+                obj.material = new THREE.MeshPhongMaterial({
+                    map: THREE.ImageUtils.loadTexture('assets/ao_color.jpg'),
+                    emissive : new THREE.Color().setRGB(0,0,0),
+                    specular : new THREE.Color('#FFFFFF'),
+                    shininess : 0
+                });
+
+            }
+
+            if( obj.name.indexOf('water') >= 0  ) {
+                //obj.material.transparent = true;
+                //obj.material.opacity = 0.8;
+
+            }
+
+            if( obj.name.indexOf('faceSun') >= 0  ) {
+                obj.visible = false;
+                obj.material = new THREE.MeshBasicMaterial({
+                    map: THREE.ImageUtils.loadTexture('assets/faceSun_2048.png'),
+                    depthWrite : false,
+                    transparent : true
+                });
+
+                var texture = obj.material.map;
+                //texture.generateMipmaps = false;
+                texture.magFilter = THREE.LinearFilter;
+                texture.minFilter = THREE.LinearFilter;
+
+                this.faceSun = obj;
+
+            }
+
+            if( obj.name.indexOf('ground') >= 0  ) {
+
+                var t = THREE.ImageUtils.loadTexture('assets/test_Light.jpg');
+
+                for (var j = 0; j < obj.material.materials.length; j++) {
+                    var mat = obj.material.materials[j];
+                    mat.map = t;
+                }
+
+                this.ground = obj;
+                this.ground.receiveShadow = true;
+            }
+
+            if( obj.name.indexOf('stone') >= 0  ) {
+                obj.material.emissive = new THREE.Color('#000000');
+                obj.material.specular = new THREE.Color('#000000')
+                obj.material.color = new THREE.Color('#555555');
+                obj.material.shininess = 0;
+
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+
+            }
+
+            if( obj.name.indexOf('cascadeBottom') >= 0  ) {
+                obj.material.visible = false;
+                this.createBubbles( obj.position );
+            }
+
+            obj.geometry.computeBoundingSphere();
+            //obj.material = new THREE.MeshBasicMaterial({
+            //    color: 0xff0000,
+            //    wireframe: true
+            //});
+        }
+
+        this.scene.add( object );
+
+    } ).bind( this ), onProgress, onError );
+
+    var instrument = 'tinkle_bell';
+    MIDI.loadPlugin({
+        soundfontUrl: "assets/sound/midi/MusyngKite/",
+        instrument: instrument,
+        onsuccess: (function() {
+            MIDI.programChange(0, MIDI.GM.byName[instrument].number);
+            this.createCharacters();
+        }).bind( this )
+    });
+
+
+
+};
+
+WorldManager.prototype.createBubbles = function( p ) {
+
+    this.bubbles = [];
+    var geom = new THREE.IcosahedronGeometry( 0.5 + Math.random() * 0.3, 1 );
+    var mat = new THREE.MeshLambertMaterial( {
+        color: 0xFFFFFF,
+        shading: THREE.FlatShading
+    } );
+
+    for (var i = 0; i < 25; i++) {
+
+        var mesh = new THREE.Mesh( geom, mat );
+        var r = (Math.random() + 0.1) * 3;
+        mesh.scale.set( r, r, r );
+        this.bubbles.push( mesh );
+        mesh.position.copy( new THREE.Vector3(-9.749, -1.863, 146.747) );
+        mesh.position.x += (Math.random() * 2 - 1 ) * 8;
+        mesh.position.y += Math.random() * 4;
+        this.scene.add( mesh );
+
+    }
 
 };
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 1024;
-    var SHADOW_MAP_HEIGHT = 1024;
+    var SHADOW_MAP_WIDTH = 512;
+    var SHADOW_MAP_HEIGHT = 512;
 
     this.light = new THREE.SpotLight( 0xffffff, 0.1 );
-    this.light.distance = 10;
-    this.light.penumbra = 0.1;
+    this.light.distance = 15;
+    this.light.penumbra = 0.5;
     this.light.decay = 0;
     this.light.angle = Math.PI * 0.4;
-    this.light.position.set( 0, 1.9, 0 );
-    this.light.target.position.set( 0, 0, 0 );
+    this.light.position.set( 0, 3.9, 0 );
+    //this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
 
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 140, 1, 0.5, 5 ) );
-    this.light.shadow.bias = 0.01;
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 90, 1, 1.3, 5 ) );
+    this.light.shadow.bias = 0;
 
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     this.light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
@@ -151,32 +284,93 @@ WorldManager.prototype.createCharacters = function(){
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/rainbow.jpg',
-            letter: 'G'
+            matcap : 'assets/matcaps/matcap_red.png',
+            letter: 'M',
+            position : new THREE.Vector3( -0.7 , 1.7, -0.5 )
         },
         {
             color: new THREE.Color(0x119977),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/rainbow.jpg',
-            letter: 'P'
+            matcap : 'assets/matcaps/matcap_neutral.png',
+            letter: 'E',
+            position : new THREE.Vector3( -0.34 , 1.7, -0.5 )
         },
         {
             color: new THREE.Color(0xFFFFFF),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'G'
+            matcap : 'assets/matcaps/matcap_red.png',
+            letter: 'R',
+            position : new THREE.Vector3( 0.02 , 1.7, -0.5 )
         },
         {
             color: new THREE.Color(0x774432),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'P'
+            matcap : 'assets/matcaps/matcap_neutral.png',
+            letter: 'R',
+            position : new THREE.Vector3( 0.38 , 1.7, -0.5 )
         },
         {
             color: new THREE.Color(0xFF3377),
             normalMap : 'assets/normal.jpg',
-            matcap : 'assets/matcap_2.jpg',
-            letter: 'U'
+            matcap : 'assets/matcaps/matcap_red.png',
+            letter: 'Y',
+            position : new THREE.Vector3( 0.74 , 1.7, -0.5 )
+        },
+        {
+            color: new THREE.Color(0xFF3377),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_green.png',
+            letter: 'X',
+            position : new THREE.Vector3( -0.75 , 1.2, -0.5 )
+        },
+        {
+            color: new THREE.Color(0x119977),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_green.png',
+            letter: 'M',
+            position : new THREE.Vector3( -0.16 , 1.2, -0.5 )
+        },
+        {
+            color: new THREE.Color(0xFFFFFF),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_green.png',
+            letter: 'A',
+            position : new THREE.Vector3( 0.25 , 1.2, -0.5 )
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_green.png',
+            letter: 'S',
+            position : new THREE.Vector3( 0.75 , 1.2, -0.5 )
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_yellow.png',
+            letter: null,
+            position : new THREE.Vector3( -0.75 , 1, -0.25 )
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_yellow.png',
+            letter: null,
+            position : new THREE.Vector3( -0.35 , 1, -0.25 )
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_yellow.png',
+            letter: null,
+            position : new THREE.Vector3( 0.35 , 1, -0.25 )
+        },
+        {
+            color: new THREE.Color(0x774432),
+            normalMap : 'assets/normal.jpg',
+            matcap : 'assets/matcaps/matcap_yellow.png',
+            letter: null,
+            position : new THREE.Vector3( 0.75 , 1, -0.25 )
         }
 
     ];
@@ -186,9 +380,8 @@ WorldManager.prototype.createCharacters = function(){
     var separation = 0.9;
 
     for ( var i = 0; i < this.totalChars; i++ ) {
-
         var character = new CharacterBase(
-            new THREE.Vector3( 0.2 + ( (i / this.totalChars) * 2 - 1 ) * separation , 1, -0.5 ),
+            this.charsSetup[i].position,
             false,
             i,
             0.4,
@@ -203,6 +396,9 @@ WorldManager.prototype.createCharacters = function(){
 
         character.addEventListener( 'onLoadModel', this.onLoadCharModel.bind( this ) );
         this.characters.push( character );
+        character.load();
+
+
 
     }
 };
@@ -227,6 +423,13 @@ WorldManager.prototype.onLoadCharModel = function( e ){
             }
 
         }
+        setTimeout(function(){
+            var container = document.getElementById( "container" );
+            container.style.opacity = "1";
+            var loader = document.getElementById( "loader" );
+            loader.style.display = "none";
+        }, 2000);
+
     }
 };
 
@@ -284,6 +487,17 @@ WorldManager.prototype.update = function( timestamp, gamePads ) {
             char.positionTouch2.copy(gamePads.intersectPoint2);
         }
 
+    }
+
+    if(this.bubbles) {
+        for (var r = 0; r < this.bubbles.length; r++) {
+            var rand = (Math.random() + 0.1) * 3;
+            var mesh = this.bubbles[r];
+            mesh.scale.set(rand, rand, rand);
+            mesh.position.set(-9.749, -1.863, 146.747);
+            mesh.position.x += (Math.random() * 2 - 1 ) * 8;
+            mesh.position.y += Math.random() * 2 - 1;
+        }
     }
 
     // this.cosica.position.x = ( Math.sin( timestamp * 0.001) ) * 1.7;

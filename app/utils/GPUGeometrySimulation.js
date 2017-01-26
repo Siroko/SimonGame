@@ -79,6 +79,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
     this.bufferMaterial = new THREE.RawShaderMaterial();
+    this.bufferMaterial.side = THREE.DoubleSide;
     this.bufferMaterial.uniforms['uGeometryTexture'] = { type: 't', value: this.gpuGeometry.geometryRT };
     this.bufferMaterial.uniforms['uGeometryNormals'] = { type: 't', value: this.gpuGeometry.normalsRT };
     this.bufferMaterial.uniforms['uSimulationTexture'] = { type: 't', value: this.simulator.targets[ 1 - this.simulator.pingpong ] };

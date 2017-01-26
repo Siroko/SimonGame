@@ -13,6 +13,8 @@ uniform float uLights;
 
 varying vec4 vPos;
 
+varying vec4 vNormalSmooth;
+
 varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
@@ -36,8 +38,10 @@ void main(){
     vec3 fdx = dFdx( vPos.xyz );
 	vec3 fdy = dFdy( vPos.xyz );
 	vec3 n = normalize(cross(fdx, fdy));
+    //n = vNormalSmooth.rgb;
 
     vec3 vNormal = vNormalMatrix * n;
+
     vec3 vONormal = n;
 
         vec3 c1 = vec3(1.0, 1.0, 1.0);

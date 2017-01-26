@@ -151,7 +151,7 @@ float snoise(vec4 v)
       float noise = snoise( vec4( pos + vertexWorldPosition, uTime * 0.001 ) );
       vec3 normal = pos - uWorldPosition;
 
-      pos += normal * noise * 0.1;
+      pos += normal * noise * 0.07;
 
 
       vec3 displacement = vec3(0.0);

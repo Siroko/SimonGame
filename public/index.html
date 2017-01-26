@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
-    <div id="container"></div>
-    <div class="vignette"></div>
+    <div id="container" style="opacity:0;"></div>
+    <div id="loader"></div>
     <div class="footer"><a href="http://sirokos.com">By Félix Martínez</a><a href="https://twitter.com/sirokos"> | @sirokos</a></div>
 
     <script>
@@ -21,11 +21,21 @@
         }
     </script>
 
+
     <script type="text/javascript" src="js/bundle.js"></script>
+    <script type="text/javascript" src="js/vendor/Base64binary.js"></script>
+    <script type="text/javascript" src="js/vendor/MIDI.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-polyfill.js"></script>
     <script type="text/javascript" src="js/vendor/webvr-manager.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.core.min.js"></script>
+    <script type="text/javascript" src="js/vendor/howler.spatial.min.js"></script>
     <script>
         app.init();
+        var sound = new Howl({
+            src: ['assets/sound/music.mp3', 'assets/sound/music.wav'],
+            autoplay: true,
+            loop: true
+        });
     </script>
 </body>
 </html>

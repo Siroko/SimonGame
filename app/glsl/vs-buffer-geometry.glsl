@@ -1,6 +1,7 @@
 attribute vec2 aV2I;
 
 uniform sampler2D uPositionsTexture;
+uniform sampler2D uNormalsTexture;
 
 varying vec4 vPos;
 varying vec2 vUv;
@@ -9,6 +10,7 @@ varying mat3 vNormalMatrix;
 varying vec4 vOPosition;
 varying vec3 vU;
 varying vec4 vWorldPosition;
+varying vec4 vNormalSmooth;
 
 #include <shadowmap_pars_vertex>
 
@@ -16,6 +18,8 @@ varying vec4 vWorldPosition;
   void main(){
 
       vec4 pos = texture2D( uPositionsTexture, aV2I );
+      vec4 n = texture2D( uNormalsTexture, aV2I );
+      vNormalSmooth = n;
 
       vPos = pos;
       vOPosition = modelViewMatrix * vPos;
