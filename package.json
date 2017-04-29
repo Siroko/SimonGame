@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "npm run watcher & npm run server",
-    "watcher": "node watcher.js -loglevel silent",
-    "server": "./node_modules/node-static/bin/cli.js -a 0.0.0.0 -p 9000 public/"
+    "watcher": "node watcher.js -loglevel silen",
+    "server": "node ./node_modules/node-static/bin/cli.js -a 0.0.0.0 -p 9000 public/"
   },
   "dependencies": {
     "body-parser": "~1.8.1",
