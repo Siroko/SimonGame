@@ -107,7 +107,7 @@ World3D.prototype.onModeChange = function( n, o ) {
 
 World3D.prototype.render = function( timestamp ) {
 
-    window.requestAnimationFrame( this.render.bind( this ) );
+    this.effect.getVRDisplay().requestAnimationFrame(this.render.bind( this ) );
 
     //this.groundMirror.render();
     this.gamePads.update( timestamp, this.worldManager.charactersCalcPlane );

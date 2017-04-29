@@ -108,9 +108,9 @@ GamePads.prototype.update = function( t ){
     var vrGamepads = [];
     var gamepads = navigator.getGamepads();
 
-    if( this.effect.getHMD() ) {
-        if( this.effect.getHMD().stageParameters ) {
-            this.sTSMat.fromArray(this.effect.getHMD().stageParameters.sittingToStandingTransform);
+    if( this.effect.getVRDisplay() ) {
+        if( this.effect.getVRDisplay().stageParameters ) {
+            this.sTSMat.fromArray(this.effect.getVRDisplay().stageParameters.sittingToStandingTransform);
         }
     }
 
