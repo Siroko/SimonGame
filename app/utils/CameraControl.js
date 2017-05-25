@@ -28,9 +28,9 @@ CameraControl.prototype = {
     downPoint :         { x : 0, y : 0 },
     down :              false,
     PI :                3.14159265359,
-    radius :            100,
-    wheelDelta :        100,
-    limits :            { up : 0.2, down : 0.008 },
+    radius :            8000,
+    wheelDelta :        8000,
+    limits :            { up : 0.249, down : 0.008 },
     planeIntersect :    null,
     currentPointIntersect: new THREE.Vector3( -10, 0, 0 ),
     mouseX : -1,
@@ -90,7 +90,7 @@ CameraControl.prototype = {
 
     onMouseWheel : function( e ) {
         var delta = e.detail ? e.detail * -120 : e.wheelDelta;
-        this.wheelDelta -= delta * 0.001;
+        this.wheelDelta -= delta * 0.1;
 
         this._mouseX = e.pageX;
         this._mouseY = e.pageY;

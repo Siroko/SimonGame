@@ -44,35 +44,34 @@ void main(){
 
     vec2 cUv = vec2(1.0) - index2D.xy;
     cUv.x = 1.0 - cUv.x;
-//    cUv.y *= 1.5;
-//    cUv.y += 0.60;
-//    cUv *= 0.5;
-//    cUv.x += 0.25;
-////    cUv.x += uTime;
-//    cUv.x = mod( cUv.x, 2.0 ) * 0.5;
 
     vec4 geomVertexPosition = texture2D( uGeometryTexture, index2D.zw );
     vec4 simPosition        = texture2D( uSimulationTexture, index2D.xy );
+    vec4 simPrevPosition    = texture2D( uSimulationPrevTexture, index2D.xy );
     vec4 heightValue        = texture2D( uHeightMap, cUv );
     vec4 colorValue         = texture2D( uColorMap, cUv );
 
-    heightValue.r = 0.5;
+//    heightValue.r = 0.5;
 
-    simPosition.y -= floor( (1.0 - heightValue.r) * 100. );
+    simPosition.y -= floor( (1.0 - heightValue.a) * 50. );
     simPosition.y += 50.;
-
-        geomVertexPosition *= 0.5;
 
 //    geomVertexPosition.y *= heightValue.r * 10.; // scale Y
 
-    vec3 p = simPosition.rgb + geomVertexPosition.rgb;
     float n = rand( simPosition.rg );
-    mat4 rot = rotationMatrix(normalize(p), simPosition.y );
-    geomVertexPosition *= rot;
+    vec3 rotationVec = normalize( simPrevPosition.rgb - simPosition.rgb );
 
-    p = simPosition.rgb + geomVertexPosition.rgb;
+    mat4 rx = rotationMatrix( vec3( 1.0, 0.0, 0.0 ), rotationVec.x + simPosition.x );
+    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y + simPosition.y );
+    mat4 rz = rotationMatrix( vec3( 0.0, 0.0, 1.0 ), rotationVec.z + simPosition.z );
+    mat4 rMatrix = rx * ry * rz;
 
-    vVertexAO       = 1.0 - step(geomVertexPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
+    vec4 rotatedPosition = geomVertexPosition;
+
+    vec3 p = simPosition.rgb + rotatedPosition.rgb;
+
+
+    vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
     vPos            = vec4( p, 1.0 );
     vColor          = colorValue;
 

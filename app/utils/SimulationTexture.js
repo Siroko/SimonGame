@@ -135,10 +135,11 @@ SimulationTexture.prototype.tickBending = function() {
     this.timesCycle = 1 - this.timesCycle;
     TweenMax.to(this, 2, {
         bending: this.timesCycle,
-        onUpdate: (function(){ this.uniforms.uBending = this.bending }).bind( this )
+        onUpdate: (function(){ this.uniforms.uBending = this.bending }).bind( this ),
+        ease: "easeIn.Expo"
     });
 
-    setTimeout( this.tickBending.bind( this ), 5000 * (Math.pow((this.timesCycle + 1), 2));
+    setTimeout( this.tickBending.bind( this ), 5000 * (Math.pow((this.timesCycle + 1), 2)));
 };
 
 SimulationTexture.prototype.update = function() {

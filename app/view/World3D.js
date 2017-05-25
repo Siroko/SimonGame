@@ -25,7 +25,7 @@ var dat = require('dat-gui');
 var World3D = function( container ) {
 
     this.container      = container;
-    this.camera         = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.01, 10000 );
+    this.camera         = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 1, 100000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
@@ -57,7 +57,7 @@ World3D.prototype.onInitializeManager = function( n, o ) {
     this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, {} );
 
 
-    this.initPostprocessing();
+    // this.initPostprocessing();
     this.setup();
 };
 
@@ -123,15 +123,17 @@ World3D.prototype.render = function( timestamp ) {
     // Render the scene through the manager.
     this.renderer.setClearColor( 0xFFFFFF );
 
-    this.composer.reset();
-    this.composer.render( this.scene, this.camera );
+    // this.composer.reset();
+    // this.composer.render( this.scene, this.camera );
+    //
+    // this.composer.pass( this.tiltShiftPass );
+    // this.composer.pass( this.noisePass );
+    // this.composer.pass( this.vignettePass );
+    // this.composer.pass( this.rgbPass );
+    //
+    // this.composer.toScreen();
 
-    this.composer.pass( this.tiltShiftPass );
-    this.composer.pass( this.noisePass );
-    this.composer.pass( this.vignettePass );
-    this.composer.pass( this.rgbPass );
-
-    this.composer.toScreen();
+    this.renderer.render( this.scene, this.camera );
 
 };
 
@@ -139,12 +141,12 @@ World3D.prototype.onResize = function( w, h ) {
 
     this.renderer.setPixelRatio( 1 );
     this.renderer.setSize( w, h );
-    this.composer.setSize( w , h );
-    this.depthTexture = new THREE.WebGLRenderTarget(w, h, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBFormat
-    });
+    // this.composer.setSize( w , h );
+    // this.depthTexture = new THREE.WebGLRenderTarget(w, h, {
+    //     minFilter: THREE.LinearFilter,
+    //     magFilter: THREE.LinearFilter,
+    //     format: THREE.RGBFormat
+    // });
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
 

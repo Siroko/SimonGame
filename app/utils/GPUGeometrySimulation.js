@@ -89,13 +89,9 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
     this.bufferMaterial = new THREE.RawShaderMaterial();
-    // if( this.isMobile ){
-    //     this.bufferMaterial.vertexShader =  vs_buffer_mobile;
-    //     this.bufferMaterial.fragmentShader = fs_buffer_mobile;
-    // } else {
-        this.bufferMaterial.vertexShader =  vs_buffer;
-        this.bufferMaterial.fragmentShader = fs_buffer;
-    // }
+    this.bufferMaterial.vertexShader =  vs_buffer;
+    this.bufferMaterial.fragmentShader = fs_buffer;
+    this.bufferMaterial.side = THREE.DoubleSide;
 
     this.colorMap.wrapS = THREE.RepeatWrapping;
     this.colorMap.wrapT = THREE.RepeatWrapping;
@@ -115,20 +111,6 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferMaterial.uniforms['uTime'] =  { type: "f", value: 0 };
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
-    // this.bufferMesh.castShadow = true;
-    // this.bufferMesh.receiveShadow = true;
-
-    // magic here
-    // this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
-    //     defines: {
-    //         'USE_SHADOWMAP': '',
-    //         'DEPTH_PACKING': '3201'
-    //     },
-    //     vertexShader: vs_depth_buffer,
-    //     fragmentShader: THREE.ShaderLib.depth.fragmentShader,
-    //
-    //     uniforms: this.bufferMaterial.uniforms
-    // } );
 
     this.simulator.update();
 };

@@ -22,7 +22,7 @@ uniform vec3 uOriginEmiter;
 
 varying vec2 vUv;
 
-const int OCTAVES = 8;
+const int OCTAVES = 1;
 
 vec4 mod289(vec4 x) {
     vec4 r = x - floor(x * (1.0 / 289.0)) * 289.0;

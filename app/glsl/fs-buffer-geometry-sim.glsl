@@ -26,5 +26,5 @@ void main(){
 
     vec4 c = vec4( vec3(vColor.rgb * addedLights.rgb * occlusion), 1.0 );
 
-    gl_FragColor = vec4( c.rgb,  1.0 );
+    gl_FragColor = vec4( vColor.rgb,  1.0 );
 }
