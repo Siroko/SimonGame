@@ -25,7 +25,7 @@ var GPUGeometrySimulation = function( params ) {
     this.fog = params.fog || {
             fogColor: new THREE.Color(0xFFFFFF),
             fogNear: 1,
-            fogFar: 20
+            fogFar: 2000
         };
 
     this.isMobile = params.isMobile;

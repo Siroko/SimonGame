@@ -187,17 +187,13 @@ World3D.prototype.render = function( timestamp ) {
     // this.scene.overrideMaterial = this.depthMaterial;
     // this.composer.render( this.scene, this.camera, null, this.depthTexture );
     // this.aoPass.params.tDepth = this.depthTexture.texture;
-    // this.scene.overrideMaterial = null;
     this.composer.render( this.scene, this.camera );
 
-
-    // this.composer.pass( this.aoPass );
-    // this.composer.pass( this.bloomPass );
     this.composer.pass( this.tiltShiftPass );
     this.composer.pass( this.noisePass );
     this.composer.pass( this.vignettePass );
     this.composer.pass( this.rgbPass );
-    // this.composer.pass( this.bloomPass );
+
     this.composer.toScreen();
 
 };

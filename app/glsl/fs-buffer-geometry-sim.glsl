@@ -36,5 +36,5 @@ void main(){
     fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );
     vec4 fog_color = mix( c, vec4( fogColor, gl_FragColor.w ), fogFactor );
 
-    gl_FragColor = vec4( fog_color.rgb,  1.0 );
+    gl_FragColor = vec4( c.rgb,  1.0 );
 }

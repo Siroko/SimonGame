@@ -85,14 +85,15 @@ WorldManager.prototype.setup = function(){
     var loader = new OBJLoader( manager );
     loader.load( 'assets/models/asteroid.obj', (function ( object ) {
 
-        var s = 256;
+        var s = 512;
         var square = s * s;
         var initialBuffer = new Float32Array( square * 4, 4 );
         var div = 1 / s;
+        var scale = 1;
         for (var i = 0; i < square ; i++) {
-            initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * 0.5;
+            initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
             initialBuffer[ i * 4 + 1 ] = -10;
-            initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * 0.5;
+            initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * (0.25) * scale;
             initialBuffer[ i * 4 + 3 ] = 1;
 
         }
@@ -101,7 +102,7 @@ WorldManager.prototype.setup = function(){
             geom : object.children[0].geometry,
             initialBuffer: initialBuffer,
             heightMap: THREE.ImageUtils.loadTexture('assets/textures/heightN_USA.png'),
-            colorMap: THREE.ImageUtils.loadTexture('assets/textures/diffuse_USA.png'),
+            colorMap: THREE.ImageUtils.loadTexture('assets/textures/KOO1KLOWNKL4N.jpg'),
             sizeSimulation: mobilecheck() ? s * 0.5 : s,
             isMobile: mobilecheck(),
             renderer: this.renderer
