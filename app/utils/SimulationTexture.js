@@ -10,6 +10,7 @@ var vs_simpleQuad       = require('../glsl/vs-simple-quad.glsl');
 var fs_updatePositions  = require('../glsl/fs-update-positions.glsl');
 
 var dat = require('dat-gui');
+var gsap = require('gsap');
 
 var SimulationTexture = function( params ) {
 
@@ -39,8 +40,11 @@ var SimulationTexture = function( params ) {
     this.lifeTime = params.lifeTime || 100;
     this.persistence = params.persistence || 0.03;
     this.speedDie = params.speedDie || 0.0001;
+    this.bending = params.bending || 1.000;
 
     this.offset = params.offset || new THREE.Vector3(0, 0, 0);
+
+    this.timesCycle = 1;
 
     this.setup();
 };
@@ -90,6 +94,7 @@ SimulationTexture.prototype.setup = function() {
             'uOffset'               : { type: "v3", value: this.offset },
             'uPersistence'          : { type: "f", value: this.persistence },
             'uSpeedDie'             : { type: "f", value: this.speedDie },
+            'uBending'             : { type: "f", value: this.bending },
             'uOriginEmiter'         : { type: "v3", value: new THREE.Vector3() },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
@@ -100,7 +105,6 @@ SimulationTexture.prototype.setup = function() {
                 this.boundary.size.z
             ] }
         },
-
         vertexShader                : vs_simpleQuad,
         fragmentShader              : fs_updatePositions
 
@@ -112,14 +116,29 @@ SimulationTexture.prototype.setup = function() {
     this.uniforms = {
         uNoiseTimeScale: this.noiseTimeScale,
         uNoisePositionScale: this.noisePositionScale,
-        uNoiseScale: this.noiseScale
+        uNoiseScale: this.noiseScale,
+        uBending: this.bending
     };
 
     this.gui = new dat.GUI();
     this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 3);
     this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.2);
     this.gui.add(this.uniforms, 'uNoiseScale', 0, 0.1);
+    this.gui.add(this.uniforms, 'uBending', 0.00000, 1.00000);
 
+    setTimeout( this.tickBending.bind( this ), 20000);
+
+};
+
+SimulationTexture.prototype.tickBending = function() {
+
+    this.timesCycle = 1 - this.timesCycle;
+    TweenMax.to(this, 2, {
+        bending: this.timesCycle,
+        onUpdate: (function(){ this.uniforms.uBending = this.bending }).bind( this )
+    });
+
+    setTimeout( this.tickBending.bind( this ), 5000 * (Math.pow((this.timesCycle + 1), 2));
 };
 
 SimulationTexture.prototype.update = function() {

@@ -16,6 +16,7 @@ uniform float uNoiseScale;
 uniform vec3 uOffset;
 uniform float uPersistence;
 uniform float uSpeedDie;
+uniform float uBending;
 
 uniform vec3 uOriginEmiter;
 
@@ -210,6 +211,8 @@ void main () {
         pLife = pLife - uSpeedDie;
     }
 
-    gl_FragColor = vec4( newPosition, pLife );
+    vec3 fPos = mix( geomPositions.rgb, newPosition, uBending );
+
+    gl_FragColor = vec4( fPos, pLife );
 
 }

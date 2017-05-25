@@ -60,17 +60,17 @@ void main(){
 
     simPosition.y -= floor( (1.0 - heightValue.r) * 100. );
     simPosition.y += 50.;
+
+        geomVertexPosition *= 0.5;
+
 //    geomVertexPosition.y *= heightValue.r * 10.; // scale Y
 
     vec3 p = simPosition.rgb + geomVertexPosition.rgb;
     float n = rand( simPosition.rg );
-    mat4 rot = rotationMatrix(p, simPosition.y );
+    mat4 rot = rotationMatrix(normalize(p), simPosition.y );
     geomVertexPosition *= rot;
 
     p = simPosition.rgb + geomVertexPosition.rgb;
-//    p.x += n * 0.3;
-//    p.y += n*2.;
-//    p.z += n * 0.3;
 
     vVertexAO       = 1.0 - step(geomVertexPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
     vPos            = vec4( p, 1.0 );

@@ -33,48 +33,8 @@ var World3D = function( container ) {
 
     this.postprocessing = {};
 
-    // Apply VR headset positional data to camera.
-    // this.controls       = new VRControls( this.camera );
-    // this.controls.standing = true;
-
-    // Apply VR stereo rendering to renderer.
-    // this.effect = new VREffect( this.renderer, null, null, this.onRenderLeft.bind( this ), this.onRenderRight.bind( this ) );
-
-    // this.pointLight = new THREE.PointLight( 0xFFFFFF, 0.4 );
-    // this.pointLight.position.set( 0, 3, 1 );
-    // this.scene.add( this.pointLight );
-    //
-    // this.pointLight2 = new THREE.PointLight( 0x446688, 0.2 );
-    // this.pointLight2.position.set( 0, 3, 1 );
-    // this.scene.add( this.pointLight2 );
-    //
-    // this.amb = new THREE.AmbientLight( 0x8C857C, 1 );
-    // this.scene.add( this.amb );
-
-    // window.pointLights = [ this.pointLight, this.pointLight2 ];
-
-    // this.dummyCamera = new THREE.Object3D();
-    // this.dummyCamera.add( this.camera);
-    // this.scene.add( this.dummyCamera );
-
-    // Create a VR manager helper to enter and exit VR mode.
-    // var params = {
-    //     hideButton: false, // Default: false.
-    //     isUndistorted: false // Default: false.
-    // };
-
-    // this.manager = new WebVRManager( this.renderer, this.effect, params );
-
     this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, 10, 0) );
     this.addEvents();
-
-};
-
-World3D.prototype.onRenderLeft = function() {
-
-};
-
-World3D.prototype.onRenderRight = function() {
 
 };
 
@@ -88,27 +48,14 @@ World3D.prototype.setup = function() {
 World3D.prototype.addEvents = function() {
 
     this.onInitializeManager( null );
-    // this.manager.on('initialized', this.onInitializeManager.bind( this ) );
-    // this.manager.on('modechange', this.onModeChange.bind( this ) );
 
 };
 
 World3D.prototype.onInitializeManager = function( n, o ) {
 
     this.worldManager = new WorldManager( this.scene, this.camera, this.dummyCamera, this.renderer );
+    this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, {} );
 
-    // if( !this.manager.isVRCompatible || typeof window.orientation !== 'undefined' ) {
-
-        this.gamePads = new MousePad( this.scene, this.camera, this.worldManager, {} );
-        // this.dummyCamera.position.z = 0.9;
-        //
-        // this.dummyCamera.position.y = - 0.3;
-
-    // } else {
-    //
-    //     this.gamePads = new GamePads( this.scene, this.camera, this.worldManager, this.effect );
-    //
-    // }
 
     this.initPostprocessing();
     this.setup();
@@ -176,17 +123,7 @@ World3D.prototype.render = function( timestamp ) {
     // Render the scene through the manager.
     this.renderer.setClearColor( 0xFFFFFF );
 
-    // this.renderer.setRenderTarget( null ); // add this line
-    // this.renderer.clear();
-    //
-    // // this.renderer.render( this.scene, this.camera );
-    //
-    // this.renderer.autoClearColor = true;
-
     this.composer.reset();
-    // this.scene.overrideMaterial = this.depthMaterial;
-    // this.composer.render( this.scene, this.camera, null, this.depthTexture );
-    // this.aoPass.params.tDepth = this.depthTexture.texture;
     this.composer.render( this.scene, this.camera );
 
     this.composer.pass( this.tiltShiftPass );
