@@ -12,19 +12,8 @@
     <div id="container"></div>
     <div class="vignette"></div>
     <div class="footer"><a href="https://sirokos.com">By Félix Martínez</a><a href="https://twitter.com/sirokos"> | @sirokos</a></div>
-
-    <script>
-        window.WebVRConfig = {
-
-            // Scales the recommended buffer size reported by WebVR, which can improve
-            // performance.
-            BUFFER_SCALE: 1.0 // Default: 1.0.
-
-        }
-    </script>
-    <script type="text/javascript" src="js/vendor/webvr-polyfill.js"></script>
-    <script type="text/javascript" src="js/vendor/webvr-manager.js"></script>
-    <script type="text/javascript" src="js/bundle.js"></script>
+    <!-- Development version: -->
+    <script>document.write('<script src="/js/bundle.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
     <script>
         app.init();
     </script>

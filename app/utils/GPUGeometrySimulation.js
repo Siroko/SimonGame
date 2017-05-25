@@ -8,10 +8,6 @@ var SimulationTexture = require('./SimulationTexture');
 
 var vs_buffer = require('./../glsl/vs-buffer-geometry-sim.glsl');
 var fs_buffer = require('./../glsl/fs-buffer-geometry-sim.glsl');
-var vs_depth_buffer = require('./../glsl/vs-buffer-geometry-sim-depth.glsl');
-
-var vs_buffer_mobile = require('./../glsl/vs-buffer-geometry-sim-mobile.glsl');
-var fs_buffer_mobile = require('./../glsl/fs-buffer-geometry-sim-mobile.glsl');
 
 var GPUGeometrySimulation = function( params ) {
 
@@ -140,11 +136,11 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 GPUGeometrySimulation.prototype.update = function( timestamp ){
 
     this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.001;
-    // this.simulator.update();
-    // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
-    // this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
-    // this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
-    // this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].needsUpdate = true;
+    this.simulator.update();
+    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
+    this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
+    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
+    this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].needsUpdate = true;
 };
 
 module.exports = GPUGeometrySimulation;
