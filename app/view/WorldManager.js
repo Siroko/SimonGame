@@ -5,6 +5,7 @@
 var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
+var triangleOBJ = require('../assets/triangle.obj');
 
 var WorldManager = function( scene, camera, dummyCamera, renderer ) {
 
@@ -31,46 +32,56 @@ WorldManager.prototype.setup = function(){
 
     };
 
-    var onProgress = function ( xhr ) {
-        if ( xhr.lengthComputable ) {
-            var percentComplete = xhr.loaded / xhr.total * 100;
-            console.log( Math.round(percentComplete, 2) + '% downloaded' );
-        }
-    };
-
-    var onError = function ( xhr ) {
-    };
-
     // model
     var loader = new OBJLoader( manager );
-    loader.load( 'assets/models/triangle.obj', (function ( object ) {
+    var object = loader.parse(triangleOBJ);
 
-        var s = 512;
-        var square = s * s;
-        var initialBuffer = new Float32Array( square * 4, 4 );
-        var div = 1 / s;
-        var scale = 0.5;
-        for (var i = 0; i < square ; i++) {
-            initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
-            initialBuffer[ i * 4 + 1 ] = -10;
-            initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * (1) * scale;
-            initialBuffer[ i * 4 + 3 ] = 1;
+    var s = 512;
+    var square = s * s;
+    var initialBuffer = new Float32Array( square * 4, 4 );
+    var div = 1 / s;
+    var scale = 0.5;
+    for (var i = 0; i < square ; i++) {
+        initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
+        initialBuffer[ i * 4 + 1 ] = -10;
+        initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * (1) * scale;
+        initialBuffer[ i * 4 + 3 ] = 1;
+    }
 
-        }
+    var artworkImg = new Image();
+    var artworkTexture = new THREE.Texture();
+    artworkImg.onload = (function () {
 
-        this.gpuGeometrySimulation = new GPUGeometrySimulation( {
-            geom : object.children[0].geometry,
-            initialBuffer: initialBuffer,
-            heightMap: THREE.ImageUtils.loadTexture('assets/textures/words.png'),
-            colorMap: THREE.ImageUtils.loadTexture('assets/textures/artwork.jpg'),
-            sizeSimulation: mobilecheck() ? s * 0.5 : s,
-            isMobile: mobilecheck(),
-            renderer: this.renderer
-        } );
+        artworkTexture.image = artworkImg;
+        artworkTexture.needsUpdate = true;
 
-        this.scene.add( this.gpuGeometrySimulation.bufferMesh );
+        var lettersImg = new Image();
+        var lettersTexture = new THREE.Texture();
 
-    } ).bind( this ), onProgress, onError );
+        lettersImg.onload = (function(){
+
+            lettersTexture.image = lettersImg;
+            lettersTexture.needsUpdate = true;
+
+            this.gpuGeometrySimulation = new GPUGeometrySimulation( {
+                geom : object.children[0].geometry,
+                initialBuffer: initialBuffer,
+                heightMap: lettersTexture,
+                colorMap: artworkTexture,
+                sizeSimulation: mobilecheck() ? s * 0.5 : s,
+                isMobile: mobilecheck(),
+                renderer: this.renderer
+            } );
+
+            this.scene.add( this.gpuGeometrySimulation.bufferMesh );
+
+        }).bind(this);
+
+        lettersImg.src = window.lettersImg;
+
+    }).bind(this);
+
+    artworkImg.src = window.artworkImg;
 
 };
 

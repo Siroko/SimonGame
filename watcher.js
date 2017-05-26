@@ -16,7 +16,7 @@ var b = browserify('./app/app.js', {
     cache: {},
     packageCache: {}
 })
-.transform(stringify(['.glsl']));
+.transform(stringify(['.glsl', '.obj']));
 
 var w = watchify(b);
 w.on('update', bundle);

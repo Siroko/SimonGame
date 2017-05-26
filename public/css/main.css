@@ -22,15 +22,15 @@ html {
     overflow: hidden;
 }
 
-/*.vignette {*/
-    /*position: fixed;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    /*width: 100%;*/
-    /*height: 100%;*/
-    /*box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;*/
-    /*pointer-events:none;*/
-/*}*/
+.vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
+    pointer-events:none;
+}
 
 .footer{
     position: absolute;

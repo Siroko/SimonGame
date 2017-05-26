@@ -62,14 +62,12 @@ void main(){
     vec3 rotationVec = normalize( simPrevPosition.rgb - simPosition.rgb );
 
     mat4 rx = rotationMatrix( vec3( 1.0, 0.0, 0.0 ), rotationVec.x + simPosition.x );
-    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y + simPosition.y );
+    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y );
     mat4 rz = rotationMatrix( vec3( 0.0, 0.0, 1.0 ), rotationVec.z + simPosition.z );
     mat4 rMatrix = rx * ry * rz;
 
-    vec4 rotatedPosition = geomVertexPosition;
-
+    vec4 rotatedPosition = geomVertexPosition * ry;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
-
 
     vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
     vPos            = vec4( p, 1.0 );
