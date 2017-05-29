@@ -7,7 +7,7 @@ var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var triangleOBJ = require('../assets/triangle.obj');
 
-var WorldManager = function( scene, camera, dummyCamera, renderer ) {
+var WorldManager = function( scene, camera, renderer ) {
 
     THREE.EventDispatcher.call( this );
 
@@ -45,12 +45,12 @@ WorldManager.prototype.setup = function(){
         initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
         initialBuffer[ i * 4 + 1 ] = -10;
         initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * (1) * scale;
-        initialBuffer[ i * 4 + 3 ] = 1;
+        initialBuffer[ i * 4 + 3 ] = Math.random() * 10;
     }
 
     var artworkImg = new Image();
     var artworkTexture = new THREE.Texture();
-    artworkImg.onload = (function () {
+    artworkImg.onload = ( function () {
 
         artworkTexture.image = artworkImg;
         artworkTexture.needsUpdate = true;
@@ -93,7 +93,7 @@ WorldManager.prototype.onKeydown = function( e ) {
 
 };
 
-WorldManager.prototype.update = function( timestamp, gamePads ) {
+WorldManager.prototype.update = function( timestamp ) {
 
     if( this.gpuGeometrySimulation ) this.gpuGeometrySimulation.update( timestamp );
 

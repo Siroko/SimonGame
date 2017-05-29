@@ -58,16 +58,6 @@ MousePad.prototype.addEvents = function() {
 };
 
 MousePad.prototype.mouseClick = function( e ) {
-    console.log('click');
-    MIDI.noteOn(0, 1, 1, 0);
-    //var note = 70;
-    //var delay = 0; // play one note every quarter second
-    //var velocity = 127; // how hard the note hits
-    //
-    //MIDI.setVolume(0, 127);
-    //MIDI.noteOn(0, note, velocity, delay);
-    //MIDI.noteOff(0, note, delay + 0.75);
-    //window.removeEventListener( 'click', this.mouseClickHandler );
 };
 
 MousePad.prototype.onMouseMove = function( e ){

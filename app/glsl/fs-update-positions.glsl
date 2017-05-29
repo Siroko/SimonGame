@@ -181,38 +181,24 @@ void main () {
     vec2 uv = vUv;
 
     vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
-    vec4 data = texture2D(uPrevPositionsMap, uv);
+    vec4 prevPositions = texture2D(uPrevPositionsMap, uv);
 
-    vec3 noiseVelocity = getCurlVelocity( data );
+    vec3 noiseVelocity = getCurlVelocity( prevPositions );
 
     vec3 vel = noiseVelocity;
     vec3 dir = uDirectionFlow;
 
-    float pLife = data.a;
+    float pLife = prevPositions.a;
 
-    if( pLife < uLifeTime ){
-     // restamos vida
-        pLife = pLife -  vel.x - ( rand( vUv ) * 0.2 + 0.1 );
-    }
 
-    vec3 newPosition = ( data.rgb + vel + dir );
+    vec3 newPosition = ( prevPositions.rgb + vel + dir );
+
+    pLife -= uSpeedDie;
 
     if( pLife < 0.0 ){
-        pLife = uLifeTime;
         newPosition = geomPositions.xyz + uOffsetPosition;
     }
 
-    if( uLock != 0 && pLife == uLifeTime ){
-
-        newPosition = geomPositions.xyz + uOffsetPosition ;
-    }
-
-    if( uLock == 0 ){
-        pLife = pLife - uSpeedDie;
-    }
-
-    vec3 fPos = mix( geomPositions.rgb, newPosition, uBending );
-
-    gl_FragColor = vec4( fPos, pLife );
+    gl_FragColor = vec4( newPosition, pLife );
 
 }

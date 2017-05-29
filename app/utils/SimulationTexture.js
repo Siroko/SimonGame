@@ -34,12 +34,12 @@ var SimulationTexture = function( params ) {
 
     this.colorParticle = params.colorParticle || new THREE.Color(0xFFFFFF);
 
-    this.noiseTimeScale = params.noiseTimeScale || 2.57;
-    this.noisePositionScale = params.noisePositionScale || 0.01;
-    this.noiseScale = params.noiseScale || 0.08;
-    this.lifeTime = params.lifeTime || 100;
-    this.persistence = params.persistence || 0.03;
-    this.speedDie = params.speedDie || 0.0001;
+    this.noiseTimeScale = params.noiseTimeScale || 44;
+    this.noisePositionScale = params.noisePositionScale || 0.0048;
+    this.noiseScale = params.noiseScale || 0.758;
+    this.lifeTime = params.lifeTime || 10;
+    this.persistence = params.persistence || 0.3;
+    this.speedDie = params.speedDie || 0.05;
     this.bending = params.bending || 1.000;
 
     this.offset = params.offset || new THREE.Vector3(0, 0, 0);
@@ -67,7 +67,7 @@ SimulationTexture.prototype.setup = function() {
             this.data[ i * 4 ]     = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.x + this.boundary.position.x;
             this.data[ i * 4 + 1 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.y + this.boundary.position.y;
             this.data[ i * 4 + 2 ] = ( ( Math.random() * 2 - 1 ) * 0.5 ) * this.boundary.size.z + this.boundary.position.z;
-            this.data[ i * 4 + 3 ] = 100; // frames life
+            this.data[ i * 4 + 3 ] = Math.random() * 100; // frames life
 
         }
 
@@ -84,7 +84,7 @@ SimulationTexture.prototype.setup = function() {
             'uGeomPositionsMap'     : { type: "t", value: this.geometryRT },
             'uTime'                 : { type: "f", value: 0 },
             'uLifeTime'             : { type: "f", value: this.lifeTime },
-            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 0.01, 0) },
+            'uDirectionFlow'        : { type: "v3", value: this.directionFlow || new THREE.Vector3(0, 1, 0.0) },
             'uOffsetPosition'       : { type: "v3", value: new THREE.Vector3() },
             'uLock'                 : { type: "i", value: this.locked },
             'uCollision'            : { type: "v3", value: new THREE.Vector3() },
@@ -121,9 +121,9 @@ SimulationTexture.prototype.setup = function() {
     };
 
     this.gui = new dat.GUI();
-    this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 3);
-    this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.2);
-    this.gui.add(this.uniforms, 'uNoiseScale', 0, 0.1);
+    this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 100);
+    this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.01);
+    this.gui.add(this.uniforms, 'uNoiseScale', 0, 1);
     this.gui.add(this.uniforms, 'uBending', 0.00000, 1.00000);
 
     setTimeout( this.tickBending.bind( this ), 20000);
