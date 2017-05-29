@@ -44,6 +44,8 @@ var SimulationTexture = function( params ) {
 
     this.offset = params.offset || new THREE.Vector3(0, 0, 0);
 
+    this.mousePosition = new THREE.Vector3();
+
     this.timesCycle = 1;
 
     this.setup();
@@ -94,7 +96,8 @@ SimulationTexture.prototype.setup = function() {
             'uOffset'               : { type: "v3", value: this.offset },
             'uPersistence'          : { type: "f", value: this.persistence },
             'uSpeedDie'             : { type: "f", value: this.speedDie },
-            'uBending'             : { type: "f", value: this.bending },
+            'uRadius'               : { type: "f", value: 0 },
+            'uMousePosition'        : { type: "v3", value: this.mousePosition },
             'uOriginEmiter'         : { type: "v3", value: new THREE.Vector3() },
             'uBoundary'             : { type: 'fv1', value : [
                 this.boundary.position.x,
@@ -116,30 +119,14 @@ SimulationTexture.prototype.setup = function() {
     this.uniforms = {
         uNoiseTimeScale: this.noiseTimeScale,
         uNoisePositionScale: this.noisePositionScale,
-        uNoiseScale: this.noiseScale,
-        uBending: this.bending
+        uNoiseScale: this.noiseScale
     };
 
     this.gui = new dat.GUI();
     this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 100);
     this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.01);
     this.gui.add(this.uniforms, 'uNoiseScale', 0, 1);
-    this.gui.add(this.uniforms, 'uBending', 0.00000, 1.00000);
 
-    setTimeout( this.tickBending.bind( this ), 20000);
-
-};
-
-SimulationTexture.prototype.tickBending = function() {
-
-    this.timesCycle = 1 - this.timesCycle;
-    TweenMax.to(this, 2, {
-        bending: this.timesCycle,
-        onUpdate: (function(){ this.uniforms.uBending = this.bending }).bind( this ),
-        ease: "easeIn.Expo"
-    });
-
-    setTimeout( this.tickBending.bind( this ), 5000 * (Math.pow((this.timesCycle + 1), 2)));
 };
 
 SimulationTexture.prototype.update = function() {

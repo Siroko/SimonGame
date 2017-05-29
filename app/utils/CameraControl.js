@@ -28,8 +28,8 @@ CameraControl.prototype = {
     downPoint :         { x : 0, y : 0 },
     down :              false,
     PI :                3.14159265359,
-    radius :            8000,
-    wheelDelta :        8000,
+    radius :            14000,
+    wheelDelta :        14000,
     limits :            { up : 0.249, down : 0.008 },
     planeIntersect :    null,
     currentPointIntersect: new THREE.Vector3( -10, 0, 0 ),
@@ -45,6 +45,8 @@ CameraControl.prototype = {
 
     raycaster : new THREE.Raycaster(),
     screenVector : new THREE.Vector2( 0, 0 ),
+    prevScreenVector : new THREE.Vector2( 0, 0 ),
+    distanceScreen : 0,
     intersectPoint : new THREE.Vector3(),
 
     events : function() {
@@ -155,8 +157,11 @@ CameraControl.prototype = {
 
         if( this.onMove) this.onMove();
 
+        this.prevScreenVector.copy(this.screenVector);
+
         this.screenVector.x = (e.pageX / window.innerWidth) * 2 - 1;
         this.screenVector.y = (1 - (e.pageY / window.innerHeight)) * 2 - 1;
+        this.distanceScreen = this.prevScreenVector.distanceTo(this.screenVector);
 
     },
 

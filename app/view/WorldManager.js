@@ -7,7 +7,7 @@ var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var triangleOBJ = require('../assets/triangle.obj');
 
-var WorldManager = function( scene, camera, renderer ) {
+var WorldManager = function( scene, camera, renderer, cameraControl ) {
 
     THREE.EventDispatcher.call( this );
 
@@ -15,6 +15,7 @@ var WorldManager = function( scene, camera, renderer ) {
 
     this.camera = camera;
     this.scene = scene;
+    this.cameraControl = cameraControl;
 
     this.setup();
     this.addEvents();
@@ -83,6 +84,9 @@ WorldManager.prototype.setup = function(){
 
     artworkImg.src = window.artworkImg;
 
+    // this.debugSphere = new THREE.Mesh(new THREE.SphereBufferGeometry( 100, 10, 10), new THREE.MeshNormalMaterial({side:THREE.DoubleSide}));
+    // this.scene.add( this.debugSphere );
+
 };
 
 WorldManager.prototype.addEvents = function() {
@@ -95,7 +99,16 @@ WorldManager.prototype.onKeydown = function( e ) {
 
 WorldManager.prototype.update = function( timestamp ) {
 
-    if( this.gpuGeometrySimulation ) this.gpuGeometrySimulation.update( timestamp );
+    if( this.gpuGeometrySimulation ){
+
+        this.gpuGeometrySimulation.update( timestamp );
+        var d = this.cameraControl.distanceScreen * 10;
+
+        this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uMousePosition.value.copy(this.cameraControl.intersectPoint);
+        this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value = 0.3;
+    }
+
+    // this.debugSphere.position.copy( this.cameraControl.intersectPoint );
 
 };
 

@@ -16,7 +16,8 @@ uniform float uNoiseScale;
 uniform vec3 uOffset;
 uniform float uPersistence;
 uniform float uSpeedDie;
-uniform float uBending;
+uniform float uRadius;
+uniform vec3 uMousePosition;
 
 uniform vec3 uOriginEmiter;
 
@@ -197,6 +198,10 @@ void main () {
 
     if( pLife < 0.0 ){
         newPosition = geomPositions.xyz + uOffsetPosition;
+
+        if( distance(newPosition, uMousePosition) < uRadius * 100.0 ){
+            pLife = geomPositions.a;
+        }
     }
 
     gl_FragColor = vec4( newPosition, pLife );

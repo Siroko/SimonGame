@@ -13,15 +13,23 @@ var dat = require('dat-gui');
 var World3D = function( container ) {
 
     this.container      = container;
-    this.camera         = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 1, 100000 );
+    this.camera         = new THREE.PerspectiveCamera( 2, window.innerWidth / window.innerHeight, 100, 100000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
     this.renderer       = new THREE.WebGLRenderer( { antialias: true } );
 
     this.cameraControl = new CameraControl( this.camera, new THREE.Vector3(0, 10, 0) );
-    this.addEvents();
+    
+    this.floorPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 1, 1), new THREE.MeshNormalMaterial({
+        side: THREE.DoubleSide,
+        visible : false
+    }));
+    this.floorPlane.rotation.x = 0.5 * Math.PI;
+    this.floorPlane.position.y = -19;
+    this.scene.add( this.floorPlane );
 
+    this.addEvents();
 };
 
 World3D.prototype.setup = function() {
@@ -39,7 +47,7 @@ World3D.prototype.addEvents = function() {
 
 World3D.prototype.onInitializeManager = function( n, o ) {
 
-    this.worldManager = new WorldManager( this.scene, this.camera, this.renderer );
+    this.worldManager = new WorldManager( this.scene, this.camera, this.renderer, this.cameraControl );
 
     this.setup();
 };
@@ -57,8 +65,9 @@ World3D.prototype.render = function( timestamp ) {
 
     window.requestAnimationFrame( this.render.bind( this ) );
 
-    this.worldManager.update( timestamp );
     this.cameraControl.update();
+    this.cameraControl.getIntersects([this.floorPlane]);
+    this.worldManager.update( timestamp );
 
     // Render the scene through the manager.
     this.renderer.setClearColor( 0xFFFFFF );
