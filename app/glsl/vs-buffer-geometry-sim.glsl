@@ -27,19 +27,6 @@ float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-mat4 rotationMatrix(vec3 axis, float angle){
-
-    axis = normalize(axis);
-    float s = sin(angle);
-    float c = cos(angle);
-    float oc = 1.0 - c;
-
-    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-                0.0,                                0.0,                                0.0,                                1.0);
-}
-
 void main(){
 
     vec2 cUv = vec2(1.0) - index2D.xy;
@@ -56,17 +43,9 @@ void main(){
     simPosition.y -= floor( (1.0 - heightValue.a) * 50. );
     simPosition.y += 50.;
 
-//    geomVertexPosition.y *= heightValue.r * 10.; // scale Y
-
     float n = rand( simPosition.rg );
-    vec3 rotationVec = normalize( simPrevPosition.rgb - simPosition.rgb );
 
-    mat4 rx = rotationMatrix( vec3( 1.0, 0.0, 0.0 ), rotationVec.x + simPosition.x );
-    mat4 ry = rotationMatrix( vec3( 0.0, 1.0, 0.0 ), rotationVec.y );
-    mat4 rz = rotationMatrix( vec3( 0.0, 0.0, 1.0 ), rotationVec.z + simPosition.z );
-    mat4 rMatrix = rx * ry * rz;
-
-    vec4 rotatedPosition = geomVertexPosition * ry;
+    vec4 rotatedPosition = geomVertexPosition;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
     vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
