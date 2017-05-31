@@ -5,7 +5,7 @@
 var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
-var triangleOBJ = require('../assets/triangle.obj');
+var triangleOBJ = require('../assets/cube.obj');
 
 var WorldManager = function( scene, camera, renderer, cameraControl ) {
 
@@ -37,11 +37,11 @@ WorldManager.prototype.setup = function(){
     var loader = new OBJLoader( manager );
     var object = loader.parse(triangleOBJ);
 
-    var s = 512;
+    var s = 256;
     var square = s * s;
     var initialBuffer = new Float32Array( square * 4, 4 );
     var div = 1 / s;
-    var scale = 0.5;
+    var scale = 0.9;
     for (var i = 0; i < square ; i++) {
         initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
         initialBuffer[ i * 4 + 1 ] = -10;

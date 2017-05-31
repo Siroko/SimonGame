@@ -13,7 +13,7 @@ var dat = require('dat-gui');
 var World3D = function( container ) {
 
     this.container      = container;
-    this.camera         = new THREE.PerspectiveCamera( 2, window.innerWidth / window.innerHeight, 100, 100000 );
+    this.camera         = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
