@@ -86,6 +86,8 @@ WorldManager.prototype.setup = function(){
 
 };
 
+
+
 WorldManager.prototype.addEvents = function() {
     window.addEventListener( 'keydown', this.onKeydown.bind( this ) );
 };
@@ -93,6 +95,7 @@ WorldManager.prototype.addEvents = function() {
 WorldManager.prototype.onKeydown = function( e ) {
 
 };
+
 
 WorldManager.prototype.update = function( timestamp ) {
 

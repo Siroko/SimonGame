@@ -198,12 +198,10 @@ void main () {
 
     if( pLife < 0.0 ){
         newPosition = geomPositions.xyz + uOffsetPosition;
-
-        if( distance(newPosition, uMousePosition) < uRadius * 100.0 ){
-            pLife = geomPositions.a;
-        }
+        pLife = uLifeTime;
     }
 
-    gl_FragColor = vec4( newPosition, pLife );
+    vec3 fPos = mix(geomPositions.rgb, newPosition, uRadius);
+    gl_FragColor = vec4( fPos, pLife );
 
 }

@@ -2,6 +2,7 @@
  * Created by siroko on 7/8/15.
  */
 var THREE = require('three');
+var gsap = require('gsap');
 
 var WorldManager = require('./WorldManager');
 
@@ -13,7 +14,7 @@ var dat = require('dat-gui');
 var World3D = function( container ) {
 
     this.container      = container;
-    this.camera         = new THREE.PerspectiveCamera( 2, window.innerWidth / window.innerHeight, 100, 100000 );
+    this.camera         = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
     this.camera.layers.enable( 1 );
 
     this.scene          = new THREE.Scene();
@@ -36,6 +37,12 @@ World3D.prototype.setup = function() {
 
     this.renderer.setClearColor( 0x000000, 1 );
     this.container.appendChild( this.renderer.domElement );
+
+    TweenMax.to(document.getElementById("container"), 0.5, {
+        opacity: 1,
+        delay: 2
+    });
+
     this.render( 0 );
 };
 

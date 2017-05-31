@@ -116,12 +116,12 @@ SimulationTexture.prototype.setup = function() {
     this.targets = [  this.finalPositionsRT,  this.finalPositionsRT.clone() ];
     this.pass( this.updatePositionsMaterial,  this.finalPositionsRT );
 
-    // this.uniforms = {
-    //     uNoiseTimeScale: this.noiseTimeScale,
-    //     uNoisePositionScale: this.noisePositionScale,
-    //     uNoiseScale: this.noiseScale
-    // };
-
+    this.uniforms = {
+        uNoiseTimeScale: this.noiseTimeScale,
+        uNoisePositionScale: this.noisePositionScale,
+        uNoiseScale: this.noiseScale
+    };
+    //
     // this.gui = new dat.GUI();
     // this.gui.add(this.uniforms, 'uNoiseTimeScale', 0, 100);
     // this.gui.add(this.uniforms, 'uNoisePositionScale', 0, 0.01);
