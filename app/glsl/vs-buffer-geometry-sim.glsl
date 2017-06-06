@@ -1,13 +1,6 @@
 precision highp float;
 
-attribute vec3 position;
 attribute vec4 index2D;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
 
 uniform sampler2D uGeometryTexture;
 uniform sampler2D uGeometryNormals;
@@ -21,7 +14,11 @@ uniform float uTime;
 varying mat3 vNormalMatrix;
 varying vec4 vPos;
 varying vec4 vColor;
+varying vec4 vWorldPosition;
 varying float vVertexAO;
+
+#include <shadowmap_pars_vertex>
+
 
 float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -38,12 +35,14 @@ void main(){
     vec4 heightValue        = texture2D( uHeightMap, cUv );
     vec4 colorValue         = texture2D( uColorMap, cUv );
 
-//    heightValue.r = 0.5;
+    simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
 
-    simPosition.y -= floor( (1.0 - heightValue.a) * 50. );
-    simPosition.y += 50.;
+    float scale =  (simPosition.a / 10.0) * 2.0;
+    if( scale < 0.0 ) scale = abs(scale);
+    if( scale > 1.0 ) scale = 1.0;
+    geomVertexPosition *= scale;
 
-    float n = rand( simPosition.rg );
+   float n = rand( simPosition.rg );
 
     vec4 rotatedPosition = geomVertexPosition;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
@@ -51,7 +50,6 @@ void main(){
     vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
     vPos            = vec4( p, 1.0 );
     vColor          = colorValue;
-
     vNormalMatrix = normalMatrix;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );

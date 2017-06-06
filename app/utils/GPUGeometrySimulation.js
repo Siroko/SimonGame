@@ -9,6 +9,8 @@ var SimulationTexture = require('./SimulationTexture');
 var vs_buffer = require('./../glsl/vs-buffer-geometry-sim.glsl');
 var fs_buffer = require('./../glsl/fs-buffer-geometry-sim.glsl');
 
+var vs_depth_buffer = require('./../glsl/vs-buffer-geometry-sim-depth.glsl');
+
 var GPUGeometrySimulation = function( params ) {
 
     this.renderer = params.renderer;
@@ -88,7 +90,10 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferGeometry.addAttribute( 'position', this.positions );
     this.bufferGeometry.addAttribute( 'index2D', this.index2D );
 
-    this.bufferMaterial = new THREE.RawShaderMaterial();
+    // this.bufferMaterial = new THREE.RawShaderMaterial();
+    this.bufferMaterial = new THREE.ShadowMaterial();
+    this.bufferMaterial.extensions.derivatives = true;
+    this.bufferMaterial.lights = true;
     this.bufferMaterial.vertexShader =  vs_buffer;
     this.bufferMaterial.fragmentShader = fs_buffer;
     this.bufferMaterial.side = THREE.DoubleSide;
@@ -112,13 +117,30 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
 
+    this.bufferMesh.castShadow = true;
+    this.bufferMesh.receiveShadow = true;
+
+    // magic here
+    this.bufferMesh.customDepthMaterial = new THREE.ShaderMaterial( {
+        defines: {
+            'USE_SHADOWMAP': '',
+            'DEPTH_PACKING': '3201'
+        },
+        vertexShader: vs_depth_buffer,
+        fragmentShader: THREE.ShaderLib.depth.fragmentShader,
+
+        uniforms: this.bufferMaterial.uniforms
+    } );
+
     this.simulator.update();
 };
 
 GPUGeometrySimulation.prototype.update = function( timestamp ){
 
     this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.001;
+
     this.simulator.update();
+
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].value = this.simulator.targets[ 1 - this.simulator.pingpong ];
     this.bufferMaterial.uniforms[ 'uSimulationTexture' ].needsUpdate = true;
     this.bufferMaterial.uniforms[ 'uSimulationPrevTexture' ].value = this.simulator.targets[ this.simulator.pingpong ];
