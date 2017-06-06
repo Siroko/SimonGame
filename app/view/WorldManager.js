@@ -30,16 +30,14 @@ WorldManager.prototype.setup = function(){
 
     var manager = new THREE.LoadingManager();
     manager.onProgress = function ( item, loaded, total ) {
-
         console.log( item, loaded, total );
-
     };
 
     // model
     var loader = new OBJLoader( manager );
     var object = loader.parse(triangleOBJ);
 
-    var s = 128;
+    var s = 256;
     var square = s * s;
     var initialBuffer = new Float32Array( square * 4, 4 );
     var div = 1 / s;
@@ -88,37 +86,35 @@ WorldManager.prototype.setup = function(){
     artworkImg.src = window.artworkImg;
 
     this.floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 2, 2), new THREE.MeshPhongMaterial({
-        color:0xFFFFFF,
+        color:0xEEEEEE,
         specular: 0x111111,
-        emissive: 0x0,
-        shininess: 30,
+        emissive: 0x0000000,
+        shininess: 0,
         side: THREE.DoubleSide
     }));
 
-    this.floor.rotation.x = Math.PI*0.5;
-    this.floor.position.y = -50;
+    this.floor.rotation.x = Math.PI * 1.5;
+    this.floor.position.y = -45;
     this.scene.add(this.floor);
+
 };
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 1024;
-    var SHADOW_MAP_HEIGHT = 1024;
+    var SHADOW_MAP_WIDTH = 512;
+    var SHADOW_MAP_HEIGHT = 512;
 
-    this.light = new THREE.SpotLight( 0xffffff );
-    // this.light.distance = 10;
+    // LIGHTS
+    this.scene.add(new THREE.AmbientLight(0xCCCCCC));
+    this.light = new THREE.SpotLight( 0x222222);
     this.light.penumbra = 0.1;
     this.light.decay = 2;
-    this.light.angle = Math.PI * .8;
 
-    this.light.position.set( 0, 450, 0 );
+    this.light.position.set( 0, 250, 0 );
     this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
-
-    var width = 1024;
-    var height = 1024;
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 90, 1, 100, 500 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 120, 1, 100, 400 ) );
     this.light.shadow.map = new THREE.WebGLRenderTarget( SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, {
         wrapS: THREE.ClampToEdgeWrapping,
         wrapT: THREE.ClampToEdgeWrapping,
@@ -126,32 +122,31 @@ WorldManager.prototype.setupShadows = function() {
         magFilter: THREE.LinearFilter,
         format: THREE.RGBAFormat,
         type: THREE.FloatType,
-        stencilBuffer: true,
-        depthBuffer: true,
+        stencilBuffer: false,
+        depthBuffer: false,
         generateMipmaps: false
     });
-    this.light.shadow.bias = 0.000000000001;
+
+    // this.light.shadow.bias = 0.000001;
     this.light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     this.light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     this.scene.add( this.light );
-
     this.renderer.autoClear = false;
-
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
-
-    this.lightShadowMapViewer = new ShadowMapViewer( this.light );
-    this.lightShadowMapViewer.position.x = 0;
-    this.lightShadowMapViewer.position.y = 0;
-    this.lightShadowMapViewer.size.width = 256;
-    this.lightShadowMapViewer.size.height = 256;
-    this.lightShadowMapViewer.update();
+    // this.scene.add(  new THREE.CameraHelper( this.light.shadow.camera ) );
+    //
+    // this.lightShadowMapViewer = new ShadowMapViewer( this.light );
+    // this.lightShadowMapViewer.position.x = 0;
+    // this.lightShadowMapViewer.position.y = 0;
+    // this.lightShadowMapViewer.size.width = 256;
+    // this.lightShadowMapViewer.size.height = 256;
+    // this.lightShadowMapViewer.update();
 
 };
 
@@ -165,7 +160,7 @@ WorldManager.prototype.onKeydown = function( e ) {
 
 WorldManager.prototype.update = function( timestamp ) {
 
-    if( this.gpuGeometrySimulation ){
+    if( this.gpuGeometrySimulation ) {
 
         this.gpuGeometrySimulation.update( timestamp );
         var d = 0.05 + (this.cameraControl.distanceScreen * 20);
@@ -177,7 +172,7 @@ WorldManager.prototype.update = function( timestamp ) {
         this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value += (d - this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value) / 10;
     }
 
-    if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
+    // if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
 
 };
 

@@ -37,6 +37,6 @@ void main(){
     float shadowMask = getShadowMask();
     shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
 
-    gl_FragColor = vec4( c.rgb * shadowMask,  vColor.a );
+    gl_FragColor = vec4( c.rgb * shadowMask,  1.0);
 
 }

@@ -69,7 +69,7 @@ World3D.prototype.render = function( timestamp ) {
     this.cameraControl.getIntersects([this.floorPlane]);
 
     // Render the scene through the manager.
-    this.renderer.setClearColor( 0xFFFFFF );
+    this.renderer.setClearColor( 0xBEBEBE );
     this.renderer.setRenderTarget( null ); // add this line
     this.renderer.clear();
     this.renderer.render( this.scene, this.camera );
