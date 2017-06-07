@@ -18,7 +18,9 @@ var b = browserify('./app/app.js', {
 })
 .transform(stringify(['.glsl', '.obj']));
 
-var w = watchify(b);
+var w = watchify(b,  {
+    poll: true
+});
 w.on('update', bundle);
 
 function bundle( e ) {

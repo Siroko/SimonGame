@@ -38,8 +38,13 @@ void main(){
     simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
 
     float scale =  (simPosition.a / 10.0) * 2.0;
-    if( scale < 0.0 ) scale = abs(scale);
-    if( scale > 1.0 ) scale = 1.0;
+    if( scale < 0.0 ){
+        scale = abs(scale);
+        if( scale > 1.0 ) scale = 1.0;
+    } else {
+        scale = sin(scale)*5.0;
+    }
+
     geomVertexPosition *= scale;
 
    float n = rand( simPosition.rg );
