@@ -19,7 +19,7 @@ var WorldManager = function( scene, camera, renderer, cameraControl ) {
     this.cameraControl = cameraControl;
 
     this.setup();
-    this.setupShadows();
+    // this.setupShadows();
     this.addEvents();
 
 };
@@ -37,7 +37,7 @@ WorldManager.prototype.setup = function(){
     var loader = new OBJLoader( manager );
     var object = loader.parse(triangleOBJ);
 
-    var s = 256;
+    var s = 128;
     var square = s * s;
     var initialBuffer = new Float32Array( square * 4, 4 );
     var div = 1 / s;
@@ -85,17 +85,17 @@ WorldManager.prototype.setup = function(){
 
     artworkImg.src = window.artworkImg;
 
-    this.floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 2, 2), new THREE.MeshPhongMaterial({
-        color:0xEEEEEE,
-        specular: 0x111111,
-        emissive: 0x0000000,
-        shininess: 0,
-        side: THREE.DoubleSide
-    }));
-
-    this.floor.rotation.x = Math.PI * 1.5;
-    this.floor.position.y = -45;
-    this.scene.add(this.floor);
+    // this.floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 2, 2), new THREE.MeshPhongMaterial({
+    //     color:0xEEEEEE,
+    //     specular: 0x111111,
+    //     emissive: 0x0000000,
+    //     shininess: 0,
+    //     side: THREE.DoubleSide
+    // }));
+    //
+    // this.floor.rotation.x = Math.PI * 1.5;
+    // this.floor.position.y = -45;
+    // this.scene.add(this.floor);
 
 };
 

@@ -184,25 +184,26 @@ void main () {
     vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
     vec4 prevPositions = texture2D(uPrevPositionsMap, uv);
 
-    vec3 noiseVelocity = getCurlVelocity( prevPositions );
+    vec3 noiseVelocity = normalize(prevPositions.rgb - vec3(0.0));
+
+    float pLife = prevPositions.a;
 
     vec3 vel = noiseVelocity;
     vec3 dir = uDirectionFlow;
 
-    float pLife = prevPositions.a;
+    vel = cross( normalize( vel / vec3( pLife / 100.0 ) ) * 2.0, vec3( 0.0, 0.0, 0.0 ) ) ;
 
+    vec3 newPosition = ( prevPositions.rgb - vel );
 
-    vec3 newPosition = ( prevPositions.rgb + vel + dir );
+    //pLife -= uSpeedDie;
 
-    pLife -= uSpeedDie;
-
-    if( pLife < 0.0 ){
-        newPosition = geomPositions.xyz + uOffsetPosition;
-
-        if( distance(newPosition, uMousePosition) < uRadius * 100.0 ){
-            pLife = geomPositions.a;
-        }
-    }
+//    if( pLife < 0.0 ){
+//        newPosition = geomPositions.xyz + uOffsetPosition;
+//
+//        if( distance(newPosition, uMousePosition) < uRadius * 100.0 ){
+//            pLife = geomPositions.a;
+//        }
+//    }
 
     gl_FragColor = vec4( newPosition, pLife );
 
