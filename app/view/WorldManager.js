@@ -37,17 +37,26 @@ WorldManager.prototype.setup = function(){
     var loader = new OBJLoader( manager );
     var object = loader.parse(triangleOBJ);
 
-    var s = 128;
+    var s = 1024;
     var square = s * s;
     var initialBuffer = new Float32Array( square * 4, 4 );
     var div = 1 / s;
     var scale = 0.98;
 
-    for (var i = 0; i < square ; i++) {
-        initialBuffer[ i * 4 ] = ( 2. * div * ( ( i % s ) + 0.5 ) - 1 ) * s * (1) * scale;
-        initialBuffer[ i * 4 + 1 ] = -10;
-        initialBuffer[ i * 4 + 2 ] = ( 2. * div * ( Math.floor( i * div ) + 0.5 ) - 1 ) * s * (1) * scale;
-        initialBuffer[ i * 4 + 3 ] = Math.random() * 10;
+    var radius = 100;
+    var it = 0;
+    for (var i = 0; i < s ; i++) {
+        for (var j = 0; j < s; j++){
+            var phi = i/s * Math.PI * 2;
+            var theta = j/s * Math.PI*2;
+            initialBuffer[ it * 4 ] = Math.sin(phi) * Math.cos(theta) * radius;
+            initialBuffer[ it * 4 + 1 ] = Math.sin(theta) * radius;
+            initialBuffer[ it * 4 + 2 ] = Math.cos(phi) * Math.sin(theta) * radius;
+            initialBuffer[ it * 4 + 3 ] = Math.random() * 10;
+
+            it++;
+        }
+
     }
 
     var artworkImg = new Image();

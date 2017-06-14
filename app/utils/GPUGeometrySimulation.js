@@ -137,7 +137,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
 
 GPUGeometrySimulation.prototype.update = function( timestamp ){
 
-    this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.001;
+    this.bufferMaterial.uniforms['uTime'].value = timestamp * 0.1;
 
     this.simulator.update();
 

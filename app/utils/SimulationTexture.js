@@ -131,7 +131,7 @@ SimulationTexture.prototype.setup = function() {
 
 SimulationTexture.prototype.update = function() {
 
-    this.updatePositionsMaterial.uniforms.uTime.value = Math.sin(Date.now()) * 0.001;
+    this.updatePositionsMaterial.uniforms.uTime.value = Date.now() * 0.1;
     this.updatePositionsMaterial.uniforms.uPrevPositionsMap.value = this.targets[ this.pingpong ];
 
     this.pingpong = 1 - this.pingpong;

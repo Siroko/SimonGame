@@ -177,6 +177,19 @@ float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+mat4 rotationMatrix(vec3 axis, float angle){
+
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+
 void main () {
 
     vec2 uv = vUv;
@@ -184,27 +197,30 @@ void main () {
     vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
     vec4 prevPositions = texture2D(uPrevPositionsMap, uv);
 
-    vec3 noiseVelocity = normalize(prevPositions.rgb - vec3(0.0));
+    vec3 center = vec3(0.0);
+    center = uMousePosition;
+    float radius = 10.0;
+    float distanceToCenter = distance(center, prevPositions.rgb);
+    float velocityToCenter = (distanceToCenter + 1.0) * radius;
 
-    float pLife = prevPositions.a;
+    vec3 toCenter = normalize( ( prevPositions.rgb - center ) * ( velocityToCenter * velocityToCenter * velocityToCenter ) );
 
-    vec3 vel = noiseVelocity;
+    vec3 randomized = vec3(prevPositions.a / uLifeTime);
+    vec3 up = vec3(0.0, 1.0, 0.0);
+    vec3 eye = vec3(0.0, 0.0, 1.0);
+    vec3 axis = vec3(1.0, 0.0, 0.0);
+    mat4 rX = rotationMatrix(axis, toCenter.x);
+    mat4 rY = rotationMatrix(up, toCenter.y);
+    mat4 rZ = rotationMatrix(eye, toCenter.z);
+
+    vec3 tangent = cross( toCenter , randomized ) * ( randomized.r + 1.0 ) * 15.0  ;
+
+    vec3 vel = tangent;
+//    vel += tangent;
     vec3 dir = uDirectionFlow;
-
-    vel = cross( normalize( vel / vec3( pLife / 100.0 ) ) * 2.0, vec3( 0.0, 0.0, 0.0 ) ) ;
 
     vec3 newPosition = ( prevPositions.rgb - vel );
 
-    //pLife -= uSpeedDie;
-
-//    if( pLife < 0.0 ){
-//        newPosition = geomPositions.xyz + uOffsetPosition;
-//
-//        if( distance(newPosition, uMousePosition) < uRadius * 100.0 ){
-//            pLife = geomPositions.a;
-//        }
-//    }
-
-    gl_FragColor = vec4( newPosition, pLife );
+    gl_FragColor = vec4( newPosition, 1.0 );
 
 }
