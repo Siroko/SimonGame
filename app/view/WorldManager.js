@@ -97,12 +97,25 @@ WorldManager.prototype.setup = function(){
     this.floor.position.y = -45;
     this.scene.add(this.floor);
 
+    // this.sphereGeom = new THREE.SphereBufferGeometry(50, 10, 10);
+    // this.sphereMesh = new THREE.Mesh(this.sphereGeom, new THREE.MeshPhongMaterial({
+    //     color:0xEEEEEE,
+    //     specular: 0x111111,
+    //     emissive: 0x0000000,
+    //     shininess: 1,
+    //     side: THREE.DoubleSide
+    // }));
+    // this.sphereMesh.position.y = 20;
+    // this.sphereMesh.castShadow = true;
+    // this.sphereMesh.receiveShadow = true;
+    // this.scene.add(this.sphereMesh);
+
 };
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 512;
-    var SHADOW_MAP_HEIGHT = 512;
+    var SHADOW_MAP_WIDTH = 1024;
+    var SHADOW_MAP_HEIGHT = 1024;
 
     // LIGHTS
     this.scene.add(new THREE.AmbientLight(0xCCCCCC));
@@ -172,7 +185,7 @@ WorldManager.prototype.update = function( timestamp ) {
         this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value += (d - this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value) / 10;
     }
 
-    if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
+    //if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
 
 };
 

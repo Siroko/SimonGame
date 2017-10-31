@@ -34,7 +34,8 @@ void main(){
     vec4 c = vec4( vec3(vColor.rgb * addedLights.rgb * occlusion), 1.0 );
     c *= vec4(1.7);
 
-    float shadowMask = getShadowMask();
+    float shadowMask = getShadowMask() + 0.5;
+
     shadowMask = shadowMask > 1.0 ? 1.0 : shadowMask;
 
     gl_FragColor = vec4( c.rgb * shadowMask,  1.0);

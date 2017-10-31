@@ -57,5 +57,10 @@ void main(){
     vColor          = colorValue;
     vNormalMatrix = normalMatrix;
 
+    vec3 transformed = vec3( p );
+    #include <project_vertex>
+    #include <worldpos_vertex>
+    #include <shadowmap_vertex>
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );
 }
