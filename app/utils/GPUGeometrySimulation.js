@@ -116,7 +116,6 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
     this.bufferMaterial.uniforms['uTime'] =  { type: "f", value: 0 };
 
     this.bufferMesh = new THREE.Mesh( this.bufferGeometry, this.bufferMaterial );
-
     this.bufferMesh.castShadow = true;
     this.bufferMesh.receiveShadow = true;
 
@@ -128,7 +127,6 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
         },
         vertexShader: vs_depth_buffer,
         fragmentShader: THREE.ShaderLib.depth.fragmentShader,
-
         uniforms: this.bufferMaterial.uniforms
     } );
 

@@ -1,0 +1,31 @@
+# This file uses centimeters as units for non-parametric coordinates.
+
+mtllib triangle_double.mtl
+g default
+v -1.882478 0.014602 1.447466
+v 1.882478 0.014602 1.468918
+v 0.021480 0.014602 -1.882478
+vt 0.000000 1.000000
+vt 1.000000 0.000000
+vt 1.000000 1.000000
+vn -0.000000 -1.000000 0.000000
+vn -0.000000 -1.000000 0.000000
+vn -0.000000 -1.000000 0.000000
+s off
+g triangle1:pPlane1 group
+usemtl triangle1:initialShadingGroup
+f 2/1/1 1/2/2 3/3/3
+g default
+v 1.882478 -0.020807 1.447466
+v -1.882478 -0.020807 1.468918
+v -0.021480 -0.020807 -1.882478
+vt 0.000000 1.000000
+vt 1.000000 0.000000
+vt 1.000000 1.000000
+vn 0.000000 1.000000 0.000000
+vn 0.000000 1.000000 0.000000
+vn 0.000000 1.000000 0.000000
+s off
+g triangle:pPlane1
+usemtl triangle:initialShadingGroup
+f 5/4/4 4/5/5 6/6/6

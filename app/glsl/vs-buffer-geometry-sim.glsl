@@ -35,7 +35,9 @@ void main(){
     vec4 heightValue        = texture2D( uHeightMap, cUv );
     vec4 colorValue         = texture2D( uColorMap, cUv );
 
-    simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
+    //simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
+    float vHeight = 1.0 - ( (colorValue.r + colorValue.g + colorValue.b ) / 3.0 );
+    simPosition.y -= floor( (1.0 - vHeight * 10. ));
 
     float scale =  (simPosition.a / 10.0) * 2.0;
     if( scale < 0.0 ){
@@ -52,7 +54,7 @@ void main(){
     vec4 rotatedPosition = geomVertexPosition;
     vec3 p = simPosition.rgb + rotatedPosition.rgb;
 
-    vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - heightValue.r) * 0.2);
+    vVertexAO       = 1.0 - step(rotatedPosition.y, 0.0) + ( (1.0 - vHeight) * 0.2);
     vPos            = vec4( p, 1.0 );
     vColor          = colorValue;
     vNormalMatrix = normalMatrix;

@@ -6,7 +6,8 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
-var triangleOBJ = require('../assets/cube.obj');
+var triangleOBJ = require('../assets/triangle_double.obj');
+// var triangleOBJ = require('../assets/cube.obj');
 
 var WorldManager = function( scene, camera, renderer, cameraControl ) {
 
@@ -185,7 +186,7 @@ WorldManager.prototype.update = function( timestamp ) {
         this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value += (d - this.gpuGeometrySimulation.simulator.updatePositionsMaterial.uniforms.uRadius.value) / 10;
     }
 
-    //if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
+    // if( this.lightShadowMapViewer ) this.lightShadowMapViewer.render(this.renderer);
 
 };
 
