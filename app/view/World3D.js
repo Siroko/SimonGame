@@ -29,6 +29,9 @@ var World3D = function( container ) {
     this.floorPlane.position.y = -19;
     this.scene.add( this.floorPlane );
 
+    this.spherePointer = new THREE.Mesh(new THREE.SphereBufferGeometry(10, 10, 10), new THREE.MeshNormalMaterial());
+    this.scene.add(this.spherePointer);
+
     this.addEvents();
 };
 
@@ -66,8 +69,9 @@ World3D.prototype.render = function( timestamp ) {
     window.requestAnimationFrame( this.render.bind( this ) );
 
     this.cameraControl.update();
-    this.cameraControl.getIntersects([this.floorPlane]);
-
+    this.worldManager.floor.lookAt(this.camera.position);
+    this.cameraControl.getIntersects([this.worldManager.floor]);
+    this.spherePointer.position.copy(this.cameraControl.intersectPoint);
     // Render the scene through the manager.
     this.renderer.setClearColor( 0xBEBEBE );
     this.renderer.setRenderTarget( null ); // add this line

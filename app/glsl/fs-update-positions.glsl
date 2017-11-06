@@ -205,15 +205,20 @@ void main () {
 
     vec3 toCenter = normalize( ( prevPositions.rgb - center ) * ( velocityToCenter * velocityToCenter * velocityToCenter ) );
 
+    vec4 _centerVector = normalize( ( vec4(prevPositions.rgb, 1.0) - vec4(center, 1.0) ) );
+
     vec3 randomized = vec3(prevPositions.a / uLifeTime);
     vec3 up = vec3(0.0, 1.0, 0.0);
     vec3 eye = vec3(0.0, 0.0, 1.0);
     vec3 axis = vec3(1.0, 0.0, 0.0);
-    mat4 rX = rotationMatrix(axis, toCenter.x);
-    mat4 rY = rotationMatrix(up, toCenter.y);
-    mat4 rZ = rotationMatrix(eye, toCenter.z);
+    mat4 rX = rotationMatrix(axis, _centerVector.x);
+    mat4 rY = rotationMatrix(up, _centerVector.y);
+    mat4 rZ = rotationMatrix(eye, _centerVector.z);
 
     vec3 tangent = cross( toCenter , randomized ) * ( randomized.r + 1.0 ) * 15.0  ;
+
+    // tangent = cross(_center, up);
+    // tangent = vec4((rX * rY * rZ) * vec4(tangent, 1.0)).rgb;
 
     vec3 vel = tangent;
 //    vel += tangent;
