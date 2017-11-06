@@ -6,7 +6,7 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
-var triangleOBJ = require('../assets/triangle_double.obj');
+var triangleOBJ = require('../assets/cube.obj');
 // var triangleOBJ = require('../assets/cube.obj');
 
 var WorldManager = function( scene, camera, renderer, cameraControl ) {
@@ -115,20 +115,21 @@ WorldManager.prototype.setup = function(){
 
 WorldManager.prototype.setupShadows = function() {
 
-    var SHADOW_MAP_WIDTH = 1024;
-    var SHADOW_MAP_HEIGHT = 1024;
+    var SHADOW_MAP_WIDTH = 2048;
+    var SHADOW_MAP_HEIGHT = 2048;
 
     // LIGHTS
     this.scene.add(new THREE.AmbientLight(0xCCCCCC));
     this.light = new THREE.SpotLight( 0x222222);
-    this.light.penumbra = 0.1;
-    this.light.decay = 2;
+    this.light.penumbra = 1;
+    this.light.decay = 1
+    this.light.distance = 600;
 
-    this.light.position.set( 0, 250, 0 );
+    this.light.position.set( 0, 400, 0 );
     this.light.target.position.set( 0, 0, 0 );
 
     this.light.castShadow = true;
-    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 120, 1, 100, 400 ) );
+    this.light.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 120, 1, 10, 450 ) );
     this.light.shadow.map = new THREE.WebGLRenderTarget( SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, {
         wrapS: THREE.ClampToEdgeWrapping,
         wrapT: THREE.ClampToEdgeWrapping,
