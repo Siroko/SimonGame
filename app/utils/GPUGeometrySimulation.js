@@ -126,6 +126,7 @@ GPUGeometrySimulation.prototype.setupMesh = function(){
             'USE_SHADOWMAP': '',
             'DEPTH_PACKING': '3201'
         },
+        side: THREE.DoubleSide,
         vertexShader: vs_depth_buffer,
         fragmentShader: THREE.ShaderLib.depth.fragmentShader,
 

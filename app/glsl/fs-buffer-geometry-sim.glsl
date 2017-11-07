@@ -27,7 +27,7 @@ void main(){
 
     // Pretty basic lambertian lighting...
     vec3 lightPosition = vec3( -400.0, 4.0, 0.0 );
-    vec4 addedLights = vec4( 0.5, 0.5, 0.5, 1.0 );
+    vec4 addedLights = vec4( 0.3, 0.3, 0.3, 1.0 );
     vec3 lightDirection = normalize( vPos.rgb - lightPosition );
     addedLights.rgb += ( clamp( dot( - lightDirection, n ), 0.0, 1.0 ) );
 

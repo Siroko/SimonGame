@@ -6,7 +6,7 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
-var triangleOBJ = require('../assets/cube.obj');
+var triangleOBJ = require('../assets/cube_nobottom.obj');
 
 var WorldManager = function( scene, camera, renderer, cameraControl ) {
 
@@ -86,7 +86,7 @@ WorldManager.prototype.setup = function(){
     artworkImg.src = window.artworkImg;
 
     this.floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 2, 2), new THREE.MeshPhongMaterial({
-        color:0xEEEEEE,
+        color:0x222222,
         specular: 0x111111,
         emissive: 0x0000000,
         shininess: 0,
