@@ -27,14 +27,18 @@ void main(){
     vec4 heightValue        = texture2D( uHeightMap, cUv );
     vec4 colorValue         = texture2D( uColorMap, cUv );
 
-    simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
+     //simPosition.y -= floor( (1.0 - heightValue.a) * 10. );
+    // float vHeight = 1.0 - ( (colorValue.r + colorValue.g + colorValue.b ) / 3.0 );
+    float vHeight = 0.0;
+    simPosition.y -= floor( (1.0 - vHeight * 10.) );
+
 
     float scale =  (simPosition.a / 10.0) * 2.0;
     if( scale < 0.0 ){
         scale = abs(scale);
         if( scale > 1.0 ) scale = 1.0;
     } else {
-        scale = sin(scale)*5.0;
+        scale = sin(scale) * 5.0;
     }
 
     geomVertexPosition *= scale;

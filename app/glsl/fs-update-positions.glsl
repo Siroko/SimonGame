@@ -182,7 +182,7 @@ void main () {
     vec2 uv = vUv;
 
     vec4 geomPositions = texture2D( uGeomPositionsMap, uv );
-    vec4 prevPositions = texture2D(uPrevPositionsMap, uv);
+    vec4 prevPositions = texture2D( uPrevPositionsMap, uv );
 
     vec3 noiseVelocity = getCurlVelocity( prevPositions );
 

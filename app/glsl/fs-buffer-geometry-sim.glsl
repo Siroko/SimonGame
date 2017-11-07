@@ -24,7 +24,7 @@ void main(){
     vec3 n = normalize( cross( fdx, fdy ) * vNormalMatrix );
 
     vec3 occlusion = vec3( vVertexAO );
-
+    occlusion = vec3(1.0);
     // Pretty basic lambertian lighting...
     vec3 lightPosition = vec3( -400.0, 4.0, 0.0 );
     vec4 addedLights = vec4( 0.3, 0.3, 0.3, 1.0 );
