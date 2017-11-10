@@ -1,10 +1,10 @@
-newmtl triangle:initialShadingGroup
+newmtl triangle_double1:initialShadingGroup
 illum 4
 Kd 0.50 0.50 0.50
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 Ni 1.00
-newmtl triangle1:initialShadingGroup
+newmtl triangle_double2:initialShadingGroup
 illum 4
 Kd 0.50 0.50 0.50
 Ka 0.00 0.00 0.00

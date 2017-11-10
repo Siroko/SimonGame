@@ -6,7 +6,8 @@ var THREE = require('three');
 var OBJLoader = require('./../utils/OBJLoader');
 var GPUGeometrySimulation = require('./../utils/GPUGeometrySimulation');
 var ShadowMapViewer = require('./../utils/ShadowMapViewer');
-var triangleOBJ = require('../assets/cube_nobottom.obj');
+var triangleOBJ = require('../assets/cube.obj');
+var triangleOBJLOW = require('../assets/triangle_double.obj');
 
 var WorldManager = function( scene, camera, renderer, cameraControl ) {
 
@@ -17,6 +18,33 @@ var WorldManager = function( scene, camera, renderer, cameraControl ) {
     this.camera = camera;
     this.scene = scene;
     this.cameraControl = cameraControl;
+
+    this.mode = location.hash;
+    console.log(this.mode);
+    if(this.mode != "#high" && this.mode != "#low" ) this.mode = "#high";
+
+    this.btnHigh = document.getElementById("btn-high");
+    this.btnLow = document.getElementById("btn-low");
+
+    if(this.mode == "#high"){
+        this.btnHigh.classList = "text active";
+    }else{
+        this.btnLow.classList = "text active";
+    }
+
+    this.btnHigh.addEventListener("click", function(){
+        if(this.mode != "#high"){
+            location.hash = "high";
+            window.location.reload();
+        }
+    });
+
+    this.btnLow.addEventListener("click", function(){
+        if(this.mode != "#low"){
+            location.hash = "low";
+            window.location.reload();
+        }
+    });
 
     this.setup();
     this.setupShadows();
@@ -35,7 +63,7 @@ WorldManager.prototype.setup = function(){
 
     // model
     var loader = new OBJLoader( manager );
-    var object = loader.parse(triangleOBJ);
+    var object = loader.parse( this.mode == "#high" ? triangleOBJ : triangleOBJLOW );
 
     var s = 256;
     var square = s * s;
@@ -119,10 +147,10 @@ WorldManager.prototype.setupShadows = function() {
 
     // LIGHTS
     this.scene.add(new THREE.AmbientLight(0xCCCCCC));
-    this.light = new THREE.SpotLight( 0x222222);
+    this.light = new THREE.SpotLight( 0x555555);
     this.light.penumbra = 1;
     this.light.decay = 1
-    this.light.distance = 600;
+    this.light.distance = 700;
 
     this.light.position.set( 0, 400, 0 );
     this.light.target.position.set( 0, 0, 0 );
